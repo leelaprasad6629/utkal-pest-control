@@ -1,0 +1,36 @@
+{
+  "name": "utkal-pest-control",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "ts-node --esm scripts/seed.ts"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^5.0.0",
+    "@hookform/resolvers": "^3.0.0",
+    "axios": "^1.4.0",
+    "cloudinary": "^1.35.0",
+    "mongoose": "^7.0.0",
+    "next": "14.2.22",
+    "nodemailer": "^6.9.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.0.0",
+    "recharts": "^2.5.0",
+    "zod": "^3.0.0",
+    "clsx": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "ts-node": "^10.0.0",
+    "tailwindcss": "^3.0.0",
+    "postcss": "^8.0.0",
+    "autoprefixer": "^10.0.0",
+    "typescript": "^5.0.0"
+  }
+}
