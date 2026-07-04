@@ -1,9 +1,9 @@
-import dbConnect from '../../../../lib/mongo'
-import { Service } from '../../../../models'
+import dbConnect from '../../../lib/mongo'
+import { Service } from '../../../models'
+import Link from 'next/link'
+import BookingSteps from '../../../components/BookingSteps'
 
-interface Props {
-  params: { slug: string }
-}
+interface Props { params: { slug: string } }
 
 export default async function ServiceDetail({ params }: Props) {
   await dbConnect()
@@ -15,7 +15,7 @@ export default async function ServiceDetail({ params }: Props) {
       <p className="mt-2">{svc.description}</p>
       <p className="mt-2 font-semibold">Starting at ₹{svc.basePrice}</p>
       <div className="mt-4">
-        <a href="/quote" className="bg-accent text-white px-4 py-2 rounded">Book Now</a>
+        <Link href={`/book/${svc._id}`} className="bg-accent text-white px-4 py-2 rounded">Book This Service</Link>
       </div>
     </main>
   )
