@@ -1,0 +1,92 @@
+The site currently has zero visual design — no colors, no background treatment,
+default browser-style form inputs, no typographic hierarchy. Give it a real,
+cohesive design system and apply it across every existing page. Don't just add
+a random gradient — follow this specific direction:
+
+Concept: A pest-control brand should feel clean, trustworthy, and
+protective — like a home inspector, not a chemical company. Avoid clichés
+(no cartoon bugs, no red warning-sign colors, no biohazard imagery). Think
+"calm authority" — closer to a modern home-services or insurance brand than
+a "kill the bugs" brand.
+
+Color palette (use these as CSS variables in tailwind.config.js, don't
+freehand new colors elsewhere):
+
+
+--color-primary: #1B4332 (deep forest green — trust, nature, "eco-friendly")
+--color-primary-light: #2D6A4F (used for hovers/secondary emphasis)
+--color-accent: #D4A373 (warm sand/tan — used sparingly for CTAs and highlights)
+--color-background: #FAF9F6 (warm off-white, not pure white)
+--color-surface: #FFFFFF (card backgrounds, sits on top of background)
+--color-text: #1C1C1C (near-black, not pure black)
+--color-text-muted: #6B7280
+--color-border: #E5E1D8
+--color-success: #2D6A4F, --color-warning: #B45309, --color-danger: #B91C1C
+(for booking status badges: confirmed/pending/cancelled etc.)
+
+
+Typography:
+
+
+Headings: a confident, slightly condensed sans-serif with real weight
+contrast — use Fraunces (a serif with character) for H1/H2 only, to give
+the brand a distinct "established, trustworthy" feel instead of looking
+like every other SaaS template. Import from Google Fonts.
+Body/UI text: Inter for everything else (forms, nav, body copy, buttons) —
+clean and highly legible.
+Set a real type scale: H1 ~48px/56px line-height, H2 ~32px, H3 ~22px,
+body ~16px/1.6, small/caption ~13px. Use consistent font-weight steps
+(400 body, 600 emphasis, 700 headings) — don't default everything to bold.
+
+
+Layout & components to fix specifically (based on the screenshots):
+
+
+Header/nav: currently plain text links with no active state or
+background. Add a subtle background color or bottom border on the active
+page's nav link, proper spacing between links, and make "Get Quote" a
+filled primary-color button (it's currently just an outlined box).
+Homepage hero: give it an actual hero section — primary-color or
+gradient background, larger heading using the display font, a supporting
+subheading, and a clear primary CTA button with hover state.
+Forms (Quote, Contact): replace default browser input styling with
+consistent custom inputs — rounded corners (6-8px), a visible border in
+--color-border, a clear focus state (border color changes to primary +
+subtle box-shadow ring, not the default blue browser outline), proper
+label spacing above each field, and disabled-state styling for buttons
+(the "Request Quote" button in the screenshot looks permanently disabled/
+greyed out — check why and fix the enabling logic too, not just the style).
+Dashboard / My Bookings: give the empty state an icon or illustration
+(simple SVG, not a stock photo) instead of just plain grey text, and add
+a primary-color CTA button ("Get a Quote") directly in the empty state
+so users have an obvious next action.
+Footer: add a background color (e.g. --color-primary with white
+text) to visually close the page instead of blending into the body.
+Buttons generally: define one consistent button system — primary
+(filled, --color-primary background), secondary (outlined), and text/
+ghost variants — and use them consistently instead of ad-hoc border
+classes per page.
+Cards (service tiles on homepage, booking list items): add subtle
+shadow (box-shadow: 0 1px 3px rgba(0,0,0,0.08)), rounded corners, and a
+hover state (slight lift or border color change) so they read as
+interactive elements, not plain bordered boxes.
+
+
+Motion: keep it minimal and purposeful — a short (150-200ms) transition
+on hover states (buttons, cards, nav links) and a subtle fade-in on page
+load is enough. Do not add scroll animations, parallax, or anything flashy —
+this is a trust-driven local service business, not a product launch page.
+
+Consistency requirement: define all of this centrally (Tailwind config
+theme extension + a shared <Header> and <Footer> component used on every
+page) rather than styling each page file individually, so future pages
+automatically inherit the same look.
+
+Accessibility floor: maintain visible keyboard focus states on all
+interactive elements, ensure text/background contrast passes WCAG AA
+(the deep green on off-white and near-black text should already pass, but
+verify), and respect prefers-reduced-motion for the transitions above.
+
+After implementing, run npm run build to confirm nothing broke, then give
+me a summary of every page/component you restyled so I know what to check
+in the browser.

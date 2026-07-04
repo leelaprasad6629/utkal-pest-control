@@ -3,6 +3,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { apiFetch } from "@/lib/api";
 import type { Booking } from "@/lib/types";
+import StatusBadge from "@/components/status-badge";
 
 export default function DashboardTechnician() {
   const { getToken } = useAuth();
@@ -25,15 +26,21 @@ export default function DashboardTechnician() {
   }, []);
 
   return (
-    <div>
-      <h3 className="text-lg font-semibold">Technician Dashboard</h3>
-      <p className="mt-1 text-sm text-gray-600">Your assigned jobs.</p>
+    <div className="rounded-xl border border-border bg-card shadow-sm">
+      <div className="p-6 border-b border-border">
+        <h3>Technician Dashboard</h3>
+        <p className="mt-1 text-sm text-text-muted">Your assigned jobs.</p>
+      </div>
 
-      {loading && <p className="mt-4 text-gray-500">Loading jobs...</p>}
-      {error && <p className="mt-4 text-red-600">{error}</p>}
+      {loading && <p className="p-6 text-text-muted">Loading jobs...</p>}
+      {error && (
+        <p className="p-6 text-danger" data-testid="text-error">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && (
-        <Table className="mt-4">
+        <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Customer</TableHead>
@@ -52,13 +59,15 @@ export default function DashboardTechnician() {
                   <TableCell>
                     {b.scheduledDate ? new Date(b.scheduledDate).toLocaleDateString() : "—"}
                   </TableCell>
-                  <TableCell>{b.status}</TableCell>
+                  <TableCell>
+                    <StatusBadge status={b.status} />
+                  </TableCell>
                 </TableRow>
               );
             })}
             {bookings.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-gray-500">
+                <TableCell colSpan={4} className="text-center text-text-muted py-8">
                   No jobs assigned yet.
                 </TableCell>
               </TableRow>

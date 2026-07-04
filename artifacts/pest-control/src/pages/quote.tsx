@@ -48,23 +48,33 @@ export default function Quote() {
 
   if (!isSignedIn) {
     return (
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-primary">Get a Quote / Book Service</h1>
-        <p className="mt-2 text-gray-700">Please sign in to request a quote or book a service.</p>
-        <div className="mt-4">
-          <SignInButton mode="modal">
-            <Button data-testid="button-sign-in-quote">Sign in to continue</Button>
-          </SignInButton>
+      <main className="max-w-5xl mx-auto px-4 md:px-6 py-14 animate-fade-in">
+        <div className="max-w-md rounded-xl border border-border bg-card p-8 shadow-sm text-center">
+          <h1 className="text-primary">Get a Quote / Book Service</h1>
+          <p className="mt-3 text-text-muted">Please sign in to request a quote or book a service.</p>
+          <div className="mt-6">
+            <SignInButton mode="modal">
+              <Button size="lg" data-testid="button-sign-in-quote">
+                Sign in to continue
+              </Button>
+            </SignInButton>
+          </div>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-primary">Get a Quote / Book Service</h1>
-      <form className="mt-4 max-w-md space-y-4" onSubmit={handleSubmit}>
-        <div>
+    <main className="max-w-5xl mx-auto px-4 md:px-6 py-14 animate-fade-in">
+      <h1 className="text-primary">Get a Quote / Book Service</h1>
+      <p className="mt-3 text-text-muted max-w-lg">
+        Tell us a bit about your property and preferred schedule — we'll confirm the details shortly.
+      </p>
+      <form
+        className="mt-8 max-w-md space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm"
+        onSubmit={handleSubmit}
+      >
+        <div className="space-y-2">
           <Label htmlFor="service">Service</Label>
           <Select value={serviceId} onValueChange={setServiceId} required>
             <SelectTrigger id="service" data-testid="select-service">
@@ -79,23 +89,31 @@ export default function Quote() {
             </SelectContent>
           </Select>
         </div>
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="address">Address</Label>
           <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} required data-testid="input-address" />
         </div>
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="pincode">Pincode</Label>
           <Input id="pincode" value={pincode} onChange={(e) => setPincode(e.target.value)} required data-testid="input-pincode" />
         </div>
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="date">Preferred Date</Label>
           <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} data-testid="input-date" />
         </div>
-        <Button type="submit" disabled={status === "submitting" || !serviceId} data-testid="button-request-quote">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={status === "submitting" || !serviceId || !address || !pincode}
+          data-testid="button-request-quote"
+        >
           {status === "submitting" ? "Submitting..." : "Request Quote"}
         </Button>
+        {!serviceId && (
+          <p className="text-xs text-text-muted">Select a service, address, and pincode to continue.</p>
+        )}
         {status === "error" && (
-          <p className="text-red-600" data-testid="text-error">
+          <p className="text-sm text-danger" data-testid="text-error">
             Error creating quote. Try again later.
           </p>
         )}

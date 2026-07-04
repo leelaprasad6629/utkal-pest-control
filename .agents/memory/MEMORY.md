@@ -1,1 +1,2 @@
 - [Next.js → Vite+Mongo migration](nextjs-to-vite-mongo-migration.md) — porting Next.js/Mongoose/Clerk apps: keep Mongoose in api-server directly (skip Drizzle/OpenAPI codegen), inject Clerk publishable key via Vite `define`.
+- [Tailwind v4 theme placeholders](tailwind-v4-theme-placeholders.md) — a Tailwind v4 CSS-var theme can look totally unstyled if HSL vars are left as literal placeholder keywords; fails silently, no errors.

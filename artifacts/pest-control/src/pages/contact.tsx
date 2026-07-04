@@ -31,18 +31,21 @@ export default function Contact() {
   }
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-primary">Contact Us</h1>
-      <p className="mt-2 text-gray-700">
+    <main className="max-w-5xl mx-auto px-4 md:px-6 py-14 animate-fade-in">
+      <h1 className="text-primary">Contact Us</h1>
+      <p className="mt-3 text-text-muted max-w-lg">
         Have a question or need a quote? Send us a message and we'll get back to you promptly.
       </p>
 
-      <form className="mt-4 max-w-md space-y-4" onSubmit={handleSubmit}>
-        <div>
+      <form
+        className="mt-8 max-w-md space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm"
+        onSubmit={handleSubmit}
+      >
+        <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required data-testid="input-name" />
         </div>
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
@@ -53,30 +56,31 @@ export default function Contact() {
             data-testid="input-email"
           />
         </div>
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="phone">Phone</Label>
           <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} data-testid="input-phone" />
         </div>
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="message">Message</Label>
           <Textarea
             id="message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
+            rows={4}
             data-testid="input-message"
           />
         </div>
-        <Button type="submit" disabled={status === "sending"} data-testid="button-send-message">
+        <Button type="submit" disabled={status === "sending"} className="w-full" data-testid="button-send-message">
           {status === "sending" ? "Sending..." : "Send Message"}
         </Button>
         {status === "sent" && (
-          <p className="text-green-600" data-testid="text-sent-confirmation">
+          <p className="text-sm text-success" data-testid="text-sent-confirmation">
             Message sent — we'll contact you soon.
           </p>
         )}
         {status === "error" && (
-          <p className="text-red-600" data-testid="text-error">
+          <p className="text-sm text-danger" data-testid="text-error">
             Error sending message. Please try again later.
           </p>
         )}

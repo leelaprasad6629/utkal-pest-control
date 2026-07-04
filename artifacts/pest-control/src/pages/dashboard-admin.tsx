@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiFetch } from "@/lib/api";
 import type { Booking } from "@/lib/types";
+import StatusBadge from "@/components/status-badge";
 
 const STATUS_OPTIONS: Booking["status"][] = [
   "pending",
@@ -48,15 +49,21 @@ export default function DashboardAdmin() {
   }
 
   return (
-    <div>
-      <h3 className="text-lg font-semibold">Admin Overview</h3>
-      <p className="mt-1 text-sm text-gray-600">All bookings across the business.</p>
+    <div className="rounded-xl border border-border bg-card shadow-sm">
+      <div className="p-6 border-b border-border">
+        <h3>Admin Overview</h3>
+        <p className="mt-1 text-sm text-text-muted">All bookings across the business.</p>
+      </div>
 
-      {loading && <p className="mt-4 text-gray-500">Loading bookings...</p>}
-      {error && <p className="mt-4 text-red-600">{error}</p>}
+      {loading && <p className="p-6 text-text-muted">Loading bookings...</p>}
+      {error && (
+        <p className="p-6 text-danger" data-testid="text-error">
+          {error}
+        </p>
+      )}
 
       {!loading && !error && (
-        <Table className="mt-4">
+        <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Customer</TableHead>
@@ -77,25 +84,28 @@ export default function DashboardAdmin() {
                     {b.scheduledDate ? new Date(b.scheduledDate).toLocaleDateString() : "—"}
                   </TableCell>
                   <TableCell>
-                    <Select value={b.status} onValueChange={(v) => updateStatus(b._id, v as Booking["status"])}>
-                      <SelectTrigger className="w-[140px]" data-testid={`select-status-${b._id}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STATUS_OPTIONS.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={b.status} />
+                      <Select value={b.status} onValueChange={(v) => updateStatus(b._id, v as Booking["status"])}>
+                        <SelectTrigger className="w-[140px]" data-testid={`select-status-${b._id}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {STATUS_OPTIONS.map((s) => (
+                            <SelectItem key={s} value={s}>
+                              {s}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </TableCell>
                 </TableRow>
               );
             })}
             {bookings.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-gray-500">
+                <TableCell colSpan={4} className="text-center text-text-muted py-8">
                   No bookings yet.
                 </TableCell>
               </TableRow>
