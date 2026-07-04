@@ -1,10 +1,11 @@
 import React from 'react'
 import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
+import { TAGLINE } from '../config/business'
 
 export const metadata = {
   title: 'Utkal Pest Control',
-  description: 'Trustworthy eco-friendly pest control in Odisha'
+  description: TAGLINE
 }
 
 export default function RootLayout({ children, }: { children: React.ReactNode }) {

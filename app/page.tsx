@@ -1,11 +1,12 @@
 import Link from 'next/link'
+import { BUSINESS_NAME, TAGLINE, SERVICE_AREAS } from '../config/business'
 
 export default function Home() {
   return (
     <main className="p-4">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-primary">Utkal Pest Control</h1>
-        <p className="text-sm text-gray-600">Trusted, eco-friendly pest control across Odisha</p>
+        <h1 className="text-3xl font-bold text-primary">{BUSINESS_NAME}</h1>
+        <p className="text-sm text-gray-600">{TAGLINE}</p>
         <nav className="mt-4">
           <Link href="/services" className="mr-4 text-accent">Services</Link>
           <Link href="/about" className="mr-4">About</Link>
@@ -15,7 +16,7 @@ export default function Home() {
 
       <section className="bg-primary text-white p-6 rounded-lg">
         <h2 className="text-2xl font-semibold">Protect your home — Book a service</h2>
-        <p className="mt-2">Get a free quote and quick booking. Mobile-first booking optimized for Odisha residents.</p>
+        <p className="mt-2">Get a free quote and quick booking. Mobile-first booking for customers in {SERVICE_AREAS.join(', ')}.</p>
         <div className="mt-4">
           <Link href="/quote" className="bg-white text-primary px-4 py-2 rounded-md">Get Free Quote</Link>
         </div>
@@ -32,7 +33,7 @@ export default function Home() {
       </section>
 
       <footer className="mt-12 text-sm text-gray-500">
-        © Utkal Pest Control — Odisha
+        © {BUSINESS_NAME} — Serving: {SERVICE_AREAS.join(', ')}
       </footer>
     </main>
   )

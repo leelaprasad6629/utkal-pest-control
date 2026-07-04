@@ -1,5 +1,6 @@
 import dbConnect from '../lib/mongo'
 import { Service, User, Technician, Booking, Review } from '../models'
+import { SERVICE_AREAS } from '../config/business'
 
 async function seed() {
   await dbConnect()
@@ -57,7 +58,7 @@ async function seed() {
       customerId: cust._id,
       serviceId: svc._id,
       technicianId: tech._id,
-      address: { line1: 'House ' + (i + 1), city: 'Bhubaneswar', state: 'Odisha', pincode: '75100' },
+      address: { line1: 'House ' + (i + 1), city: (SERVICE_AREAS && SERVICE_AREAS[0]) || 'Your City', state: '', pincode: '000000' },
       scheduledDate: new Date(Date.now() + (i - 7) * 86400000),
       timeSlot: '10:00-12:00',
       status: i % 6 === 0 ? 'completed' : 'pending',
