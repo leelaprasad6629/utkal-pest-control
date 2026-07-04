@@ -1,7 +1,6 @@
 import dbConnect from '@/lib/mongo'
 import { Service } from '@/models'
 import Link from 'next/link'
-import BookingSteps from '@/components/BookingSteps'
 
 interface Props { params: { slug: string } }
 

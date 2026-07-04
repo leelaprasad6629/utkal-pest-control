@@ -1,7 +1,6 @@
-import React from 'react'
-import './globals.css'
+import { TAGLINE } from '@/config/business'
+import '@/styles/globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
-import { TAGLINE } from '../config/business'
 
 export const metadata = {
   title: 'Utkal Pest Control',

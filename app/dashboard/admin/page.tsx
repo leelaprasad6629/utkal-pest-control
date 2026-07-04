@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
-import dbConnect from '../../../../lib/mongo'
-import { User } from '../../../../models'
+import dbConnect from '@/lib/mongo'
+import { User } from '@/models'
 import { redirect } from 'next/navigation'
 
 export default async function AdminPage() {
@@ -8,7 +8,7 @@ export default async function AdminPage() {
   if (!userId) redirect('/sign-in')
 
   await dbConnect()
-  const user = await User.findOne({ clerkId: userId }).lean()
+  const user = await User.findOne({ clerkId: userId }).lean<{ role?: string }>()
   if (!user || user.role !== 'admin') {
     // Not authorized
     redirect('/')
