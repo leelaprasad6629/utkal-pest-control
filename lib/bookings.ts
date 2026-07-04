@@ -1,5 +1,5 @@
-import dbConnect from './lib/mongo'
-import { Booking } from './models'
+import dbConnect from '@/lib/mongo'
+import { Booking } from '@/models'
 
 export async function createBooking({ serviceId, address, scheduledDate, timeSlot, customerId, price }: any) {
   await dbConnect()

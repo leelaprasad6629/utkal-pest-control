@@ -1,6 +1,5 @@
-import dbConnect from '../lib/mongo'
-import { Service, User, Technician, Booking, Review } from '../models'
-import { SERVICE_AREAS } from '../config/business'
+import dbConnect from '@/lib/mongo'
+import { User } from '@/models'
 
 async function seed() {
   await dbConnect()

@@ -1,5 +1,5 @@
-import dbConnect from '../../../../lib/mongo'
-import { Booking } from '../../../../models'
+import dbConnect from '@/lib/mongo'
+import { Booking } from '@/models'
 
 interface Props { params: { id: string } }
 

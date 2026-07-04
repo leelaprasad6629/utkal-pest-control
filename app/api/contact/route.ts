@@ -1,5 +1,5 @@
-import dbConnect from '../../../lib/mongo'
-import { ContactMessage } from '../../../models'
+import dbConnect from '@/lib/mongo'
+import { ContactMessage } from '@/models'
 import { z } from 'zod'
 import nodemailer from 'nodemailer'
 

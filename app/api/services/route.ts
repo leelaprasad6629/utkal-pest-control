@@ -1,5 +1,5 @@
-import dbConnect from '../../../lib/mongo'
-import { Service } from '../../../models'
+import dbConnect from '@/lib/mongo'
+import { Service } from '@/models'
 
 export async function GET() {
   await dbConnect()

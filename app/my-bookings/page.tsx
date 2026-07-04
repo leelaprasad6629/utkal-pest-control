@@ -1,10 +1,9 @@
-import React from 'react'
 import { auth } from '@clerk/nextjs/server'
-import dbConnect from '../../lib/mongo'
-import { User, Booking } from '../../models'
-import StatusBadge from '../../components/StatusBadge'
-import Loading from '../../components/Loading'
-import EmptyState from '../../components/EmptyState'
+import dbConnect from '@/lib/mongo'
+import { User, Booking } from '@/models'
+import StatusBadge from '@/components/StatusBadge'
+import Loading from '@/components/Loading'
+import EmptyState from '@/components/EmptyState'
 
 export default async function MyBookingsPage() {
   const { userId } = auth()

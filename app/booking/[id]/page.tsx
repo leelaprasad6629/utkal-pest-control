@@ -1,6 +1,6 @@
-import dbConnect from '../../../../lib/mongo'
-import { Booking } from '../../../../models'
-import { StatusBadge } from '../../../../components/StatusBadge'
+import dbConnect from '@/lib/mongo'
+import { Booking } from '@/models'
+import StatusBadge from '@/components/StatusBadge'
 
 interface Props { params: { id: string } }
 

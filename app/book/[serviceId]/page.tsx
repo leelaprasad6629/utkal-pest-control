@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import BookingSteps from '../../../components/BookingSteps'
+import BookingSteps from '@/components/BookingSteps'
 
 export default async function BookServicePage({ params }: { params: { serviceId: string } }) {
   // Note: this is rendered on client; we fetch service info client-side
