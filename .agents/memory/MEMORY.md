@@ -1,0 +1,1 @@
+- [Next.js → Vite+Mongo migration](nextjs-to-vite-mongo-migration.md) — porting Next.js/Mongoose/Clerk apps: keep Mongoose in api-server directly (skip Drizzle/OpenAPI codegen), inject Clerk publishable key via Vite `define`.
