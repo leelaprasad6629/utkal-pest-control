@@ -1,19 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { authMiddleware } from '@clerk/nextjs/server'
 
-// Basic middleware that ensures dashboard subpaths are protected.
-// NOTE: To fully enable Clerk auth middleware, follow Clerk docs and replace this logic.
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl
-  if (pathname.startsWith('/dashboard')) {
-    const hasSession = req.cookies.get('__session') || req.cookies.get('__clerk_session')
-    if (!hasSession) {
-      const url = req.nextUrl.clone()
-      url.pathname = '/sign-in'
-      return NextResponse.redirect(url)
-    }
-  }
-  return NextResponse.next()
-}
+// Use Clerk's official middleware to require authentication for dashboard routes.
+// See Clerk docs for more advanced configuration: https://docs.clerk.com
+export default authMiddleware()
 
 export const config = {
   matcher: ['/dashboard/:path*']
