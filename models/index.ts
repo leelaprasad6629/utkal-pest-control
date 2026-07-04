@@ -6,7 +6,9 @@ const AddressSchema = new Schema({
   city: String,
   state: String,
   pincode: String,
-  landmark: String
+  landmark: String,
+  lat: Number,
+  lng: Number
 })
 
 const UserSchema = new Schema({
@@ -24,14 +26,15 @@ const ServiceSchema = new Schema({
   category: String,
   description: String,
   basePrice: Number,
-  icon: String
+  icon: String,
+  active: { type: Boolean, default: true }
 }, { timestamps: true })
 
 const BookingSchema = new Schema({
   customerId: { type: Schema.Types.ObjectId, ref: 'User' },
   serviceId: { type: Schema.Types.ObjectId, ref: 'Service' },
   technicianId: { type: Schema.Types.ObjectId, ref: 'User' },
-  address: Object,
+  address: AddressSchema,
   scheduledDate: Date,
   timeSlot: String,
   status: { type: String, enum: ['pending','confirmed','en-route','in-progress','completed','cancelled'], default: 'pending' },
@@ -57,8 +60,18 @@ const PaymentSchema = new Schema({
   bookingId: { type: Schema.Types.ObjectId, ref: 'Booking' },
   amount: Number,
   status: { type: String, enum: ['pending','successful','failed'], default: 'pending' },
-  method: String
+  method: String,
+  razorpayOrderId: String,
+  razorpayPaymentId: String
 }, { timestamps: true })
+
+const ContactMessageSchema = new Schema({
+  name: String,
+  email: String,
+  phone: String,
+  message: String,
+  createdAt: { type: Date, default: Date.now }
+})
 
 export const User = models.User || model('User', UserSchema)
 export const Service = models.Service || model('Service', ServiceSchema)
@@ -66,3 +79,4 @@ export const Booking = models.Booking || model('Booking', BookingSchema)
 export const Technician = models.Technician || model('Technician', TechnicianSchema)
 export const Review = models.Review || model('Review', ReviewSchema)
 export const Payment = models.Payment || model('Payment', PaymentSchema)
+export const ContactMessage = models.ContactMessage || model('ContactMessage', ContactMessageSchema)
