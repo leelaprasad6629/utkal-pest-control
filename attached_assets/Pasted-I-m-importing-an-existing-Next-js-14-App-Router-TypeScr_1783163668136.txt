@@ -1,0 +1,122 @@
+I'm importing an existing Next.js 14 (App Router, TypeScript) project called
+"Utkal Pest Control" — a location-agnostic pest-control booking site. Stack:
+Next.js 14, MongoDB/Mongoose, Clerk (auth), Cloudinary (images), Tailwind CSS.
+Do not change this core stack, do not add React Native, do not migrate off
+MongoDB. All required secrets are already set in Replit Secrets — read them
+via process.env, never hardcode or print their values, and never write them
+into any file in the repo.
+
+First, fix known existing bugs before adding anything new:
+
+
+Run npm install then npm run build and fix every error before writing
+new code. Known issues to check for specifically:
+
+Deep relative imports like ../../../../lib/mongo that are off by one
+directory level — replace ALL such imports project-wide with a clean
+TypeScript path alias. Add to tsconfig.json:
+
+
+
+
+
+json     "baseUrl": ".",
+     "paths": { "@/*": ["./*"] }
+
+ (note the `*` wildcards — a common mistake is writing `"@/": ["./"]`
+ without them, which silently fails to resolve). Then update every
+ import across the whole codebase to use `@/lib/...`, `@/models`,
+ `@/components/...`, `@/config/...` etc.
+
+
+app/layout.tsx should import global styles from @/styles/globals.css
+(the file lives in styles/, not app/).
+Any .lean() Mongoose query used to check a role or other typed field
+needs a typed generic, e.g. User.findOne(...).lean<{ role: string }>(),
+so TypeScript doesn't error on the returned shape.
+
+
+
+Confirm zero "Odisha" or other hardcoded-location strings remain anywhere
+in the repo — location must stay driven by config/business.ts /
+NEXT_PUBLIC_BUSINESS_NAME / NEXT_PUBLIC_SERVICE_AREAS env vars, fully
+generic, no country restriction hardcoded into any Maps integration.
+Only once npm run build completes with zero errors and zero type errors,
+move on to the sections below. Re-run npm run build after EVERY section
+and fix errors before continuing — do not let errors accumulate across
+sections.
+
+
+Then complete these sections in order:
+
+A. Booking flow (if not already present): multi-step flow from a service
+page → date/time → address → review → confirm → /booking/[id]/confirmation.
+Authenticated bookings must map the Clerk user server-side to customerId
+(never trust a client-supplied customerId). Add /my-bookings (protected)
+listing a logged-in customer's bookings with status badges.
+
+B. Payments (Razorpay): server-side order creation, client-side Razorpay
+Checkout, server-side signature verification, update Booking.paymentStatus
+and the Payment model on success/failure. Use RAZORPAY_KEY_ID /
+RAZORPAY_KEY_SECRET from Secrets — never hardcode.
+
+C. Location (Google Maps): Google Places Autocomplete on every address
+input (quote form, booking flow). Store lat/lng on the booking's address.
+Show a small embedded map on booking detail and admin views. Use
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY from Secrets. Leave the autocomplete open
+to any country — do not add a country restriction.
+
+D. Admin dashboard (/dashboard/admin): full bookings table with
+filters (status, date range), revenue/bookings chart (use recharts,
+already a dependency), technician assignment dropdown per booking, Service
+CRUD (create/edit/deactivate + price), and a view of submitted contact
+messages.
+
+E. Technician dashboard (/dashboard/technician): list of bookings
+assigned to the logged-in technician, ability to progress status
+(confirmed → en-route → in-progress → completed) with timestamps, and an
+availability editor.
+
+F. Reviews: after a booking reaches completed, prompt the customer on
+/my-bookings to leave a review; store via the existing Review model;
+show average rating + recent reviews on the relevant service page.
+
+G. Security hardening:
+
+
+Add real Clerk webhook signature verification using svix in
+app/api/webhooks/clerk/route.ts (currently accepts unsigned requests).
+Add Zod validation to every API route's request body before it touches
+the database.
+Add basic rate limiting to /api/bookings and /api/contact.
+Run npm audit and tell me which vulnerabilities are safe to fix with
+npm audit fix (non-breaking) versus ones that need a manual review
+before using --force — do not run --force without asking me first.
+
+
+H. UI/UX polish: shared <Header>/<Footer> components used on every
+page (not just the homepage), consistent color/typography system via
+tailwind.config.js, responsive at 375px/768px/1280px, loading and empty
+states on every data-fetching page.
+
+I. Deployment readiness:
+
+
+npm run build must complete with zero errors and zero TypeScript errors.
+Update .env.example to list every variable now in use (as names only,
+no real values).
+Remove the stale experimental.appDir option from next.config.js (not
+needed in Next.js 14 App Router — it's a leftover from an older version
+and currently throws a config warning on every build).
+Write a short DEPLOYMENT.md explaining how to deploy this Replit project
+(Replit Deployments, plus how to redeploy to Vercel later if I want to
+switch hosts, listing exactly which env vars must be set either way).
+
+
+Reporting back: after each lettered section, run the build, fix any
+errors yourself without waiting for me, then give me a short summary of what
+changed and exactly what I need to test manually in the browser (specific
+pages/actions) before you move to the next section. Stop and ask me only if
+you need a decision that affects the product (e.g., pricing display format,
+what statuses are allowed) — not for routine bug fixes.
+
