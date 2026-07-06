@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BUSINESS_NAME, TAGLINE, SERVICE_AREAS } from "@/config/business";
 import { apiFetch } from "@/lib/api";
-import type { Review, ServiceItem } from "@/lib/types";
+import type { PublicStats, Review, ServiceItem } from "@/lib/types";
 import StarRating from "@/components/star-rating";
 
 const FEATURED_SERVICES = [
@@ -12,13 +12,6 @@ const FEATURED_SERVICES = [
   { slug: "commercial-pest-control", name: "Commercial", description: "Discreet, compliant pest management for businesses." },
   { slug: "termite-control", name: "Termite", description: "Detection and treatment before damage spreads." },
   { slug: "rodent-control", name: "Rodent", description: "Humane, effective rodent exclusion and control." },
-];
-
-const STATS = [
-  { value: "10,000+", label: "Homes & businesses protected" },
-  { value: "15+", label: "Years of experience" },
-  { value: "4.8/5", label: "Average customer rating" },
-  { value: "24/7", label: "Emergency response" },
 ];
 
 const PROCESS_STEPS = [
@@ -54,10 +47,12 @@ function Stars({ value }: { value: number }) {
 export default function Home() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [services, setServices] = useState<ServiceItem[]>([]);
+  const [stats, setStats] = useState<PublicStats | null>(null);
 
   useEffect(() => {
     apiFetch<Review[]>("/reviews").then((data) => setReviews(data.slice(0, 3))).catch(() => setReviews([]));
     apiFetch<ServiceItem[]>("/services").then(setServices).catch(() => setServices([]));
+    apiFetch<PublicStats>("/stats").then(setStats).catch(() => setStats(null));
   }, []);
 
   return (
@@ -101,12 +96,26 @@ export default function Home() {
 
       <section className="border-b border-border bg-secondary/40">
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          {STATS.map((s) => (
-            <div key={s.label}>
-              <p className="text-2xl md:text-3xl font-display font-semibold text-primary">{s.value}</p>
-              <p className="mt-1 text-xs md:text-sm text-text-muted">{s.label}</p>
-            </div>
-          ))}
+          <div>
+            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">
+              {stats ? stats.totalCustomers.toLocaleString() : "—"}
+            </p>
+            <p className="mt-1 text-xs md:text-sm text-text-muted">Customers served</p>
+          </div>
+          <div>
+            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">15+</p>
+            <p className="mt-1 text-xs md:text-sm text-text-muted">Years of experience</p>
+          </div>
+          <div>
+            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">
+              {stats?.averageRating ? `${stats.averageRating.toFixed(1)}/5` : "—"}
+            </p>
+            <p className="mt-1 text-xs md:text-sm text-text-muted">Average customer rating</p>
+          </div>
+          <div>
+            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">24/7</p>
+            <p className="mt-1 text-xs md:text-sm text-text-muted">Emergency response</p>
+          </div>
         </div>
       </section>
 

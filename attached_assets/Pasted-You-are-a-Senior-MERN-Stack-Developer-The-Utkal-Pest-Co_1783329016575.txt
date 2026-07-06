@@ -1,0 +1,251 @@
+You are a Senior MERN Stack Developer.
+
+The Utkal Pest Control Platform is already built with:
+- React
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- Clerk Authentication
+- Role-Based Authentication (Customer, Manager/Admin, Technician)
+
+The role-based dashboards are working correctly, but the Admin Dashboard and Technician Portal are still displaying hardcoded demo data.
+
+I want to convert the project into a fully production-ready application.
+
+==========================
+REMOVE ALL DEMO DATA
+==========================
+
+Search the entire project and remove every hardcoded array, sample object, placeholder data, mock JSON, or seed data related to:
+
+- Customers
+- Technicians
+- Reviews
+- Bookings
+- Ratings
+- Statistics
+
+Delete demo names like:
+
+- Ramesh Tech
+- Suman Tech
+- Bipin Tech
+- Neha Tech
+- Kunal Tech
+- Ravi Das
+- Anita Sen
+- Sita Mohanty
+- Lila Rao
+- Any other sample users
+
+No page should display fake information.
+
+==========================
+CUSTOMERS
+==========================
+
+Customers must come only from authenticated Clerk users.
+
+When a new customer signs up:
+
+- Create a Customer document in MongoDB if one does not already exist.
+- Store:
+  - Clerk User ID
+  - Full Name
+  - Email
+  - Phone
+  - Address
+  - City
+  - Created At
+
+The Admin Customers page must fetch only these MongoDB records.
+
+No hardcoded customers.
+
+==========================
+TECHNICIANS
+==========================
+
+Technicians must come from MongoDB.
+
+Manager/Admin should be able to:
+
+- Add Technician
+- Edit Technician
+- Delete Technician
+- Activate/Deactivate Technician
+
+Technician fields:
+
+- Name
+- Email
+- Phone
+- Specialization
+- Experience
+- City
+- Profile Image
+- Availability
+- Rating
+- Status
+- Clerk User ID (optional until technician registers)
+
+The Technician tab should fetch technicians only from MongoDB.
+
+==========================
+BOOKINGS
+==========================
+
+Bookings should only exist when customers submit quote requests.
+
+Every booking must include:
+
+- Customer
+- Service
+- Address
+- City
+- Booking Date
+- Assigned Technician
+- Status
+- Timeline
+- Payment
+- Invoice
+- Service Report
+- Before Images
+- After Images
+
+Remove all sample bookings.
+
+==========================
+REVIEWS
+==========================
+
+Reviews must be stored in MongoDB.
+
+Workflow:
+
+Customer completes service
+
+↓
+
+Customer submits review
+
+↓
+
+Review saved in MongoDB
+
+↓
+
+Admin Reviews page displays only database reviews.
+
+Remove all sample review cards.
+
+==========================
+TECHNICIAN PORTAL
+==========================
+
+When a technician logs in:
+
+Find technician using Clerk User ID.
+
+Display only:
+
+- Assigned Jobs
+- Pending Jobs
+- Completed Jobs
+- Upcoming Jobs
+
+If none exist show:
+
+"No jobs assigned yet."
+
+Do not create fake jobs.
+
+==========================
+ADMIN DASHBOARD
+==========================
+
+Dashboard statistics must be calculated dynamically from MongoDB.
+
+Display:
+
+- Total Customers
+- Total Technicians
+- Total Bookings
+- Pending Bookings
+- Completed Bookings
+- Cancelled Bookings
+- Revenue
+- Reviews
+- Average Rating
+
+Do not use fixed numbers.
+
+==========================
+NAVBAR
+==========================
+
+Display logged-in user's real Clerk name.
+
+Customer Dashboard → Customer Name
+
+Technician Portal → Technician Name
+
+Admin Dashboard → Admin Name
+
+No placeholder names.
+
+==========================
+DATABASE
+==========================
+
+Every dashboard page must fetch data through REST APIs.
+
+Never use:
+
+- Local arrays
+- Mock JSON
+- Static objects
+- Placeholder data
+
+Everything must come from MongoDB.
+
+==========================
+PROJECT CLEANUP
+==========================
+
+Search the project for:
+
+sampleData
+mockData
+dummyData
+fakeData
+seedUsers
+seedCustomers
+seedTechnicians
+staticReviews
+defaultBookings
+exampleUsers
+placeholder arrays
+
+Remove or replace every occurrence with MongoDB database queries.
+
+==========================
+FINAL TESTING
+==========================
+
+Verify the following:
+
+✓ New Clerk customer automatically appears in Admin Customers page.
+
+✓ Newly added technician appears in the Technician tab.
+
+✓ Bookings appear only after customers submit requests.
+
+✓ Reviews appear only after completed services.
+
+✓ Dashboard statistics update automatically from MongoDB.
+
+✓ No hardcoded names appear anywhere in the application.
+
+The final application should behave exactly like a real-world production Pest Control Management System with all data stored and retrieved from MongoDB.

@@ -162,6 +162,14 @@ const BookingSchema = new Schema<BookingDoc>(
 
 export interface TechnicianDoc extends mongoose.Document {
   userId?: mongoose.Types.ObjectId;
+  name: string;
+  email?: string;
+  phone?: string;
+  specialization?: string;
+  experience?: number;
+  city?: string;
+  profileImage?: string;
+  status: "active" | "inactive";
   assignedBookings: mongoose.Types.ObjectId[];
   availability: { day: string; from: string; to: string }[];
   rating: number;
@@ -171,9 +179,17 @@ export interface TechnicianDoc extends mongoose.Document {
 const TechnicianSchema = new Schema<TechnicianDoc>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User" },
+    name: { type: String, required: true },
+    email: { type: String, index: true },
+    phone: String,
+    specialization: String,
+    experience: Number,
+    city: String,
+    profileImage: String,
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
     assignedBookings: [{ type: Schema.Types.ObjectId, ref: "Booking" }],
     availability: [{ day: String, from: String, to: String, _id: false }],
-    rating: { type: Number, default: 4.5 },
+    rating: { type: Number, default: 0 },
     specialties: [String],
   },
   { timestamps: true },

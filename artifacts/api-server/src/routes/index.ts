@@ -11,10 +11,12 @@ import invoicesRouter from "./invoices";
 import technicianRouter from "./technician";
 import adminRouter from "./admin";
 import paymentsRouter from "./payments";
+import statsRouter from "./stats";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(statsRouter);
 router.use(servicesRouter);
 router.use(contactRouter);
 router.use(bookingsRouter);

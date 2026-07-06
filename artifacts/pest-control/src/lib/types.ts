@@ -140,10 +140,26 @@ export interface ServiceReport {
 
 export interface TechnicianRecord {
   _id: string;
-  userId: PersonRef;
+  userId?: PersonRef;
+  name: string;
+  email: string;
+  phone?: string;
+  specialization?: string;
+  experience?: number;
+  city?: string;
+  profileImage?: string;
+  status: "active" | "inactive";
   availability: { day: string; from: string; to: string }[];
   rating: number;
   specialties?: string[];
+}
+
+export interface PublicStats {
+  totalCustomers: number;
+  totalBookings: number;
+  totalTechnicians: number;
+  averageRating: number | null;
+  reviewCount: number;
 }
 
 export interface AdminAnalytics {

@@ -31,7 +31,7 @@ router.get("/admin/analytics", requireAuth, requireAdmin, async (_req, res): Pro
         { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
       User.countDocuments({ role: "customer" }),
-      User.countDocuments({ role: "technician" }),
+      Technician.countDocuments({ status: "active" }),
       Review.aggregate([{ $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } }]),
     ],
   );
@@ -68,9 +68,14 @@ router.get("/admin/customers", requireAuth, requireAdmin, async (_req, res): Pro
   res.json(customers);
 });
 
+// ─── Technicians CRUD ─────────────────────────────────────────────────────────
+
 router.get("/admin/technicians", requireAuth, requireAdmin, async (_req, res): Promise<void> => {
   await dbConnect();
-  const technicians = await Technician.find({}).populate("userId", "name email phone").lean();
+  const technicians = await Technician.find({})
+    .populate("userId", "name email phone")
+    .sort({ createdAt: -1 })
+    .lean();
   res.json(technicians);
 });
 
@@ -78,7 +83,14 @@ const TechnicianInput = z.object({
   name: z.string().min(1),
   email: z.string().email(),
   phone: z.string().optional(),
+  specialization: z.string().optional(),
+  experience: z.number().nonnegative().optional(),
+  city: z.string().optional(),
+  profileImage: z.string().optional(),
   specialties: z.array(z.string()).optional(),
+  availability: z
+    .array(z.object({ day: z.string(), from: z.string(), to: z.string() }))
+    .optional(),
 });
 
 router.post("/admin/technicians", requireAuth, requireAdmin, async (req, res): Promise<void> => {
@@ -88,6 +100,8 @@ router.post("/admin/technicians", requireAuth, requireAdmin, async (req, res): P
     return;
   }
   await dbConnect();
+
+  // Create or reuse a User record so bookings can reference a User._id
   let user = await User.findOne({ email: parsed.data.email });
   if (!user) {
     user = await User.create({
@@ -100,12 +114,78 @@ router.post("/admin/technicians", requireAuth, requireAdmin, async (req, res): P
     user.role = "technician";
     await user.save();
   }
+
   const technician = await Technician.create({
     userId: user._id,
+    name: parsed.data.name,
+    email: parsed.data.email,
+    phone: parsed.data.phone,
+    specialization: parsed.data.specialization,
+    experience: parsed.data.experience,
+    city: parsed.data.city,
+    profileImage: parsed.data.profileImage,
     specialties: parsed.data.specialties ?? [],
+    availability: parsed.data.availability ?? [],
+    status: "active",
   });
+
   res.status(201).json(technician);
 });
+
+const TechnicianUpdateInput = TechnicianInput.partial();
+
+router.patch("/admin/technicians/:id", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  const parsed = TechnicianUpdateInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues.map((i) => i.message).join(", ") });
+    return;
+  }
+  await dbConnect();
+  const technician = await Technician.findByIdAndUpdate(req.params.id, parsed.data, { new: true });
+  if (!technician) {
+    res.status(404).json({ error: "Technician not found" });
+    return;
+  }
+  // Sync name/phone to linked User if present
+  if (technician.userId && (parsed.data.name || parsed.data.phone)) {
+    await User.findByIdAndUpdate(technician.userId, {
+      ...(parsed.data.name ? { name: parsed.data.name } : {}),
+      ...(parsed.data.phone ? { phone: parsed.data.phone } : {}),
+    });
+  }
+  res.json(technician);
+});
+
+router.patch("/admin/technicians/:id/status", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  await dbConnect();
+  const technician = await Technician.findById(req.params.id);
+  if (!technician) {
+    res.status(404).json({ error: "Technician not found" });
+    return;
+  }
+  technician.status = technician.status === "active" ? "inactive" : "active";
+  await technician.save();
+  res.json(technician);
+});
+
+router.delete("/admin/technicians/:id", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  await dbConnect();
+  const technician = await Technician.findByIdAndDelete(req.params.id);
+  if (!technician) {
+    res.status(404).json({ error: "Technician not found" });
+    return;
+  }
+  // Demote linked User back to customer if they have no other technician records
+  if (technician.userId) {
+    const others = await Technician.countDocuments({ userId: technician.userId });
+    if (others === 0) {
+      await User.findByIdAndUpdate(technician.userId, { role: "customer" });
+    }
+  }
+  res.status(204).end();
+});
+
+// ─── Services CRUD ────────────────────────────────────────────────────────────
 
 const ServiceInput = z.object({
   name: z.string().min(1),
@@ -142,6 +222,8 @@ router.patch("/admin/services/:id", requireAuth, requireAdmin, async (req, res):
   }
   res.json(service);
 });
+
+// ─── Reviews ──────────────────────────────────────────────────────────────────
 
 router.get("/admin/reviews", requireAuth, requireAdmin, async (_req, res): Promise<void> => {
   await dbConnect();

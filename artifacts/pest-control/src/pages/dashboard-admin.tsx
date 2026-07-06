@@ -4,6 +4,27 @@ import { Link } from "wouter";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { apiFetch } from "@/lib/api";
 import type {
   AdminAnalytics,
@@ -16,6 +37,7 @@ import type {
 import StatusBadge from "@/components/status-badge";
 import StarRating from "@/components/star-rating";
 import { useUserContext } from "@/lib/user-context";
+import { toast } from "@/hooks/use-toast";
 
 const STATUS_OPTIONS: BookingStatus[] = [
   "pending",
@@ -27,9 +49,26 @@ const STATUS_OPTIONS: BookingStatus[] = [
   "cancelled",
 ];
 
+const EMPTY_FORM = {
+  name: "",
+  email: "",
+  phone: "",
+  specialization: "",
+  experience: "",
+  city: "",
+  profileImage: "",
+  specialties: "",
+};
+
 function AnalyticsCards({ analytics }: { analytics: AdminAnalytics }) {
+  const pending = analytics.bookingsByStatus["pending"] ?? 0;
+  const completed = analytics.bookingsByStatus["completed"] ?? 0;
+  const cancelled = analytics.bookingsByStatus["cancelled"] ?? 0;
   const cards = [
     { label: "Total Bookings", value: analytics.totalBookings },
+    { label: "Pending", value: pending },
+    { label: "Completed", value: completed },
+    { label: "Cancelled", value: cancelled },
     { label: "Total Revenue", value: `₹${analytics.totalRevenue.toLocaleString()}` },
     { label: "Customers", value: analytics.totalCustomers },
     { label: "Technicians", value: analytics.totalTechnicians },
@@ -39,7 +78,7 @@ function AnalyticsCards({ analytics }: { analytics: AdminAnalytics }) {
     },
   ];
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {cards.map((c) => (
         <div key={c.label} className="rounded-xl border border-border bg-card p-4 shadow-sm">
           <p className="text-xs text-text-muted uppercase tracking-wide">{c.label}</p>
@@ -69,9 +108,7 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
     }
   }
 
-  useEffect(() => {
-    loadBookings();
-  }, []);
+  useEffect(() => { loadBookings(); }, []);
 
   async function updateStatus(id: string, status: BookingStatus) {
     const token = await getToken();
@@ -83,11 +120,11 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
     loadBookings();
   }
 
-  async function assignTechnician(id: string, technicianId: string) {
+  async function assignTechnician(id: string, userId: string) {
     const token = await getToken();
     await apiFetch(`/bookings/${id}/status`, {
       method: "PATCH",
-      body: JSON.stringify({ status: "technician-assigned", technicianId }),
+      body: JSON.stringify({ status: "technician-assigned", technicianId: userId }),
       token,
     });
     loadBookings();
@@ -95,6 +132,9 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
 
   if (loading) return <p className="p-6 text-text-muted">Loading bookings...</p>;
   if (error) return <p className="p-6 text-danger" data-testid="text-error">{error}</p>;
+
+  // Only technicians with a linked User can be assigned to bookings
+  const assignable = technicians.filter((t) => t.userId && t.status === "active");
 
   return (
     <Table>
@@ -132,9 +172,9 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
                     <SelectValue placeholder="Assign" />
                   </SelectTrigger>
                   <SelectContent>
-                    {technicians.map((t) => (
-                      <SelectItem key={t._id} value={t.userId._id}>
-                        {t.userId.name}
+                    {assignable.map((t) => (
+                      <SelectItem key={t._id} value={t.userId!._id}>
+                        {t.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -149,9 +189,7 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
                     </SelectTrigger>
                     <SelectContent>
                       {STATUS_OPTIONS.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {s}
-                        </SelectItem>
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -162,9 +200,7 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
         })}
         {bookings.length === 0 && (
           <TableRow>
-            <TableCell colSpan={6} className="text-center text-text-muted py-8">
-              No bookings yet.
-            </TableCell>
+            <TableCell colSpan={6} className="text-center text-text-muted py-8">No bookings yet.</TableCell>
           </TableRow>
         )}
       </TableBody>
@@ -175,13 +211,22 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
 function CustomersTab() {
   const { getToken } = useAuth();
   const [customers, setCustomers] = useState<LocalUser[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     (async () => {
-      const token = await getToken();
-      const data = await apiFetch<LocalUser[]>("/admin/customers", { token });
-      setCustomers(data);
+      try {
+        const token = await getToken();
+        const data = await apiFetch<LocalUser[]>("/admin/customers", { token });
+        setCustomers(data);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
+
+  if (loading) return <p className="p-6 text-text-muted">Loading customers...</p>;
+
   return (
     <Table>
       <TableHeader>
@@ -209,46 +254,326 @@ function CustomersTab() {
   );
 }
 
-function TechniciansTab({ technicians }: { technicians: TechnicianRecord[] }) {
+function TechniciansTab({
+  technicians,
+  onRefresh,
+}: {
+  technicians: TechnicianRecord[];
+  onRefresh: () => void;
+}) {
+  const { getToken } = useAuth();
+  const [addOpen, setAddOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<TechnicianRecord | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TechnicianRecord | null>(null);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [saving, setSaving] = useState(false);
+
+  function openAdd() {
+    setForm(EMPTY_FORM);
+    setAddOpen(true);
+  }
+
+  function openEdit(t: TechnicianRecord) {
+    setForm({
+      name: t.name,
+      email: t.email,
+      phone: t.phone ?? "",
+      specialization: t.specialization ?? "",
+      experience: t.experience !== undefined ? String(t.experience) : "",
+      city: t.city ?? "",
+      profileImage: t.profileImage ?? "",
+      specialties: t.specialties?.join(", ") ?? "",
+    });
+    setEditTarget(t);
+  }
+
+  function closeDialogs() {
+    setAddOpen(false);
+    setEditTarget(null);
+  }
+
+  async function handleSave() {
+    if (!form.name.trim() || !form.email.trim()) {
+      toast({ title: "Name and email are required", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    try {
+      const token = await getToken();
+      const body = {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || undefined,
+        specialization: form.specialization.trim() || undefined,
+        experience: form.experience ? Number(form.experience) : undefined,
+        city: form.city.trim() || undefined,
+        profileImage: form.profileImage.trim() || undefined,
+        specialties: form.specialties
+          ? form.specialties.split(",").map((s) => s.trim()).filter(Boolean)
+          : [],
+      };
+      if (editTarget) {
+        await apiFetch(`/admin/technicians/${editTarget._id}`, {
+          method: "PATCH",
+          body: JSON.stringify(body),
+          token,
+        });
+        toast({ title: "Technician updated" });
+      } else {
+        await apiFetch("/admin/technicians", {
+          method: "POST",
+          body: JSON.stringify(body),
+          token,
+        });
+        toast({ title: "Technician added" });
+      }
+      closeDialogs();
+      onRefresh();
+    } catch (err) {
+      toast({
+        title: editTarget ? "Update failed" : "Add failed",
+        description: err instanceof Error ? err.message : undefined,
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setSaving(true);
+    try {
+      const token = await getToken();
+      await apiFetch(`/admin/technicians/${deleteTarget._id}`, { method: "DELETE", token });
+      toast({ title: "Technician removed" });
+      setDeleteTarget(null);
+      onRefresh();
+    } catch (err) {
+      toast({
+        title: "Delete failed",
+        description: err instanceof Error ? err.message : undefined,
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleToggleStatus(t: TechnicianRecord) {
+    try {
+      const token = await getToken();
+      await apiFetch(`/admin/technicians/${t._id}/status`, { method: "PATCH", token });
+      toast({ title: t.status === "active" ? "Technician deactivated" : "Technician activated" });
+      onRefresh();
+    } catch (err) {
+      toast({
+        title: "Status update failed",
+        description: err instanceof Error ? err.message : undefined,
+        variant: "destructive",
+      });
+    }
+  }
+
+  const formFields = (
+    <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-1 col-span-2 md:col-span-1">
+        <Label htmlFor="t-name">Full Name *</Label>
+        <Input id="t-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+      </div>
+      <div className="space-y-1 col-span-2 md:col-span-1">
+        <Label htmlFor="t-email">Email *</Label>
+        <Input id="t-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="t-phone">Phone</Label>
+        <Input id="t-phone" value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="t-city">City</Label>
+        <Input id="t-city" value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="t-spec">Specialization</Label>
+        <Input id="t-spec" value={form.specialization} onChange={(e) => setForm((f) => ({ ...f, specialization: e.target.value }))} />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="t-exp">Experience (years)</Label>
+        <Input id="t-exp" type="number" min={0} value={form.experience} onChange={(e) => setForm((f) => ({ ...f, experience: e.target.value }))} />
+      </div>
+      <div className="space-y-1 col-span-2">
+        <Label htmlFor="t-specialties">Specialties (comma-separated)</Label>
+        <Input id="t-specialties" value={form.specialties} onChange={(e) => setForm((f) => ({ ...f, specialties: e.target.value }))} placeholder="Termite, Rodent, Cockroach" />
+      </div>
+      <div className="space-y-1 col-span-2">
+        <Label htmlFor="t-image">Profile Image URL</Label>
+        <Input id="t-image" value={form.profileImage} onChange={(e) => setForm((f) => ({ ...f, profileImage: e.target.value }))} placeholder="https://..." />
+      </div>
+    </div>
+  );
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Rating</TableHead>
-          <TableHead>Specialties</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {technicians.map((t) => (
-          <TableRow key={t._id} data-testid={`row-technician-${t._id}`}>
-            <TableCell>{t.userId.name}</TableCell>
-            <TableCell>{t.userId.email}</TableCell>
-            <TableCell>{t.rating.toFixed(1)} ★</TableCell>
-            <TableCell>{t.specialties?.join(", ") || "—"}</TableCell>
-          </TableRow>
-        ))}
-        {technicians.length === 0 && (
+    <>
+      <div className="flex justify-end p-3 border-b border-border">
+        <Button size="sm" onClick={openAdd} data-testid="button-add-technician">
+          + Add Technician
+        </Button>
+      </div>
+
+      <Table>
+        <TableHeader>
           <TableRow>
-            <TableCell colSpan={4} className="text-center text-text-muted py-8">No technicians yet.</TableCell>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Specialization</TableHead>
+            <TableHead>City</TableHead>
+            <TableHead>Exp.</TableHead>
+            <TableHead>Rating</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {technicians.map((t) => (
+            <TableRow key={t._id} data-testid={`row-technician-${t._id}`}>
+              <TableCell className="font-medium">{t.name}</TableCell>
+              <TableCell>{t.email}</TableCell>
+              <TableCell>{t.phone ?? "—"}</TableCell>
+              <TableCell>{t.specialization ?? "—"}</TableCell>
+              <TableCell>{t.city ?? "—"}</TableCell>
+              <TableCell>{t.experience !== undefined ? `${t.experience}y` : "—"}</TableCell>
+              <TableCell>{t.rating > 0 ? `${t.rating.toFixed(1)} ★` : "—"}</TableCell>
+              <TableCell>
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                    t.status === "active"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  {t.status}
+                </span>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-1">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openEdit(t)}
+                    data-testid={`button-edit-technician-${t._id}`}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleToggleStatus(t)}
+                    data-testid={`button-toggle-technician-${t._id}`}
+                  >
+                    {t.status === "active" ? "Deactivate" : "Activate"}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => setDeleteTarget(t)}
+                    data-testid={`button-delete-technician-${t._id}`}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+          {technicians.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={9} className="text-center text-text-muted py-8">
+                No technicians yet. Click &quot;Add Technician&quot; to get started.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      {/* Add Dialog */}
+      <Dialog open={addOpen} onOpenChange={(o) => { if (!o) closeDialogs(); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Add Technician</DialogTitle>
+            <DialogDescription>Fill in the technician's details. They can register via Clerk later.</DialogDescription>
+          </DialogHeader>
+          {formFields}
+          <DialogFooter>
+            <Button variant="outline" onClick={closeDialogs}>Cancel</Button>
+            <Button onClick={handleSave} disabled={saving} data-testid="button-confirm-add-technician">
+              {saving ? "Saving..." : "Add Technician"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editTarget} onOpenChange={(o) => { if (!o) closeDialogs(); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Technician</DialogTitle>
+            <DialogDescription>Update the technician's profile details.</DialogDescription>
+          </DialogHeader>
+          {formFields}
+          <DialogFooter>
+            <Button variant="outline" onClick={closeDialogs}>Cancel</Button>
+            <Button onClick={handleSave} disabled={saving} data-testid="button-confirm-edit-technician">
+              {saving ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirm */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Technician</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{deleteTarget?.name}</strong>? This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={saving}
+              data-testid="button-confirm-delete-technician"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {saving ? "Removing..." : "Remove"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
 function ReviewsTab() {
   const { getToken } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     (async () => {
-      const token = await getToken();
-      const data = await apiFetch<Review[]>("/admin/reviews", { token });
-      setReviews(data);
+      try {
+        const token = await getToken();
+        const data = await apiFetch<Review[]>("/admin/reviews", { token });
+        setReviews(data);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, []);
+
+  if (loading) return <p className="p-6 text-text-muted">Loading reviews...</p>;
+
   return (
     <div className="space-y-3 p-2">
       {reviews.map((r) => {
@@ -276,17 +601,17 @@ export default function DashboardAdmin() {
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [technicians, setTechnicians] = useState<TechnicianRecord[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      const token = await getToken();
-      const [a, t] = await Promise.all([
-        apiFetch<AdminAnalytics>("/admin/analytics", { token }),
-        apiFetch<TechnicianRecord[]>("/admin/technicians", { token }),
-      ]);
-      setAnalytics(a);
-      setTechnicians(t);
-    })();
-  }, []);
+  async function loadData() {
+    const token = await getToken();
+    const [a, t] = await Promise.all([
+      apiFetch<AdminAnalytics>("/admin/analytics", { token }),
+      apiFetch<TechnicianRecord[]>("/admin/technicians", { token }),
+    ]);
+    setAnalytics(a);
+    setTechnicians(t);
+  }
+
+  useEffect(() => { loadData(); }, []);
 
   return (
     <div className="min-h-screen max-w-5xl mx-auto px-4 md:px-6 py-10 animate-fade-in">
@@ -313,10 +638,18 @@ export default function DashboardAdmin() {
               <TabsTrigger value="technicians" data-testid="tab-admin-technicians">Technicians</TabsTrigger>
               <TabsTrigger value="reviews" data-testid="tab-admin-reviews">Reviews</TabsTrigger>
             </TabsList>
-            <TabsContent value="bookings"><BookingsTab technicians={technicians} /></TabsContent>
-            <TabsContent value="customers"><CustomersTab /></TabsContent>
-            <TabsContent value="technicians"><TechniciansTab technicians={technicians} /></TabsContent>
-            <TabsContent value="reviews"><ReviewsTab /></TabsContent>
+            <TabsContent value="bookings">
+              <BookingsTab technicians={technicians} />
+            </TabsContent>
+            <TabsContent value="customers">
+              <CustomersTab />
+            </TabsContent>
+            <TabsContent value="technicians">
+              <TechniciansTab technicians={technicians} onRefresh={loadData} />
+            </TabsContent>
+            <TabsContent value="reviews">
+              <ReviewsTab />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
