@@ -2,3 +2,4 @@
 - [Tailwind v4 theme placeholders](tailwind-v4-theme-placeholders.md) — a Tailwind v4 CSS-var theme can look totally unstyled if HSL vars are left as literal placeholder keywords; fails silently, no errors.
 - [express-rate-limit behind Replit proxy](express-rate-limit-trust-proxy.md) — must set `app.set("trust proxy", 1)` or it throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR on every request.
 - [Multi-role app testing with lazily-created users](clerk-role-based-testing.md) — role-gated dashboards backed by a lazily-created local user record need the DB row's role field patched post-signup before the role UI will render.
+- [Artifact workflows need PORT injected manually](artifact-workflow-port-injection.md) — configureWorkflow does not inject PORT/BASE_PATH; prefix them in the command string (e.g. PORT=8080 pnpm run dev).
