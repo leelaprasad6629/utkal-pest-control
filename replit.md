@@ -38,19 +38,29 @@ A pest-control booking website: customers browse services, request quotes/book a
 
 ## Product
 
-- Public pages: home, about, services list/detail, contact form.
-- Customers sign in via Clerk and submit booking requests ("Get a Quote") tied to a service, address, and preferred date/time.
-- Admins see all bookings and can update booking status; technicians see bookings assigned to them.
+- Public pages: premium home (stats, service grid, how-it-works, live testimonials, FAQ), about, services list/detail, contact form.
+- Customers sign in via Clerk and submit detailed booking requests ("Get a Quote": service, address, property type, area size, date/time, notes, emergency flag).
+- Booking lifecycle: pending → confirmed → technician-assigned → en-route → in-progress → completed/cancelled, with a full status-history timeline, reschedule/cancel, and in-app + email notifications at each transition.
+- Customer dashboard: upcoming/history tabs, booking detail page (timeline, reschedule/cancel, Razorpay payment button, review form after completion), printable invoice page, profile page (edit phone).
+- Admin dashboard: analytics cards (bookings/revenue/customers/technicians/avg rating), tabbed bookings (status + technician-assignment dropdowns), customers, technicians, reviews.
+- Technician portal: assigned jobs list, start job, complete job (before/after photo URLs, notes, typed customer signature) — completing a job auto-generates an invoice.
+- Payments: Razorpay checkout wired end-to-end in booking-detail; gracefully reports "not configured" (`/api/payments/config` → `configured:false`) until `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` secrets are set.
+- Notifications: in-app bell (`/api/notifications`) + email (via optional SMTP config) on booking create/status-change/reschedule/cancel.
+- Reviews: customers rate/comment after a completed booking; surfaced on admin dashboard and homepage testimonials.
 - Contact form messages are stored in Mongo and optionally emailed via SMTP if configured.
 
 ## User preferences
 
 _Populate as you build — explicit user instructions worth remembering across sessions._
 
+- Keep MongoDB + Mongoose + Clerk as the stack (no Postgres/Drizzle/JWT re-platform) even though the workspace default is Postgres — this was an explicit, confirmed decision.
+
 ## Gotchas
 
-- Payments (Razorpay), Google Maps, technician assignment UI, reviews UI, and full booking-status timeline for customers were out of scope for the initial migration (parity port only) — see task plan for details. These are good candidates for follow-up work.
 - `CLERK_WEBHOOK_SECRET` is not yet configured; the `/api/webhooks/clerk` route will reject events with a 500 until it's set.
+- `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` are not yet configured; payment endpoints return `501`/`configured:false` until added — request via environment-secrets skill when the user is ready to accept real payments.
+- Invoices are printable HTML (`window.print()`) rather than generated PDFs — avoids an extra PDF dependency while still satisfying "download invoice".
+- `pnpm --filter <artifact> run build` run standalone (outside its workflow) will fail with "PORT/BASE_PATH environment variable is required" — those are injected by the workflow at runtime; use `pnpm run typecheck` for standalone verification instead.
 
 ## Pointers
 

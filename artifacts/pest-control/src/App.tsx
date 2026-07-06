@@ -13,6 +13,9 @@ import Services from "@/pages/services";
 import ServiceDetail from "@/pages/service-detail";
 import Quote from "@/pages/quote";
 import Dashboard from "@/pages/dashboard";
+import BookingDetail from "@/pages/booking-detail";
+import Profile from "@/pages/profile";
+import InvoiceDetail from "@/pages/invoice-detail";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +33,9 @@ function Router() {
         <Route path="/services/:slug" component={ServiceDetail} />
         <Route path="/quote" component={Quote} />
         <Route path="/dashboard" component={Dashboard} />
+        <Route path="/bookings/:id" component={BookingDetail} />
+        <Route path="/profile" component={Profile} />
+        <Route path="/invoices/:id" component={InvoiceDetail} />
         <Route component={NotFound} />
       </Switch>
       <SiteFooter />

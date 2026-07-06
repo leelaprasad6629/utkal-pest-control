@@ -4,6 +4,8 @@ import { useAuth, SignInButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiFetch } from "@/lib/api";
 import type { ServiceItem } from "@/lib/types";
@@ -16,8 +18,12 @@ export default function Quote() {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
+  const [propertyType, setPropertyType] = useState<"residential" | "commercial">("residential");
+  const [areaSize, setAreaSize] = useState("");
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("09:00-11:00");
+  const [notes, setNotes] = useState("");
+  const [emergency, setEmergency] = useState(false);
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -34,8 +40,12 @@ export default function Quote() {
       const payload = {
         serviceId,
         address: { line1: address, city, pincode },
+        propertyType,
+        areaSize: areaSize ? Number(areaSize) : undefined,
         scheduledDate: new Date(date).toISOString(),
         timeSlot,
+        notes: notes || undefined,
+        emergency,
       };
       const booking = await apiFetch<{ _id: string }>("/bookings", {
         method: "POST",
@@ -43,8 +53,7 @@ export default function Quote() {
         token,
       });
       setStatus("done");
-      setLocation("/dashboard");
-      void booking;
+      setLocation(`/bookings/${booking._id}`);
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Failed to create quote. Please try again.");
@@ -69,6 +78,8 @@ export default function Quote() {
     );
   }
 
+  const requiredFilled = serviceId && address && city && pincode && date;
+
   return (
     <main className="max-w-5xl mx-auto px-4 md:px-6 py-14 animate-fade-in">
       <h1 className="text-primary">Get a Quote / Book Service</h1>
@@ -76,7 +87,7 @@ export default function Quote() {
         Tell us a bit about your property and preferred schedule — we'll confirm the details shortly.
       </p>
       <form
-        className="mt-8 max-w-md space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm"
+        className="mt-8 max-w-lg space-y-5 rounded-xl border border-border bg-card p-6 shadow-sm"
         onSubmit={handleSubmit}
       >
         <div className="space-y-2">
@@ -108,6 +119,31 @@ export default function Quote() {
             <Input id="pincode" value={pincode} onChange={(e) => setPincode(e.target.value)} required data-testid="input-pincode" />
           </div>
         </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="property-type">Property Type</Label>
+            <Select value={propertyType} onValueChange={(v) => setPropertyType(v as "residential" | "commercial")}>
+              <SelectTrigger id="property-type" data-testid="select-property-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="residential">Residential</SelectItem>
+                <SelectItem value="commercial">Commercial</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="area-size">Area Size (sq ft)</Label>
+            <Input
+              id="area-size"
+              type="number"
+              min="0"
+              value={areaSize}
+              onChange={(e) => setAreaSize(e.target.value)}
+              data-testid="input-area-size"
+            />
+          </div>
+        </div>
         <div className="space-y-2">
           <Label htmlFor="date">Preferred Date</Label>
           <Input
@@ -134,15 +170,29 @@ export default function Quote() {
             </SelectContent>
           </Select>
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="notes">Additional Notes (optional)</Label>
+          <Textarea
+            id="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Describe the pest issue, access instructions, etc."
+            data-testid="input-notes"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Checkbox id="emergency" checked={emergency} onCheckedChange={(v) => setEmergency(Boolean(v))} data-testid="checkbox-emergency" />
+          <Label htmlFor="emergency" className="cursor-pointer">This is an urgent/emergency request</Label>
+        </div>
         <Button
           type="submit"
           className="w-full"
-          disabled={status === "submitting" || !serviceId || !address || !city || !pincode || !date}
+          disabled={status === "submitting" || !requiredFilled}
           data-testid="button-request-quote"
         >
           {status === "submitting" ? "Submitting..." : "Request Quote"}
         </Button>
-        {(!serviceId || !address || !city || !pincode || !date) && (
+        {!requiredFilled && (
           <p className="text-xs text-text-muted">Fill in service, address, city, pincode, and date to continue.</p>
         )}
         {status === "error" && (

@@ -3,6 +3,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-reac
 import { Button } from "@/components/ui/button";
 import { BUSINESS_NAME } from "@/config/business";
 import { cn } from "@/lib/utils";
+import NotificationBell from "@/components/notification-bell";
 
 const NAV_LINKS = [
   { href: "/services", label: "Services", testId: "link-services" },
@@ -72,7 +73,8 @@ export default function SiteHeader() {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <div className="ml-2">
+            <NotificationBell />
+            <div className="ml-1">
               <UserButton afterSignOutUrl={import.meta.env.BASE_URL} />
             </div>
           </SignedIn>
