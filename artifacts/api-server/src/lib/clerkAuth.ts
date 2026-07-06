@@ -6,6 +6,20 @@ const secretKey = process.env.CLERK_SECRET_KEY ?? "";
 
 export const clerkClient = secretKey ? createClerkClient({ secretKey }) : null;
 
+/** Canonical DB roles */
+export type AppRole = "customer" | "technician" | "admin";
+
+/**
+ * Normalize any role string coming from Clerk publicMetadata into one of the
+ * three canonical DB roles. "manager" is treated as "admin" so the DB enum
+ * stays clean. Unknown values fall back to "customer".
+ */
+export function normalizeRole(raw: unknown): AppRole {
+  if (raw === "admin" || raw === "manager") return "admin";
+  if (raw === "technician") return "technician";
+  return "customer";
+}
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {

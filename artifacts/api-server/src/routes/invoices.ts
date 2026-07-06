@@ -5,6 +5,10 @@ import { requireAuth } from "../lib/clerkAuth";
 
 const router: IRouter = Router();
 
+function isAdminRole(role: string): boolean {
+  return role === "admin" || role === "manager";
+}
+
 router.get("/invoices", requireAuth, async (req, res): Promise<void> => {
   await dbConnect();
   const localUser = await User.findOne({ clerkId: req.clerkUserId }).lean<{ _id: unknown; role: string } | null>();
@@ -12,7 +16,7 @@ router.get("/invoices", requireAuth, async (req, res): Promise<void> => {
     res.json([]);
     return;
   }
-  const filter = localUser.role === "admin" ? {} : { customerId: localUser._id };
+  const filter = isAdminRole(localUser.role) ? {} : { customerId: localUser._id };
   const invoices = await Invoice.find(filter)
     .populate({ path: "bookingId", populate: { path: "serviceId" } })
     .sort({ createdAt: -1 })
@@ -35,7 +39,7 @@ router.get("/invoices/:id", requireAuth, async (req, res): Promise<void> => {
     res.status(404).json({ error: "Invoice not found" });
     return;
   }
-  if (localUser.role !== "admin" && String(invoice.customerId?._id) !== String(localUser._id)) {
+  if (!isAdminRole(localUser.role) && String(invoice.customerId?._id) !== String(localUser._id)) {
     res.status(403).json({ error: "Not authorized to view this invoice" });
     return;
   }

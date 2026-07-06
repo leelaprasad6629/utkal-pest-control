@@ -3,6 +3,7 @@ import { Webhook } from "svix";
 import { dbConnect } from "../lib/mongo";
 import { User } from "../models";
 import { logger } from "../lib/logger";
+import { normalizeRole } from "../lib/clerkAuth";
 
 const router: IRouter = Router();
 
@@ -13,6 +14,7 @@ interface ClerkWebhookEvent {
     first_name?: string;
     last_name?: string;
     email_addresses?: { email_address: string }[];
+    public_metadata?: Record<string, unknown>;
   };
 }
 
@@ -61,14 +63,26 @@ router.post("/webhooks/clerk", async (req: Request, res): Promise<void> => {
   await dbConnect();
 
   if (event.type === "user.created" || event.type === "user.updated") {
-    const { id, first_name, last_name, email_addresses } = event.data;
+    const { id, first_name, last_name, email_addresses, public_metadata } = event.data;
     const name = [first_name, last_name].filter(Boolean).join(" ") || "Customer";
     const email = email_addresses?.[0]?.email_address ?? `${id}@placeholder.local`;
-    await User.findOneAndUpdate(
-      { clerkId: id },
-      { $set: { name, email }, $setOnInsert: { clerkId: id, role: "customer" } },
-      { upsert: true, new: true },
-    );
+    // Read role from Clerk public metadata and normalize it
+    const role = normalizeRole(public_metadata?.role);
+
+    if (event.type === "user.created") {
+      await User.findOneAndUpdate(
+        { clerkId: id },
+        { $set: { name, email, role }, $setOnInsert: { clerkId: id } },
+        { upsert: true, new: true },
+      );
+    } else {
+      // user.updated — always sync name, email, AND role
+      await User.findOneAndUpdate(
+        { clerkId: id },
+        { $set: { name, email, role } },
+        { new: true },
+      );
+    }
   }
 
   res.json({ received: true });

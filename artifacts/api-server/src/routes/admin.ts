@@ -6,10 +6,15 @@ import { requireAuth } from "../lib/clerkAuth";
 
 const router: IRouter = Router();
 
+/** Accept both "admin" and the legacy "manager" value (normalized at sync time but belt-and-suspenders here). */
+function isAdminRole(role: string): boolean {
+  return role === "admin" || role === "manager";
+}
+
 async function requireAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
   await dbConnect();
   const user = await User.findOne({ clerkId: req.clerkUserId }).lean<{ role: string } | null>();
-  if (!user || user.role !== "admin") {
+  if (!user || !isAdminRole(user.role)) {
     res.status(403).json({ error: "Admin access required" });
     return;
   }

@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { z } from "zod";
 import { dbConnect } from "../lib/mongo";
 import { Booking, Invoice, Service, User } from "../models";
-import { requireAuth, clerkClient } from "../lib/clerkAuth";
+import { requireAuth, clerkClient, normalizeRole } from "../lib/clerkAuth";
 import { generateBookingNumber, generateInvoiceNumber } from "../lib/ids";
 import { createNotification } from "../lib/notifications";
 import {
@@ -13,6 +13,10 @@ import {
 } from "../lib/mailer";
 
 const router: IRouter = Router();
+
+function isAdminRole(role: string): boolean {
+  return role === "admin" || role === "manager";
+}
 
 const AddressInput = z.object({
   line1: z.string().min(1),
@@ -53,17 +57,19 @@ async function findOrCreateLocalUser(clerkUserId: string): Promise<InstanceType<
 
   let name = "Customer";
   let email = `${clerkUserId}@placeholder.local`;
+  let role: "customer" | "technician" | "admin" = "customer";
   if (clerkClient) {
     try {
       const clerkUser = await clerkClient.users.getUser(clerkUserId);
       name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || name;
       email = clerkUser.emailAddresses[0]?.emailAddress ?? email;
+      role = normalizeRole((clerkUser.publicMetadata as Record<string, unknown>)?.role);
     } catch {
       // fall back to placeholder values
     }
   }
 
-  user = await User.create({ name, email, clerkId: clerkUserId, role: "customer" });
+  user = await User.create({ name, email, clerkId: clerkUserId, role });
   return user;
 }
 

@@ -1,13 +1,24 @@
+/**
+ * Dashboard — role-aware entry point.
+ *
+ * After the UserContext loads the authenticated user from /api/me (which syncs
+ * the Clerk publicMetadata role to the DB), we redirect to the correct
+ * sub-dashboard so each role always lands on the right page.
+ *
+ *   admin / manager → /dashboard/admin
+ *   technician      → /dashboard/technician
+ *   customer        → inline customer dashboard
+ */
+
 import { useEffect, useState } from "react";
-import { Link } from "wouter";
+import { Link, Redirect } from "wouter";
 import { useAuth } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { apiFetch } from "@/lib/api";
-import type { Booking, LocalUser, ServiceItem } from "@/lib/types";
+import type { Booking, ServiceItem } from "@/lib/types";
 import StatusBadge from "@/components/status-badge";
-import DashboardAdmin from "./dashboard-admin";
-import DashboardTechnician from "./dashboard-technician";
+import { useUserContext, isAdmin, isTechnician } from "@/lib/user-context";
 
 function BookingCard({ booking }: { booking: Booking }) {
   const service = typeof booking.serviceId === "object" ? (booking.serviceId as ServiceItem) : undefined;
@@ -104,37 +115,29 @@ function CustomerDashboard() {
 }
 
 export default function Dashboard() {
-  const { getToken } = useAuth();
-  const [user, setUser] = useState<LocalUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useUserContext();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const token = await getToken();
-        const data = await apiFetch<LocalUser>("/me", { token });
-        setUser(data);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  // Redirect to role-specific dashboard pages — this keeps admin and technician
+  // UIs at stable, bookmarkable URLs with proper route-level protection.
+  if (!loading && isAdmin(user)) return <Redirect to="/dashboard/admin" />;
+  if (!loading && isTechnician(user)) return <Redirect to="/dashboard/technician" />;
 
   return (
     <div className="min-h-screen max-w-5xl mx-auto px-4 md:px-6 py-10 animate-fade-in">
       <header className="mb-6 flex items-center justify-between">
-        <h1 className="text-primary">Dashboard</h1>
-        {!loading && (!user || user.role === "customer") && (
-          <Link href="/profile" className="text-sm text-primary hover:underline" data-testid="link-profile">
-            My Profile
-          </Link>
-        )}
+        <div>
+          <h1 className="text-primary">My Dashboard</h1>
+          {!loading && user && (
+            <p className="text-sm text-text-muted mt-0.5">Welcome back, {user.name}</p>
+          )}
+        </div>
+        <Link href="/profile" className="text-sm text-primary hover:underline" data-testid="link-profile">
+          My Profile
+        </Link>
       </header>
       <div>
         {loading && <p className="text-text-muted">Loading...</p>}
-        {!loading && user?.role === "admin" && <DashboardAdmin />}
-        {!loading && user?.role === "technician" && <DashboardTechnician />}
-        {!loading && (!user || user.role === "customer") && <CustomerDashboard />}
+        {!loading && <CustomerDashboard />}
       </div>
     </div>
   );

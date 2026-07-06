@@ -17,6 +17,7 @@ import { apiFetch } from "@/lib/api";
 import type { Booking, ServiceItem } from "@/lib/types";
 import StatusBadge from "@/components/status-badge";
 import { toast } from "@/hooks/use-toast";
+import { useUserContext } from "@/lib/user-context";
 
 function CompleteJobDialog({ booking, onDone }: { booking: Booking; onDone: () => void }) {
   const { getToken } = useAuth();
@@ -95,6 +96,7 @@ function CompleteJobDialog({ booking, onDone }: { booking: Booking; onDone: () =
 
 export default function DashboardTechnician() {
   const { getToken } = useAuth();
+  const { user, loading: userLoading } = useUserContext();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,48 +125,57 @@ export default function DashboardTechnician() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-xl border border-border bg-card shadow-sm p-6">
-        <h3>Technician Dashboard</h3>
-        <p className="mt-1 text-sm text-text-muted">Your assigned jobs.</p>
-      </div>
+    <div className="min-h-screen max-w-5xl mx-auto px-4 md:px-6 py-10 animate-fade-in">
+      <header className="mb-6">
+        <h1 className="text-primary">Technician Portal</h1>
+        {!userLoading && user && (
+          <p className="text-sm text-text-muted mt-0.5">Welcome, {user.name} · Technician</p>
+        )}
+      </header>
 
-      {loading && <p className="text-text-muted">Loading jobs...</p>}
-      {error && <p className="text-danger" data-testid="text-error">{error}</p>}
+      <div className="space-y-4">
+        <div className="rounded-xl border border-border bg-card shadow-sm p-6">
+          <h3>Your Assigned Jobs</h3>
+          <p className="mt-1 text-sm text-text-muted">Jobs assigned to you are listed below.</p>
+        </div>
 
-      {!loading && !error && bookings.length === 0 && (
-        <p className="text-center text-text-muted py-10 rounded-xl border border-border bg-card">No jobs assigned yet.</p>
-      )}
+        {loading && <p className="text-text-muted">Loading jobs...</p>}
+        {error && <p className="text-danger" data-testid="text-error">{error}</p>}
 
-      {!loading && !error && bookings.map((b) => {
-        const customer = typeof b.customerId === "object" ? b.customerId : undefined;
-        const service = typeof b.serviceId === "object" ? (b.serviceId as ServiceItem) : undefined;
-        return (
-          <div key={b._id} className="rounded-xl border border-border bg-card p-5 shadow-sm" data-testid={`card-job-${b._id}`}>
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-semibold">{service?.name ?? "Service"}</p>
-                <p className="text-xs text-text-muted mt-0.5">{b.bookingNumber} · {customer?.name}</p>
+        {!loading && !error && bookings.length === 0 && (
+          <p className="text-center text-text-muted py-10 rounded-xl border border-border bg-card">No jobs assigned yet.</p>
+        )}
+
+        {!loading && !error && bookings.map((b) => {
+          const customer = typeof b.customerId === "object" ? b.customerId : undefined;
+          const service = typeof b.serviceId === "object" ? (b.serviceId as ServiceItem) : undefined;
+          return (
+            <div key={b._id} className="rounded-xl border border-border bg-card p-5 shadow-sm" data-testid={`card-job-${b._id}`}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-semibold">{service?.name ?? "Service"}</p>
+                  <p className="text-xs text-text-muted mt-0.5">{b.bookingNumber} · {customer?.name}</p>
+                </div>
+                <StatusBadge status={b.status} />
               </div>
-              <StatusBadge status={b.status} />
+              <div className="mt-3 text-sm text-text-muted space-y-1">
+                <p>{[b.address?.line1, b.address?.city, b.address?.pincode].filter(Boolean).join(", ")}</p>
+                <p>{b.scheduledDate ? new Date(b.scheduledDate).toLocaleDateString() : "—"} {b.timeSlot && `· ${b.timeSlot}`}</p>
+                {customer?.phone && <p>Contact: {customer.phone}</p>}
+                {b.notes && <p>Notes: {b.notes}</p>}
+              </div>
+              <div className="mt-4 flex gap-2">
+                {(b.status === "technician-assigned" || b.status === "confirmed" || b.status === "en-route") && (
+                  <Button size="sm" variant="outline" onClick={() => startJob(b._id)} data-testid={`button-start-${b._id}`}>
+                    Start Job
+                  </Button>
+                )}
+                {b.status === "in-progress" && <CompleteJobDialog booking={b} onDone={load} />}
+              </div>
             </div>
-            <div className="mt-3 text-sm text-text-muted space-y-1">
-              <p>{[b.address?.line1, b.address?.city, b.address?.pincode].filter(Boolean).join(", ")}</p>
-              <p>{b.scheduledDate ? new Date(b.scheduledDate).toLocaleDateString() : "—"} {b.timeSlot && `· ${b.timeSlot}`}</p>
-              {customer?.phone && <p>Contact: {customer.phone}</p>}
-              {b.notes && <p>Notes: {b.notes}</p>}
-            </div>
-            <div className="mt-4 flex gap-2">
-              {(b.status === "technician-assigned" || b.status === "confirmed" || b.status === "en-route") && (
-                <Button size="sm" variant="outline" onClick={() => startJob(b._id)} data-testid={`button-start-${b._id}`}>
-                  Start Job
-                </Button>
-              )}
-              {b.status === "in-progress" && <CompleteJobDialog booking={b} onDone={load} />}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -15,6 +15,7 @@ import type {
 } from "@/lib/types";
 import StatusBadge from "@/components/status-badge";
 import StarRating from "@/components/star-rating";
+import { useUserContext } from "@/lib/user-context";
 
 const STATUS_OPTIONS: BookingStatus[] = [
   "pending",
@@ -271,6 +272,7 @@ function ReviewsTab() {
 
 export default function DashboardAdmin() {
   const { getToken } = useAuth();
+  const { user, loading: userLoading } = useUserContext();
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [technicians, setTechnicians] = useState<TechnicianRecord[]>([]);
 
@@ -287,25 +289,36 @@ export default function DashboardAdmin() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      {analytics && <AnalyticsCards analytics={analytics} />}
-      <div className="rounded-xl border border-border bg-card shadow-sm">
-        <div className="p-6 border-b border-border">
-          <h3>Admin Overview</h3>
-          <p className="mt-1 text-sm text-text-muted">Manage bookings, customers, technicians, and reviews.</p>
+    <div className="min-h-screen max-w-5xl mx-auto px-4 md:px-6 py-10 animate-fade-in">
+      <header className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-primary">Admin Dashboard</h1>
+          {!userLoading && user && (
+            <p className="text-sm text-text-muted mt-0.5">Logged in as {user.name} · Admin</p>
+          )}
         </div>
-        <Tabs defaultValue="bookings" className="p-4">
-          <TabsList>
-            <TabsTrigger value="bookings" data-testid="tab-admin-bookings">Bookings</TabsTrigger>
-            <TabsTrigger value="customers" data-testid="tab-admin-customers">Customers</TabsTrigger>
-            <TabsTrigger value="technicians" data-testid="tab-admin-technicians">Technicians</TabsTrigger>
-            <TabsTrigger value="reviews" data-testid="tab-admin-reviews">Reviews</TabsTrigger>
-          </TabsList>
-          <TabsContent value="bookings"><BookingsTab technicians={technicians} /></TabsContent>
-          <TabsContent value="customers"><CustomersTab /></TabsContent>
-          <TabsContent value="technicians"><TechniciansTab technicians={technicians} /></TabsContent>
-          <TabsContent value="reviews"><ReviewsTab /></TabsContent>
-        </Tabs>
+      </header>
+
+      <div className="space-y-6">
+        {analytics && <AnalyticsCards analytics={analytics} />}
+        <div className="rounded-xl border border-border bg-card shadow-sm">
+          <div className="p-6 border-b border-border">
+            <h3>Admin Overview</h3>
+            <p className="mt-1 text-sm text-text-muted">Manage bookings, customers, technicians, and reviews.</p>
+          </div>
+          <Tabs defaultValue="bookings" className="p-4">
+            <TabsList>
+              <TabsTrigger value="bookings" data-testid="tab-admin-bookings">Bookings</TabsTrigger>
+              <TabsTrigger value="customers" data-testid="tab-admin-customers">Customers</TabsTrigger>
+              <TabsTrigger value="technicians" data-testid="tab-admin-technicians">Technicians</TabsTrigger>
+              <TabsTrigger value="reviews" data-testid="tab-admin-reviews">Reviews</TabsTrigger>
+            </TabsList>
+            <TabsContent value="bookings"><BookingsTab technicians={technicians} /></TabsContent>
+            <TabsContent value="customers"><CustomersTab /></TabsContent>
+            <TabsContent value="technicians"><TechniciansTab technicians={technicians} /></TabsContent>
+            <TabsContent value="reviews"><ReviewsTab /></TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

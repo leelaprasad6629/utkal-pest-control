@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { BUSINESS_NAME } from "@/config/business";
 import { cn } from "@/lib/utils";
 import NotificationBell from "@/components/notification-bell";
+import { useUserContext, isAdmin, isTechnician } from "@/lib/user-context";
 
 const NAV_LINKS = [
   { href: "/services", label: "Services", testId: "link-services" },
@@ -11,8 +12,22 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact", testId: "link-contact" },
 ];
 
+/** Returns the correct dashboard href and label for the current user's role. */
+function useDashboardLink() {
+  const { user } = useUserContext();
+  if (isAdmin(user)) return { href: "/dashboard/admin", label: "Admin Panel" };
+  if (isTechnician(user)) return { href: "/dashboard/technician", label: "My Jobs" };
+  return { href: "/dashboard", label: "Dashboard" };
+}
+
 export default function SiteHeader() {
   const [location] = useLocation();
+  const { href: dashHref, label: dashLabel } = useDashboardLink();
+
+  const isDashActive =
+    location === "/dashboard" ||
+    location === "/dashboard/admin" ||
+    location === "/dashboard/technician";
 
   return (
     <header className="border-b border-border bg-card/95 backdrop-blur sticky top-0 z-40">
@@ -46,16 +61,16 @@ export default function SiteHeader() {
 
           <SignedIn>
             <Link
-              href="/dashboard"
+              href={dashHref}
               data-testid="link-dashboard"
               className={cn(
                 "px-3 py-2 rounded-md font-medium text-sm transition-colors duration-150",
-                location === "/dashboard"
+                isDashActive
                   ? "text-primary bg-secondary border-b-2 border-primary"
                   : "text-foreground/70 hover:text-foreground hover:bg-muted border-b-2 border-transparent"
               )}
             >
-              Dashboard
+              {dashLabel}
             </Link>
           </SignedIn>
 
