@@ -1,0 +1,290 @@
+You are a senior Full Stack Software Engineer and UI/UX Architect. Transform this project from a UI prototype into a fully production-ready Pest Control Management Platform. Do NOT redesign the existing branding or color theme unless necessary for usability. Keep the current professional green/white design, but improve spacing, responsiveness, typography, animations, and overall user experience to match modern commercial websites.
+
+Your goal is to deliver a real-world application with ZERO runtime errors, ZERO placeholder functionality, and a complete end-to-end workflow.
+
+## 1. Code Quality & Bug Fixes
+- Audit the entire codebase.
+- Fix all frontend and backend bugs.
+- Fix the "Error creating quote. Try again later." issue.
+- Remove all mock data, placeholder responses, and TODOs.
+- Eliminate console warnings and runtime errors.
+- Ensure proper loading, success, and error states for every action.
+- Validate all forms with meaningful error messages.
+
+## 2. Database & Backend
+Implement a proper PostgreSQL database with migrations and relationships for:
+- Users
+- Customers
+- Admins
+- Technicians
+- Services
+- Bookings
+- Booking Status History
+- Payments
+- Reviews
+- Notifications
+- Invoices
+- Service Reports
+- Contact Messages
+
+All data must be stored permanently and retrieved from the database.
+
+## 3. Authentication & Authorization
+Implement secure authentication using JWT.
+Support:
+- Customer Login/Register
+- Technician Login
+- Admin Login
+- Email Verification
+- Forgot Password
+- Reset Password
+- Password Hashing
+- Protected Routes
+- Role-Based Access Control
+- Session Management
+
+## 4. Complete Booking System
+Booking form must include:
+- Service Selection
+- Customer Name
+- Phone Number
+- Email
+- Full Address
+- City
+- State
+- Pincode
+- GPS Location (optional)
+- Property Type
+- Area Size
+- Preferred Date
+- Preferred Time Slot
+- Additional Notes
+- Image Upload
+- Emergency Service Option
+
+On successful booking:
+- Generate unique Booking ID
+- Save booking
+- Create booking history
+- Send confirmation email
+- Create notification
+- Show confirmation page
+- Display booking in customer dashboard
+
+## 5. Booking Workflow
+Implement complete booking lifecycle:
+Pending
+→ Confirmed
+→ Technician Assigned
+→ On The Way
+→ Service Started
+→ Completed
+→ Feedback Received
+
+Display a real-time status timeline in the dashboard.
+
+## 6. Customer Dashboard
+Replace the empty dashboard with:
+- Upcoming Services
+- Booking History
+- Booking Details
+- Live Booking Status
+- Assigned Technician
+- Payment History
+- Invoices
+- Download Invoice
+- Service Reports
+- Cancel Booking
+- Reschedule Booking
+- Notifications
+- Profile Management
+
+## 7. Admin Dashboard
+Build a professional admin panel with:
+- Dashboard Analytics
+- Customer Management
+- Booking Management
+- Technician Management
+- Service Management
+- Payment Management
+- Invoice Generation
+- Review Management
+- Website Content Management
+- Offers & Coupons
+- Reports & Analytics
+- Export Data
+
+Admin should be able to assign technicians and update booking statuses.
+
+## 8. Technician Portal
+Implement technician dashboard with:
+- Assigned Jobs
+- Today's Schedule
+- Customer Details
+- Call Customer
+- Google Maps Navigation
+- Start Service
+- Upload Before Images
+- Upload After Images
+- Add Notes
+- Customer Digital Signature
+- Complete Job
+- Generate Service Report
+
+## 9. Payments
+Integrate Razorpay.
+Support:
+- UPI
+- Cards
+- Net Banking
+- Wallets
+
+After successful payment:
+- Generate Invoice
+- Update Payment Status
+- Store Payment History
+- Send Payment Confirmation
+
+## 10. Notifications
+Implement notification system:
+- Booking Confirmation
+- Booking Status Updates
+- Payment Success
+- Technician Assigned
+- Service Reminder
+- Completion Message
+- Feedback Request
+
+Support both email and in-app notifications.
+
+## 11. Reviews & Ratings
+Customers can:
+- Rate Service
+- Write Review
+- Upload Images
+
+Display reviews professionally on the homepage.
+
+## 12. Contact Page
+Create a fully working contact page with:
+- Contact Form
+- Google Maps
+- Business Hours
+- Emergency Contact
+- Click-to-Call
+- WhatsApp Integration
+- Email Integration
+
+## 13. Services
+Each service page should include:
+- Description
+- Features
+- Benefits
+- Treatment Process
+- Safety Measures
+- Pricing
+- Duration
+- FAQs
+- Related Services
+- Book Now Button
+
+## 14. Homepage
+Create a premium landing page including:
+- Hero Section
+- Call-to-Action
+- Why Choose Us
+- Services
+- Process Timeline
+- Statistics
+- Testimonials
+- Certifications
+- Gallery
+- FAQ
+- Service Areas
+- Blog Preview
+- Contact Section
+- Professional Footer
+
+## 15. SEO
+Implement:
+- Dynamic Metadata
+- Open Graph
+- Structured Data
+- Sitemap
+- robots.txt
+- Optimized Images
+- Semantic HTML
+
+## 16. Performance
+Optimize for production:
+- Lazy Loading
+- Code Splitting
+- Image Optimization
+- Pagination
+- Caching
+- Fast API Responses
+- Lighthouse Score above 90
+
+## 17. Security
+Implement:
+- Input Validation
+- XSS Protection
+- CSRF Protection
+- SQL Injection Protection
+- Rate Limiting
+- Secure Headers
+- Environment Variables
+- Proper API Authorization
+
+## 18. Responsive UI
+Ensure perfect responsiveness on:
+- Mobile
+- Tablet
+- Laptop
+- Desktop
+
+Improve:
+- Typography
+- Cards
+- Buttons
+- Forms
+- Loading Animations
+- Empty States
+- Success Messages
+- Error States
+- Accessibility (WCAG)
+
+## 19. Production Readiness
+Remove:
+- Dummy Data
+- Seed Data
+- Placeholder Text
+- Fake APIs
+- Demo Components
+- Hardcoded Values
+
+Every feature must use live backend data.
+
+## 20. Deployment
+Prepare for production deployment:
+- Environment Variables
+- Database Migrations
+- API Configuration
+- Health Check Endpoint
+- Vercel-ready Frontend
+- Render/Railway Backend
+- PostgreSQL/Supabase Database
+
+## 21. Final Validation
+Before finishing:
+- Test every page.
+- Test every API.
+- Test authentication.
+- Test booking flow.
+- Test payment flow.
+- Test dashboard functionality.
+- Test technician workflow.
+- Test admin workflow.
+- Ensure there are no runtime errors, broken links, failed requests, or unfinished features.
+
+The final product should be indistinguishable from a real commercial pest control platform, with complete functionality, polished UI/UX, secure architecture, and production-quality code. Do not stop after fixing individual issues—review the entire application end-to-end, implement all missing functionality, and ensure every button, form, API, and workflow works correctly.
