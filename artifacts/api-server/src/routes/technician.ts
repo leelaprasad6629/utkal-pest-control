@@ -31,13 +31,22 @@ router.get("/technician/profile", requireAuth, async (req, res): Promise<void> =
     return;
   }
   const { Technician } = await import("../models");
-  const profile = await Technician.findOne({ userId: user._id }).lean();
+  let profile = await Technician.findOne({ userId: user._id }).lean();
   if (!profile) {
-    res.status(404).json({
-      code: "NO_TECHNICIAN_PROFILE",
-      error: "No technician profile found. Contact administrator.",
+    // Auto-create a minimal Technician record so the portal is never
+    // permanently blocked when the admin set role directly instead of
+    // going through the Admin Dashboard technician creation form.
+    profile = await Technician.create({
+      userId: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone ?? "",
+      status: "active",
+      specialties: [],
+      availability: [],
+      assignedBookings: [],
+      rating: 0,
     });
-    return;
   }
   res.json(profile);
 });
