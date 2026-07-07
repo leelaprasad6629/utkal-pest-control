@@ -1,9 +1,9 @@
 import { Link, useLocation } from "wouter";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
-import { BUSINESS_NAME } from "@/config/business";
 import { cn } from "@/lib/utils";
 import NotificationBell from "@/components/notification-bell";
+import { LogoLockup } from "@/components/logo";
 import { useUserContext, isAdmin, isTechnician } from "@/lib/user-context";
 
 const NAV_LINKS = [
@@ -32,12 +32,8 @@ export default function SiteHeader() {
   return (
     <header className="border-b border-border bg-card/95 backdrop-blur sticky top-0 z-40">
       <div className="max-w-5xl mx-auto flex items-center justify-between px-4 md:px-6 h-16">
-        <Link
-          href="/"
-          className="font-display text-lg font-semibold text-primary"
-          data-testid="link-home"
-        >
-          {BUSINESS_NAME}
+        <Link href="/" data-testid="link-home">
+          <LogoLockup size={30} textClass="text-primary text-base hidden sm:inline" />
         </Link>
         <nav className="flex items-center gap-1 md:gap-2 text-sm">
           {NAV_LINKS.map((link) => {

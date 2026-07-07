@@ -6,6 +6,8 @@ import { requireAuth } from "../lib/clerkAuth";
 
 const router: IRouter = Router();
 
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 /** Accept both "admin" and the legacy "manager" value (normalized at sync time but belt-and-suspenders here). */
 function isAdminRole(role: string): boolean {
   return role === "admin" || role === "manager";
@@ -22,19 +24,63 @@ async function requireAdmin(req: Request, res: Response, next: NextFunction): Pr
 }
 
 router.get("/admin/analytics", requireAuth, requireAdmin, async (_req, res): Promise<void> => {
-  const [totalBookings, statusCounts, revenueAgg, totalCustomers, totalTechnicians, avgRatingAgg] = await Promise.all(
-    [
-      Booking.countDocuments({}),
-      Booking.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
-      Payment.aggregate([
-        { $match: { status: "successful" } },
-        { $group: { _id: null, total: { $sum: "$amount" } } },
-      ]),
-      User.countDocuments({ role: "customer" }),
-      Technician.countDocuments({ status: "active" }),
-      Review.aggregate([{ $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } }]),
-    ],
-  );
+  await dbConnect();
+
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+  const [
+    totalBookings,
+    statusCounts,
+    revenueAgg,
+    todayRevenueAgg,
+    monthlyRevenueAgg,
+    totalCustomers,
+    totalTechnicians,
+    avgRatingAgg,
+    monthlyBookingsAgg,
+    monthlyRevenueChartAgg,
+  ] = await Promise.all([
+    Booking.countDocuments({}),
+    Booking.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
+    Payment.aggregate([
+      { $match: { status: "successful" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]),
+    Payment.aggregate([
+      { $match: { status: "successful", createdAt: { $gte: todayStart } } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]),
+    Payment.aggregate([
+      { $match: { status: "successful", createdAt: { $gte: monthStart } } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]),
+    User.countDocuments({ role: "customer" }),
+    Technician.countDocuments({ status: "active" }),
+    Review.aggregate([{ $group: { _id: null, avg: { $avg: "$rating" }, count: { $sum: 1 } } }]),
+    Booking.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]),
+    Payment.aggregate([
+      { $match: { status: "successful", createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
+          revenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]),
+  ]);
 
   const bookingsByStatus: Record<string, number> = {};
   for (const row of statusCounts as { _id: string; count: number }[]) {
@@ -50,15 +96,38 @@ router.get("/admin/analytics", requireAuth, requireAdmin, async (_req, res): Pro
     { $project: { _id: 0, name: "$service.name", count: 1 } },
   ]);
 
+  const totalRevenue = (revenueAgg[0] as { total?: number } | undefined)?.total ?? 0;
+  const completedBookings = bookingsByStatus["completed"] ?? 0;
+  const avgBookingValue = completedBookings > 0 ? Math.round(totalRevenue / completedBookings) : 0;
+
+  const monthlyBookings: { month: string; count: number }[] = (
+    monthlyBookingsAgg as { _id: { year: number; month: number }; count: number }[]
+  ).map((row) => ({
+    month: `${MONTH_NAMES[row._id.month - 1]} ${row._id.year}`,
+    count: row.count,
+  }));
+
+  const revenueByMonth: { month: string; revenue: number }[] = (
+    monthlyRevenueChartAgg as { _id: { year: number; month: number }; revenue: number }[]
+  ).map((row) => ({
+    month: `${MONTH_NAMES[row._id.month - 1]} ${row._id.year}`,
+    revenue: row.revenue,
+  }));
+
   res.json({
     totalBookings,
     bookingsByStatus,
-    totalRevenue: (revenueAgg[0] as { total?: number } | undefined)?.total ?? 0,
+    totalRevenue,
+    todayRevenue: (todayRevenueAgg[0] as { total?: number } | undefined)?.total ?? 0,
+    monthlyRevenue: (monthlyRevenueAgg[0] as { total?: number } | undefined)?.total ?? 0,
+    avgBookingValue,
     totalCustomers,
     totalTechnicians,
     averageRating: (avgRatingAgg[0] as { avg?: number } | undefined)?.avg ?? null,
     reviewCount: (avgRatingAgg[0] as { count?: number } | undefined)?.count ?? 0,
     topServices,
+    monthlyBookings,
+    revenueByMonth,
   });
 });
 

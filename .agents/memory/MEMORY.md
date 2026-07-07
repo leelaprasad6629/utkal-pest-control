@@ -3,3 +3,6 @@
 - [express-rate-limit behind Replit proxy](express-rate-limit-trust-proxy.md) — must set `app.set("trust proxy", 1)` or it throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR on every request.
 - [Multi-role app testing with lazily-created users](clerk-role-based-testing.md) — role-gated dashboards backed by a lazily-created local user record need the DB row's role field patched post-signup before the role UI will render.
 - [Artifact workflows need PORT injected manually](artifact-workflow-port-injection.md) — configureWorkflow does not inject PORT/BASE_PATH; prefix them in the command string (e.g. PORT=8080 pnpm run dev).
+- [Technician model standalone fields](technician-standalone-fields.md) — Technician docs carry name/email/phone/city/specialization/experience/status directly (not only via User ref); admin CRUD creates/syncs a linked User for booking assignment.
+- [Admin analytics monthly chart data](admin-analytics-charts.md) — analytics endpoint aggregates last 6 months of bookings/revenue using $group by year+month; today/monthStart cutoffs are midnight-anchored Date objects computed server-side.
+- [User addresses array — primary address pattern](user-address-primary.md) — User model has addresses[] array; profile page reads/writes addresses[0] as primary; PATCH /me merges into index 0 with markModified("addresses").

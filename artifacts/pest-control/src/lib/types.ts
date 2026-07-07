@@ -80,6 +80,7 @@ export interface LocalUser {
   phone?: string;
   role: "customer" | "technician" | "admin";
   exists?: boolean;
+  addresses?: Address[];
 }
 
 export type NotificationType =
@@ -162,13 +163,28 @@ export interface PublicStats {
   reviewCount: number;
 }
 
+export interface MonthlyDataPoint {
+  month: string;
+  count: number;
+}
+
+export interface RevenueDataPoint {
+  month: string;
+  revenue: number;
+}
+
 export interface AdminAnalytics {
   totalBookings: number;
   bookingsByStatus: Record<string, number>;
   totalRevenue: number;
+  todayRevenue: number;
+  monthlyRevenue: number;
+  avgBookingValue: number;
   totalCustomers: number;
   totalTechnicians: number;
   averageRating: number | null;
   reviewCount: number;
   topServices: { name: string; count: number }[];
+  monthlyBookings: MonthlyDataPoint[];
+  revenueByMonth: RevenueDataPoint[];
 }

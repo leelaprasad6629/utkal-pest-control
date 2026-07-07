@@ -21,6 +21,39 @@ const PROCESS_STEPS = [
   { title: "Follow-up & Warranty", description: "We check in after treatment and stand behind our work with a warranty." },
 ];
 
+const WHY_CHOOSE_US = [
+  {
+    icon: "🌿",
+    title: "Eco-Friendly Products",
+    description: "We use government-approved, low-toxicity formulations that are safe for children and pets.",
+  },
+  {
+    icon: "🎓",
+    title: "Certified Technicians",
+    description: "Every technician is trained, certified, and background-verified before joining our team.",
+  },
+  {
+    icon: "🛡️",
+    title: "Service Warranty",
+    description: "Most treatments come with a warranty. If pests return, so do we — at no extra charge.",
+  },
+  {
+    icon: "⚡",
+    title: "24/7 Emergency Response",
+    description: "Urgent infestation? We offer same-day emergency visits across all service areas.",
+  },
+  {
+    icon: "💰",
+    title: "Transparent Pricing",
+    description: "No hidden fees. All pricing is shared upfront during the free inspection.",
+  },
+  {
+    icon: "📱",
+    title: "Easy Online Booking",
+    description: "Book, track, and manage your services entirely online — no phone calls required.",
+  },
+];
+
 const FAQS = [
   {
     question: "Are your treatments safe for children and pets?",
@@ -57,11 +90,10 @@ export default function Home() {
 
   return (
     <main className="animate-fade-in">
+      {/* Hero */}
       <section className="bg-gradient-to-br from-primary to-[hsl(155,43%,12%)] text-primary-foreground">
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-16 md:py-24">
-          <p className="text-sm font-medium uppercase tracking-widest text-accent">
-            {TAGLINE}
-          </p>
+          <p className="text-sm font-medium uppercase tracking-widest text-accent">{TAGLINE}</p>
           <h1 className="mt-4 max-w-2xl text-primary-foreground">
             Protect your home, calmly and thoroughly.
           </h1>
@@ -94,6 +126,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Stats bar */}
       <section className="border-b border-border bg-secondary/40">
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
@@ -119,6 +152,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Services */}
       <section className="max-w-5xl mx-auto px-4 md:px-6 py-14">
         <h2>Our Services</h2>
         <p className="mt-2 text-text-muted max-w-xl">
@@ -137,44 +171,87 @@ export default function Home() {
             </Link>
           ))}
         </div>
+        <div className="mt-6 text-center">
+          <Link href="/services">
+            <Button variant="outline" data-testid="button-all-services">View All Services</Button>
+          </Link>
+        </div>
       </section>
 
+      {/* Why Choose Us */}
       <section className="bg-secondary/30 border-y border-border">
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-14">
-          <h2>How It Works</h2>
-          <p className="mt-2 text-text-muted max-w-xl">From booking to warranty, we make pest control simple.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
-            {PROCESS_STEPS.map((step, idx) => (
-              <div key={step.title} className="relative">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold">
-                  {idx + 1}
-                </div>
-                <h4 className="mt-3 text-foreground">{step.title}</h4>
-                <p className="mt-1 text-sm text-text-muted">{step.description}</p>
+          <h2>Why Choose Us</h2>
+          <p className="mt-2 text-text-muted max-w-xl">
+            We're committed to delivering safe, effective, and transparent pest control — every time.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+            {WHY_CHOOSE_US.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                data-testid={`why-choose-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                <div className="text-3xl mb-3">{item.icon}</div>
+                <h4 className="font-semibold text-foreground">{item.title}</h4>
+                <p className="mt-2 text-sm text-text-muted">{item.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {reviews.length > 0 && (
-        <section className="max-w-5xl mx-auto px-4 md:px-6 py-14">
-          <h2>What Our Customers Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            {reviews.map((r) => {
-              const customer = typeof r.customerId === "object" ? r.customerId : undefined;
-              return (
-                <div key={r._id} className="rounded-xl border border-border bg-card p-5 shadow-sm" data-testid={`testimonial-${r._id}`}>
-                  <Stars value={r.rating} />
-                  <p className="mt-3 text-sm text-foreground/90">&ldquo;{r.comment}&rdquo;</p>
-                  <p className="mt-3 text-sm font-medium text-text-muted">— {customer?.name ?? "Verified Customer"}</p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+      {/* How It Works */}
+      <section className="max-w-5xl mx-auto px-4 md:px-6 py-14">
+        <h2>How It Works</h2>
+        <p className="mt-2 text-text-muted max-w-xl">From booking to warranty, we make pest control simple.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+          {PROCESS_STEPS.map((step, idx) => (
+            <div key={step.title} className="relative">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold">
+                {idx + 1}
+              </div>
+              <h4 className="mt-3 text-foreground">{step.title}</h4>
+              <p className="mt-1 text-sm text-text-muted">{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
+      {/* Customer Testimonials */}
+      <section className="bg-secondary/30 border-y border-border">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-14">
+          <h2>What Our Customers Say</h2>
+          <p className="mt-2 text-text-muted max-w-xl">Real feedback from homeowners and businesses we've served.</p>
+          {reviews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+              {reviews.map((r) => {
+                const customer = typeof r.customerId === "object" ? r.customerId : undefined;
+                return (
+                  <div
+                    key={r._id}
+                    className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                    data-testid={`testimonial-${r._id}`}
+                  >
+                    <Stars value={r.rating} />
+                    <p className="mt-3 text-sm text-foreground/90 leading-relaxed">&ldquo;{r.comment}&rdquo;</p>
+                    <p className="mt-3 text-sm font-medium text-text-muted">— {customer?.name ?? "Verified Customer"}</p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-8 rounded-xl border border-border bg-card p-10 text-center">
+              <p className="text-text-muted">Be the first to share your experience!</p>
+              <Link href="/quote" className="mt-4 inline-block">
+                <Button variant="outline" size="sm">Book a Service</Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* FAQ */}
       <section className="max-w-3xl mx-auto px-4 md:px-6 py-14">
         <h2>Frequently Asked Questions</h2>
         <Accordion type="single" collapsible className="mt-6">
@@ -187,6 +264,7 @@ export default function Home() {
         </Accordion>
       </section>
 
+      {/* CTA */}
       <section className="bg-primary text-primary-foreground">
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-14 text-center">
           <h2 className="text-primary-foreground">Serving {SERVICE_AREAS.join(", ")}</h2>
@@ -195,7 +273,11 @@ export default function Home() {
           </p>
           <div className="mt-6">
             <Link href="/quote">
-              <Button size="lg" className="bg-accent text-accent-foreground border-accent hover:brightness-95" data-testid="button-cta-quote">
+              <Button
+                size="lg"
+                className="bg-accent text-accent-foreground border-accent hover:brightness-95"
+                data-testid="button-cta-quote"
+              >
                 Get Free Quote
               </Button>
             </Link>

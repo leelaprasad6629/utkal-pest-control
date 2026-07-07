@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { Link } from "wouter";
+import {
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+} from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +15,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -32,75 +35,259 @@ import type {
   BookingStatus,
   LocalUser,
   Review,
+  ServiceItem,
   TechnicianRecord,
 } from "@/lib/types";
 import StatusBadge from "@/components/status-badge";
 import StarRating from "@/components/star-rating";
+import BookingTimeline from "@/components/booking-timeline";
 import { useUserContext } from "@/lib/user-context";
 import { toast } from "@/hooks/use-toast";
 
 const STATUS_OPTIONS: BookingStatus[] = [
-  "pending",
-  "confirmed",
-  "technician-assigned",
-  "en-route",
-  "in-progress",
-  "completed",
-  "cancelled",
+  "pending", "confirmed", "technician-assigned", "en-route", "in-progress", "completed", "cancelled",
 ];
 
 const EMPTY_FORM = {
-  name: "",
-  email: "",
-  phone: "",
-  specialization: "",
-  experience: "",
-  city: "",
-  profileImage: "",
-  specialties: "",
+  name: "", email: "", phone: "", specialization: "",
+  experience: "", city: "", profileImage: "", specialties: "",
 };
+
+const PIE_COLORS = ["#2a6641", "#3d8b5c", "#a3c4bc", "#e3b04b", "#c0392b", "#7f8c8d", "#2c3e50"];
+
+// ─── Analytics cards ──────────────────────────────────────────────────────────
 
 function AnalyticsCards({ analytics }: { analytics: AdminAnalytics }) {
   const pending = analytics.bookingsByStatus["pending"] ?? 0;
   const completed = analytics.bookingsByStatus["completed"] ?? 0;
   const cancelled = analytics.bookingsByStatus["cancelled"] ?? 0;
-  const cards = [
+
+  const summaryCards = [
     { label: "Total Bookings", value: analytics.totalBookings },
     { label: "Pending", value: pending },
     { label: "Completed", value: completed },
     { label: "Cancelled", value: cancelled },
-    { label: "Total Revenue", value: `₹${analytics.totalRevenue.toLocaleString()}` },
     { label: "Customers", value: analytics.totalCustomers },
-    { label: "Technicians", value: analytics.totalTechnicians },
+    { label: "Active Technicians", value: analytics.totalTechnicians },
     {
       label: "Avg. Rating",
       value: analytics.averageRating ? `${analytics.averageRating.toFixed(1)} ★ (${analytics.reviewCount})` : "—",
     },
+    {
+      label: "Total Revenue",
+      value: `₹${analytics.totalRevenue.toLocaleString("en-IN")}`,
+    },
   ];
+
+  const revenueCards = [
+    { label: "Today's Revenue", value: `₹${analytics.todayRevenue.toLocaleString("en-IN")}` },
+    { label: "Monthly Revenue", value: `₹${analytics.monthlyRevenue.toLocaleString("en-IN")}` },
+    { label: "Avg. Booking Value", value: analytics.avgBookingValue ? `₹${analytics.avgBookingValue.toLocaleString("en-IN")}` : "—" },
+  ];
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {cards.map((c) => (
-        <div key={c.label} className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs text-text-muted uppercase tracking-wide">{c.label}</p>
-          <p className="mt-1 text-xl font-semibold text-primary">{c.value}</p>
-        </div>
-      ))}
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {summaryCards.map((c) => (
+          <div key={c.label} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+            <p className="text-xs text-text-muted uppercase tracking-wide">{c.label}</p>
+            <p className="mt-1 text-xl font-semibold text-primary">{c.value}</p>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {revenueCards.map((c) => (
+          <div key={c.label} className="rounded-xl border border-primary/20 bg-primary/5 p-4 shadow-sm">
+            <p className="text-xs text-primary/70 uppercase tracking-wide font-medium">{c.label}</p>
+            <p className="mt-1 text-xl font-semibold text-primary">{c.value}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
+// ─── Charts ───────────────────────────────────────────────────────────────────
+
+function ChartsSection({ analytics }: { analytics: AdminAnalytics }) {
+  const statusData = Object.entries(analytics.bookingsByStatus).map(([name, value]) => ({
+    name: name.replace(/-/g, " "),
+    value,
+  }));
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Monthly Bookings */}
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <h4 className="text-sm font-semibold mb-4">Monthly Bookings (last 6 months)</h4>
+        {analytics.monthlyBookings.length === 0 ? (
+          <p className="text-sm text-text-muted py-8 text-center">No booking data yet.</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={analytics.monthlyBookings} margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+              <Tooltip />
+              <Bar dataKey="count" fill="#2a6641" radius={[4, 4, 0, 0]} name="Bookings" />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Booking Status Distribution */}
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+        <h4 className="text-sm font-semibold mb-4">Booking Status Distribution</h4>
+        {statusData.length === 0 ? (
+          <p className="text-sm text-text-muted py-8 text-center">No booking data yet.</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={statusData} cx="50%" cy="50%" outerRadius={75} dataKey="value" label={({ name, value }) => `${name} (${value})`} labelLine={false} fontSize={10}>
+                {statusData.map((_, idx) => (
+                  <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Revenue Trend */}
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm md:col-span-2">
+        <h4 className="text-sm font-semibold mb-4">Revenue Trend (last 6 months)</h4>
+        {analytics.revenueByMonth.length === 0 ? (
+          <p className="text-sm text-text-muted py-8 text-center">No revenue data yet. Revenue is tracked from completed payments.</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={analytics.revenueByMonth} margin={{ top: 0, right: 10, left: -10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+              <Tooltip formatter={(v: number) => [`₹${v.toLocaleString("en-IN")}`, "Revenue"]} />
+              <Line type="monotone" dataKey="revenue" stroke="#2a6641" strokeWidth={2.5} dot={{ fill: "#2a6641", r: 4 }} name="Revenue" />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Booking detail modal ─────────────────────────────────────────────────────
+
+function BookingDetailModal({ booking, onClose }: { booking: Booking; onClose: () => void }) {
+  const service = typeof booking.serviceId === "object" ? (booking.serviceId as ServiceItem) : undefined;
+  const customer = typeof booking.customerId === "object" ? booking.customerId : undefined;
+  const technician = typeof booking.technicianId === "object" ? booking.technicianId : undefined;
+
+  return (
+    <Dialog open onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-3">
+            {booking.bookingNumber}
+            <StatusBadge status={booking.status} />
+          </DialogTitle>
+          <DialogDescription>{service?.name ?? "Service"}</DialogDescription>
+        </DialogHeader>
+
+        <div className="grid md:grid-cols-2 gap-4 text-sm">
+          {/* Customer */}
+          <section className="rounded-lg border border-border p-4 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-2">Customer</p>
+            <p><span className="text-text-muted">Name:</span> {customer?.name ?? "—"}</p>
+            <p><span className="text-text-muted">Email:</span> {customer?.email ?? "—"}</p>
+            <p><span className="text-text-muted">Phone:</span> {customer?.phone ?? "—"}</p>
+          </section>
+
+          {/* Service + Schedule */}
+          <section className="rounded-lg border border-border p-4 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-2">Details</p>
+            <p><span className="text-text-muted">Service:</span> {service?.name ?? "—"}</p>
+            <p><span className="text-text-muted">Scheduled:</span> {booking.scheduledDate ? new Date(booking.scheduledDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"} {booking.timeSlot ? `(${booking.timeSlot})` : ""}</p>
+            <p><span className="text-text-muted">Property:</span> {booking.propertyType ?? "—"}</p>
+            {booking.areaSize && <p><span className="text-text-muted">Area:</span> {booking.areaSize} sq ft</p>}
+          </section>
+
+          {/* Address */}
+          <section className="rounded-lg border border-border p-4 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-2">Address</p>
+            {booking.address ? (
+              <>
+                {booking.address.line1 && <p>{booking.address.line1}</p>}
+                {booking.address.line2 && <p>{booking.address.line2}</p>}
+                <p>{[booking.address.city, booking.address.state, booking.address.pincode].filter(Boolean).join(", ") || "—"}</p>
+                {booking.address.landmark && <p className="text-text-muted">Near: {booking.address.landmark}</p>}
+              </>
+            ) : <p className="text-text-muted">No address provided</p>}
+          </section>
+
+          {/* Technician + Payment */}
+          <section className="rounded-lg border border-border p-4 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-2">Assignment & Payment</p>
+            <p><span className="text-text-muted">Technician:</span> {technician?.name ?? "Not assigned"}</p>
+            <p><span className="text-text-muted">Price:</span> {booking.price ? `₹${booking.price.toLocaleString("en-IN")}` : "—"}</p>
+            <p><span className="text-text-muted">Payment:</span> <span className="capitalize">{booking.paymentStatus}</span></p>
+            {booking.emergency && <p className="text-danger font-medium">⚡ Emergency request</p>}
+          </section>
+        </div>
+
+        {/* Notes */}
+        {booking.notes && (
+          <section className="rounded-lg border border-border p-4 text-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-2">Notes</p>
+            <p>{booking.notes}</p>
+          </section>
+        )}
+
+        {/* Status history */}
+        {booking.statusHistory?.length > 0 && (
+          <section className="rounded-lg border border-border p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted mb-3">Status History</p>
+            <BookingTimeline history={booking.statusHistory} />
+          </section>
+        )}
+
+        <div className="flex justify-end pt-2">
+          <Link href={`/bookings/${booking._id}`}>
+            <Button variant="outline" size="sm">Open Full Page</Button>
+          </Link>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─── Bookings tab (with filters + modal) ─────────────────────────────────────
+
 function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
   const { getToken } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+
+  // Filters
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [serviceFilter, setServiceFilter] = useState<string>("all");
+  const [technicianFilter, setTechnicianFilter] = useState<string>("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   async function loadBookings() {
     setLoading(true);
     try {
       const token = await getToken();
-      const data = await apiFetch<Booking[]>("/bookings", { token });
-      setBookings(data);
+      const [bData, sData] = await Promise.all([
+        apiFetch<Booking[]>("/bookings", { token }),
+        apiFetch<ServiceItem[]>("/services"),
+      ]);
+      setBookings(bData);
+      setServices(sData);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load bookings");
     } finally {
@@ -112,11 +299,7 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
 
   async function updateStatus(id: string, status: BookingStatus) {
     const token = await getToken();
-    await apiFetch(`/bookings/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-      token,
-    });
+    await apiFetch(`/bookings/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }), token });
     loadBookings();
   }
 
@@ -130,83 +313,195 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
     loadBookings();
   }
 
-  if (loading) return <p className="p-6 text-text-muted">Loading bookings...</p>;
-  if (error) return <p className="p-6 text-danger" data-testid="text-error">{error}</p>;
+  // Client-side filtering
+  const filtered = useMemo(() => {
+    return bookings.filter((b) => {
+      const customer = typeof b.customerId === "object" ? b.customerId : undefined;
+      const service = typeof b.serviceId === "object" ? b.serviceId : undefined;
+      const technician = typeof b.technicianId === "object" ? b.technicianId : undefined;
 
-  // Only technicians with a linked User can be assigned to bookings
+      if (search) {
+        const q = search.toLowerCase();
+        const match =
+          b.bookingNumber.toLowerCase().includes(q) ||
+          customer?.name.toLowerCase().includes(q) ||
+          customer?.email?.toLowerCase().includes(q);
+        if (!match) return false;
+      }
+      if (statusFilter !== "all" && b.status !== statusFilter) return false;
+      if (serviceFilter !== "all" && service?._id !== serviceFilter) return false;
+      if (technicianFilter !== "all" && technician?._id !== technicianFilter) return false;
+      if (dateFrom) {
+        const d = b.scheduledDate ? new Date(b.scheduledDate) : null;
+        if (!d || d < new Date(dateFrom)) return false;
+      }
+      if (dateTo) {
+        const d = b.scheduledDate ? new Date(b.scheduledDate) : null;
+        const to = new Date(dateTo);
+        to.setHours(23, 59, 59, 999);
+        if (!d || d > to) return false;
+      }
+      return true;
+    });
+  }, [bookings, search, statusFilter, serviceFilter, technicianFilter, dateFrom, dateTo]);
+
   const assignable = technicians.filter((t) => t.userId && t.status === "active");
 
+  if (loading) {
+    return (
+      <div className="p-6 space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-10 rounded bg-muted animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+  if (error) return <p className="p-6 text-danger" data-testid="text-error">{error}</p>;
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Booking</TableHead>
-          <TableHead>Customer</TableHead>
-          <TableHead>Service</TableHead>
-          <TableHead>Scheduled</TableHead>
-          <TableHead>Technician</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {bookings.map((b) => {
-          const customer = typeof b.customerId === "object" ? b.customerId : undefined;
-          const service = typeof b.serviceId === "object" ? b.serviceId : undefined;
-          const technician = typeof b.technicianId === "object" ? b.technicianId : undefined;
-          return (
-            <TableRow key={b._id} data-testid={`row-booking-${b._id}`}>
-              <TableCell>
-                <Link href={`/bookings/${b._id}`} className="text-primary hover:underline text-sm">
-                  {b.bookingNumber}
-                </Link>
-              </TableCell>
-              <TableCell>{customer?.name ?? "—"}</TableCell>
-              <TableCell>{service?.name ?? "—"}</TableCell>
-              <TableCell>{b.scheduledDate ? new Date(b.scheduledDate).toLocaleDateString() : "—"}</TableCell>
-              <TableCell>
-                <Select
-                  value={technician?._id ?? ""}
-                  onValueChange={(v) => assignTechnician(b._id, v)}
-                >
-                  <SelectTrigger className="w-[150px]" data-testid={`select-technician-${b._id}`}>
-                    <SelectValue placeholder="Assign" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {assignable.map((t) => (
-                      <SelectItem key={t._id} value={t.userId!._id}>
-                        {t.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={b.status} />
+    <div className="space-y-3">
+      {/* Filters */}
+      <div className="p-4 border-b border-border space-y-3">
+        <div className="flex flex-wrap gap-3">
+          <Input
+            placeholder="Search booking # or customer..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-xs"
+            data-testid="input-bookings-search"
+          />
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[160px]" data-testid="select-filter-status">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={serviceFilter} onValueChange={setServiceFilter}>
+            <SelectTrigger className="w-[160px]" data-testid="select-filter-service">
+              <SelectValue placeholder="All services" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Services</SelectItem>
+              {services.map((s) => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={technicianFilter} onValueChange={setTechnicianFilter}>
+            <SelectTrigger className="w-[160px]" data-testid="select-filter-technician">
+              <SelectValue placeholder="All technicians" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Technicians</SelectItem>
+              {assignable.map((t) => <SelectItem key={t._id} value={t.userId!._id}>{t.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex items-center gap-2 text-sm text-text-muted">
+            <Label className="text-xs">From</Label>
+            <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-36 h-8 text-xs" data-testid="input-filter-date-from" />
+          </div>
+          <div className="flex items-center gap-2 text-sm text-text-muted">
+            <Label className="text-xs">To</Label>
+            <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-36 h-8 text-xs" data-testid="input-filter-date-to" />
+          </div>
+          {(search || statusFilter !== "all" || serviceFilter !== "all" || technicianFilter !== "all" || dateFrom || dateTo) && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => { setSearch(""); setStatusFilter("all"); setServiceFilter("all"); setTechnicianFilter("all"); setDateFrom(""); setDateTo(""); }}
+            >
+              Clear Filters
+            </Button>
+          )}
+          <span className="text-xs text-text-muted ml-auto">{filtered.length} / {bookings.length} bookings</span>
+        </div>
+      </div>
+
+      {/* Table */}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Booking</TableHead>
+            <TableHead>Customer</TableHead>
+            <TableHead>Service</TableHead>
+            <TableHead>Scheduled</TableHead>
+            <TableHead>Technician</TableHead>
+            <TableHead>Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.map((b) => {
+            const customer = typeof b.customerId === "object" ? b.customerId : undefined;
+            const service = typeof b.serviceId === "object" ? b.serviceId : undefined;
+            const technician = typeof b.technicianId === "object" ? b.technicianId : undefined;
+            return (
+              <TableRow
+                key={b._id}
+                className="cursor-pointer hover:bg-secondary/30"
+                data-testid={`row-booking-${b._id}`}
+                onClick={(e) => {
+                  // Don't open modal when clicking interactive elements
+                  if ((e.target as HTMLElement).closest("button,select,[role='combobox']")) return;
+                  setSelectedBooking(b);
+                }}
+              >
+                <TableCell>
+                  <span className="text-primary font-mono text-sm">{b.bookingNumber}</span>
+                </TableCell>
+                <TableCell>{customer?.name ?? "—"}</TableCell>
+                <TableCell>{service?.name ?? "—"}</TableCell>
+                <TableCell>{b.scheduledDate ? new Date(b.scheduledDate).toLocaleDateString() : "—"}</TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <Select value={technician?._id ?? ""} onValueChange={(v) => assignTechnician(b._id, v)}>
+                    <SelectTrigger className="w-[140px]" data-testid={`select-technician-${b._id}`}>
+                      <SelectValue placeholder="Assign" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {assignable.map((t) => (
+                        <SelectItem key={t._id} value={t.userId!._id}>{t.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select value={b.status} onValueChange={(v) => updateStatus(b._id, v as BookingStatus)}>
                     <SelectTrigger className="w-[150px]" data-testid={`select-status-${b._id}`}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {STATUS_OPTIONS.map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
+                      {STATUS_OPTIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+          {filtered.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center text-text-muted py-10">
+                {bookings.length === 0 ? (
+                  <span>No bookings yet.</span>
+                ) : (
+                  <span>No bookings match the current filters.</span>
+                )}
               </TableCell>
             </TableRow>
-          );
-        })}
-        {bookings.length === 0 && (
-          <TableRow>
-            <TableCell colSpan={6} className="text-center text-text-muted py-8">No bookings yet.</TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+          )}
+        </TableBody>
+      </Table>
+
+      {/* Booking detail modal */}
+      {selectedBooking && (
+        <BookingDetailModal booking={selectedBooking} onClose={() => setSelectedBooking(null)} />
+      )}
+    </div>
   );
 }
+
+// ─── Customers tab ────────────────────────────────────────────────────────────
 
 function CustomersTab() {
   const { getToken } = useAuth();
@@ -225,7 +520,11 @@ function CustomersTab() {
     })();
   }, []);
 
-  if (loading) return <p className="p-6 text-text-muted">Loading customers...</p>;
+  if (loading) return (
+    <div className="p-6 space-y-3">
+      {[1, 2, 3].map((i) => <div key={i} className="h-10 rounded bg-muted animate-pulse" />)}
+    </div>
+  );
 
   return (
     <Table>
@@ -246,13 +545,20 @@ function CustomersTab() {
         ))}
         {customers.length === 0 && (
           <TableRow>
-            <TableCell colSpan={3} className="text-center text-text-muted py-8">No customers yet.</TableCell>
+            <TableCell colSpan={3} className="text-center text-text-muted py-10">
+              <div>
+                <p className="text-base font-medium">No customers yet</p>
+                <p className="text-sm mt-1">Customers will appear here once they sign up and make a booking.</p>
+              </div>
+            </TableCell>
           </TableRow>
         )}
       </TableBody>
     </Table>
   );
 }
+
+// ─── Technicians tab (full CRUD — unchanged) ──────────────────────────────────
 
 function TechniciansTab({
   technicians,
@@ -268,29 +574,18 @@ function TechniciansTab({
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
-  function openAdd() {
-    setForm(EMPTY_FORM);
-    setAddOpen(true);
-  }
-
+  function openAdd() { setForm(EMPTY_FORM); setAddOpen(true); }
   function openEdit(t: TechnicianRecord) {
     setForm({
-      name: t.name,
-      email: t.email,
-      phone: t.phone ?? "",
+      name: t.name, email: t.email, phone: t.phone ?? "",
       specialization: t.specialization ?? "",
       experience: t.experience !== undefined ? String(t.experience) : "",
-      city: t.city ?? "",
-      profileImage: t.profileImage ?? "",
+      city: t.city ?? "", profileImage: t.profileImage ?? "",
       specialties: t.specialties?.join(", ") ?? "",
     });
     setEditTarget(t);
   }
-
-  function closeDialogs() {
-    setAddOpen(false);
-    setEditTarget(null);
-  }
+  function closeDialogs() { setAddOpen(false); setEditTarget(null); }
 
   async function handleSave() {
     if (!form.name.trim() || !form.email.trim()) {
@@ -301,40 +596,25 @@ function TechniciansTab({
     try {
       const token = await getToken();
       const body = {
-        name: form.name.trim(),
-        email: form.email.trim(),
+        name: form.name.trim(), email: form.email.trim(),
         phone: form.phone.trim() || undefined,
         specialization: form.specialization.trim() || undefined,
         experience: form.experience ? Number(form.experience) : undefined,
         city: form.city.trim() || undefined,
         profileImage: form.profileImage.trim() || undefined,
-        specialties: form.specialties
-          ? form.specialties.split(",").map((s) => s.trim()).filter(Boolean)
-          : [],
+        specialties: form.specialties ? form.specialties.split(",").map((s) => s.trim()).filter(Boolean) : [],
       };
       if (editTarget) {
-        await apiFetch(`/admin/technicians/${editTarget._id}`, {
-          method: "PATCH",
-          body: JSON.stringify(body),
-          token,
-        });
+        await apiFetch(`/admin/technicians/${editTarget._id}`, { method: "PATCH", body: JSON.stringify(body), token });
         toast({ title: "Technician updated" });
       } else {
-        await apiFetch("/admin/technicians", {
-          method: "POST",
-          body: JSON.stringify(body),
-          token,
-        });
+        await apiFetch("/admin/technicians", { method: "POST", body: JSON.stringify(body), token });
         toast({ title: "Technician added" });
       }
       closeDialogs();
       onRefresh();
     } catch (err) {
-      toast({
-        title: editTarget ? "Update failed" : "Add failed",
-        description: err instanceof Error ? err.message : undefined,
-        variant: "destructive",
-      });
+      toast({ title: editTarget ? "Update failed" : "Add failed", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -350,11 +630,7 @@ function TechniciansTab({
       setDeleteTarget(null);
       onRefresh();
     } catch (err) {
-      toast({
-        title: "Delete failed",
-        description: err instanceof Error ? err.message : undefined,
-        variant: "destructive",
-      });
+      toast({ title: "Delete failed", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -367,11 +643,7 @@ function TechniciansTab({
       toast({ title: t.status === "active" ? "Technician deactivated" : "Technician activated" });
       onRefresh();
     } catch (err) {
-      toast({
-        title: "Status update failed",
-        description: err instanceof Error ? err.message : undefined,
-        variant: "destructive",
-      });
+      toast({ title: "Status update failed", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
     }
   }
 
@@ -415,11 +687,8 @@ function TechniciansTab({
   return (
     <>
       <div className="flex justify-end p-3 border-b border-border">
-        <Button size="sm" onClick={openAdd} data-testid="button-add-technician">
-          + Add Technician
-        </Button>
+        <Button size="sm" onClick={openAdd} data-testid="button-add-technician">+ Add Technician</Button>
       </div>
-
       <Table>
         <TableHeader>
           <TableRow>
@@ -445,50 +714,29 @@ function TechniciansTab({
               <TableCell>{t.experience !== undefined ? `${t.experience}y` : "—"}</TableCell>
               <TableCell>{t.rating > 0 ? `${t.rating.toFixed(1)} ★` : "—"}</TableCell>
               <TableCell>
-                <span
-                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                    t.status === "active"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-100 text-gray-500"
-                  }`}
-                >
+                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${t.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
                   {t.status}
                 </span>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openEdit(t)}
-                    data-testid={`button-edit-technician-${t._id}`}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleToggleStatus(t)}
-                    data-testid={`button-toggle-technician-${t._id}`}
-                  >
+                  <Button size="sm" variant="outline" onClick={() => openEdit(t)} data-testid={`button-edit-technician-${t._id}`}>Edit</Button>
+                  <Button size="sm" variant="outline" onClick={() => handleToggleStatus(t)} data-testid={`button-toggle-technician-${t._id}`}>
                     {t.status === "active" ? "Deactivate" : "Activate"}
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => setDeleteTarget(t)}
-                    data-testid={`button-delete-technician-${t._id}`}
-                  >
-                    Delete
-                  </Button>
+                  <Button size="sm" variant="destructive" onClick={() => setDeleteTarget(t)} data-testid={`button-delete-technician-${t._id}`}>Delete</Button>
                 </div>
               </TableCell>
             </TableRow>
           ))}
           {technicians.length === 0 && (
             <TableRow>
-              <TableCell colSpan={9} className="text-center text-text-muted py-8">
-                No technicians yet. Click &quot;Add Technician&quot; to get started.
+              <TableCell colSpan={9} className="text-center py-10">
+                <div>
+                  <p className="text-base font-medium text-text-muted">No technicians yet</p>
+                  <p className="text-sm text-text-muted mt-1">Click &quot;Add Technician&quot; to get started.</p>
+                  <Button size="sm" className="mt-4" onClick={openAdd}>+ Add First Technician</Button>
+                </div>
               </TableCell>
             </TableRow>
           )}
@@ -503,12 +751,12 @@ function TechniciansTab({
             <DialogDescription>Fill in the technician's details. They can register via Clerk later.</DialogDescription>
           </DialogHeader>
           {formFields}
-          <DialogFooter>
+          <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" onClick={closeDialogs}>Cancel</Button>
             <Button onClick={handleSave} disabled={saving} data-testid="button-confirm-add-technician">
               {saving ? "Saving..." : "Add Technician"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -520,12 +768,12 @@ function TechniciansTab({
             <DialogDescription>Update the technician's profile details.</DialogDescription>
           </DialogHeader>
           {formFields}
-          <DialogFooter>
+          <div className="flex justify-end gap-2 pt-2">
             <Button variant="outline" onClick={closeDialogs}>Cancel</Button>
             <Button onClick={handleSave} disabled={saving} data-testid="button-confirm-edit-technician">
               {saving ? "Saving..." : "Save Changes"}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -555,6 +803,8 @@ function TechniciansTab({
   );
 }
 
+// ─── Reviews tab ──────────────────────────────────────────────────────────────
+
 function ReviewsTab() {
   const { getToken } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -572,7 +822,11 @@ function ReviewsTab() {
     })();
   }, []);
 
-  if (loading) return <p className="p-6 text-text-muted">Loading reviews...</p>;
+  if (loading) return (
+    <div className="p-6 space-y-3">
+      {[1, 2, 3].map((i) => <div key={i} className="h-16 rounded bg-muted animate-pulse" />)}
+    </div>
+  );
 
   return (
     <div className="space-y-3 p-2">
@@ -590,25 +844,38 @@ function ReviewsTab() {
           </div>
         );
       })}
-      {reviews.length === 0 && <p className="text-center text-text-muted py-8">No reviews yet.</p>}
+      {reviews.length === 0 && (
+        <div className="py-12 text-center">
+          <p className="text-lg font-medium text-text-muted">No reviews yet</p>
+          <p className="text-sm text-text-muted mt-1">Customer reviews will appear here once services are completed.</p>
+        </div>
+      )}
     </div>
   );
 }
+
+// ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function DashboardAdmin() {
   const { getToken } = useAuth();
   const { user, loading: userLoading } = useUserContext();
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [technicians, setTechnicians] = useState<TechnicianRecord[]>([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   async function loadData() {
-    const token = await getToken();
-    const [a, t] = await Promise.all([
-      apiFetch<AdminAnalytics>("/admin/analytics", { token }),
-      apiFetch<TechnicianRecord[]>("/admin/technicians", { token }),
-    ]);
-    setAnalytics(a);
-    setTechnicians(t);
+    setAnalyticsLoading(true);
+    try {
+      const token = await getToken();
+      const [a, t] = await Promise.all([
+        apiFetch<AdminAnalytics>("/admin/analytics", { token }),
+        apiFetch<TechnicianRecord[]>("/admin/technicians", { token }),
+      ]);
+      setAnalytics(a);
+      setTechnicians(t);
+    } finally {
+      setAnalyticsLoading(false);
+    }
   }
 
   useEffect(() => { loadData(); }, []);
@@ -625,11 +892,22 @@ export default function DashboardAdmin() {
       </header>
 
       <div className="space-y-6">
-        {analytics && <AnalyticsCards analytics={analytics} />}
+        {/* Analytics cards */}
+        {analyticsLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div key={i} className="rounded-xl border border-border bg-card p-4 h-20 animate-pulse" />
+            ))}
+          </div>
+        ) : analytics ? (
+          <AnalyticsCards analytics={analytics} />
+        ) : null}
+
+        {/* Management tabs */}
         <div className="rounded-xl border border-border bg-card shadow-sm">
           <div className="p-6 border-b border-border">
             <h3>Admin Overview</h3>
-            <p className="mt-1 text-sm text-text-muted">Manage bookings, customers, technicians, and reviews.</p>
+            <p className="mt-1 text-sm text-text-muted">Manage bookings, customers, technicians, reviews, and analytics.</p>
           </div>
           <Tabs defaultValue="bookings" className="p-4">
             <TabsList>
@@ -637,6 +915,7 @@ export default function DashboardAdmin() {
               <TabsTrigger value="customers" data-testid="tab-admin-customers">Customers</TabsTrigger>
               <TabsTrigger value="technicians" data-testid="tab-admin-technicians">Technicians</TabsTrigger>
               <TabsTrigger value="reviews" data-testid="tab-admin-reviews">Reviews</TabsTrigger>
+              <TabsTrigger value="charts" data-testid="tab-admin-charts">Charts</TabsTrigger>
             </TabsList>
             <TabsContent value="bookings">
               <BookingsTab technicians={technicians} />
@@ -649,6 +928,17 @@ export default function DashboardAdmin() {
             </TabsContent>
             <TabsContent value="reviews">
               <ReviewsTab />
+            </TabsContent>
+            <TabsContent value="charts" className="pt-2">
+              {analytics ? (
+                <ChartsSection analytics={analytics} />
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="rounded-xl border border-border bg-card p-5 h-48 animate-pulse" />
+                  ))}
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

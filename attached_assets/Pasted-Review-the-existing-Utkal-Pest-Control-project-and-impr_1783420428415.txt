@@ -1,0 +1,81 @@
+Review the existing Utkal Pest Control project and improve it without changing the current design theme or adding unnecessary features.
+
+Please implement only the following improvements:
+
+1. Fix the Admin Dashboard statistics so Total Revenue, Total Technicians, Total Customers, and Booking Counts are calculated dynamically from the database instead of hardcoded values.
+
+2. Improve the Technician Dashboard by displaying:
+   - Assigned Jobs
+   - Pending Jobs
+   - Completed Jobs
+   - Today's Schedule
+   Show meaningful empty-state cards when no jobs are assigned.
+
+3. Improve the Customer Dashboard by adding summary cards:
+   - Total Bookings
+   - Pending Services
+   - Completed Services
+   - Last Service Date
+
+4. Add a booking progress tracker visible to customers showing:
+   Booking Submitted → Technician Assigned → Scheduled → In Progress → Completed.
+
+5. Make the notification bell functional by displaying booking-related notifications such as technician assignment, status updates, and completed services.
+
+6. Add a Profile page where users can:
+   - View/Edit profile
+   - Change password
+   - Update phone number and address
+   - Logout
+
+7. Improve the Admin Bookings table by adding:
+   - Search
+   - Filter by Status
+   - Filter by Service
+   - Filter by Technician
+   - Filter by Date
+
+8. Allow clicking a booking to open a detailed modal showing:
+   - Customer information
+   - Address
+   - Notes
+   - Assigned technician
+   - Service details
+   - Status history
+
+9. Add loading indicators (skeleton loaders or spinners) for API requests and page loading.
+
+10. Improve empty-state screens with user-friendly messages and call-to-action buttons instead of plain text.
+
+11. Add complete client-side and server-side validation for booking forms:
+   - Required fields
+   - Valid phone number
+   - Valid pincode
+   - Future booking dates
+   - Clear validation messages
+
+12. After successful booking, display a confirmation page/card containing:
+   - Booking ID
+   - Booking summary
+   - Success message
+
+13. Calculate Total Revenue dynamically using completed bookings and display:
+   - Today's Revenue
+   - Monthly Revenue
+   - Average Booking Value
+
+14. Add professional dashboard charts using the existing UI theme:
+   - Monthly Bookings
+   - Revenue Trend
+   - Booking Status Distribution
+
+15. Improve the homepage by adding:
+   - Customer Testimonials
+   - Why Choose Us icons
+   - How It Works (Book → Visit → Treatment → Follow-up)
+
+Important:
+- Do NOT redesign the application.
+- Keep the current color palette and layout.
+- Do NOT add AI chatbot, payment gateway, maps, SMS, email verification, inventory management, invoices, or other unnecessary features.
+- Maintain clean code, responsive design, and existing project architecture.

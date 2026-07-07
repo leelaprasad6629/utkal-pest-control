@@ -53,9 +53,18 @@ router.get("/me", requireAuth, async (req, res): Promise<void> => {
   res.json(user);
 });
 
+const AddressInput = z.object({
+  line1: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  pincode: z.string().optional(),
+  landmark: z.string().optional(),
+});
+
 const UpdateMeInput = z.object({
   phone: z.string().optional(),
   name: z.string().min(1).optional(),
+  address: AddressInput.optional(),
 });
 
 router.patch("/me", requireAuth, async (req, res): Promise<void> => {
@@ -86,6 +95,15 @@ router.patch("/me", requireAuth, async (req, res): Promise<void> => {
 
   if (parsed.data.phone !== undefined) user.phone = parsed.data.phone;
   if (parsed.data.name !== undefined) user.name = parsed.data.name;
+  if (parsed.data.address !== undefined) {
+    if (user.addresses.length > 0) {
+      // Update primary address in-place
+      Object.assign(user.addresses[0], parsed.data.address);
+      user.markModified("addresses");
+    } else {
+      user.addresses.push(parsed.data.address as typeof user.addresses[0]);
+    }
+  }
   await user.save();
 
   res.json(user);
