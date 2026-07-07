@@ -8,6 +8,17 @@ interface ApiFetchOptions extends RequestInit {
   token?: string | null;
 }
 
+export class ApiError extends Error {
+  constructor(
+    public readonly statusCode: number,
+    public readonly code: string | undefined,
+    message: string,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   const { token, headers, ...rest } = options;
   const res = await fetch(apiUrl(path), {
@@ -21,7 +32,11 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(body.error ?? `Request failed with status ${res.status}`);
+    throw new ApiError(
+      res.status,
+      body.code as string | undefined,
+      body.error ?? `Request failed with status ${res.status}`,
+    );
   }
 
   if (res.status === 204) {

@@ -1,0 +1,66 @@
+You are working on an existing React + Next.js + TypeScript + Clerk + Prisma + PostgreSQL Pest Control Management System.
+
+Do NOT redesign the UI or change styling. Only fix backend logic, database relationships, and data flow.
+
+Tasks:
+
+1. Fix Technician Assignment
+- When admin assigns a technician, save technicianId in the Booking table.
+- Technician Dashboard should fetch bookings where booking.technicianId == logged-in technician.
+- Dashboard cards (Assigned, Pending, Completed, Today's Schedule) must use real database data.
+
+2. Fix Clerk Mapping
+- Map logged-in technician using Clerk email.
+- Find Technician by email.
+- If no technician exists, show "No technician profile found. Contact administrator."
+
+3. Remove Fake Data
+- Remove all seed/demo/mock/sample customers, technicians, bookings, reviews, analytics, and hardcoded arrays.
+- Delete existing fake records from the database.
+- Only display real data created by users or admins.
+
+4. Replace Mock Data
+Search and remove:
+- mockData
+- dummyData
+- seedData
+- sampleData
+- fakeUsers
+- fixtures
+- hardcoded arrays
+
+Replace everything with Prisma queries.
+
+5. Admin Dashboard
+Calculate all statistics from PostgreSQL:
+- Total Bookings
+- Pending
+- Completed
+- Cancelled
+- Customers
+- Active Technicians
+- Revenue (completed & paid bookings only)
+
+6. Technician Dashboard
+Show only assigned jobs with:
+- Booking ID
+- Customer
+- Phone
+- Address
+- Service
+- Date
+- Status
+- Notes
+
+Allow technician to Start Job, Update Status, and Complete Job.
+
+7. Auto Refresh
+After every create, update, delete, or assignment, refresh data automatically without requiring a page reload.
+
+8. Verify Database Relationships
+Ensure Booking, Technician, Customer, Review, and Service relations are correctly implemented using Prisma foreign keys.
+
+Finally, test the complete workflow:
+Create Technician → Technician Login → Create Customer → Create Booking → Assign Technician → Technician Dashboard Shows Job → Update Status → Complete Job → Dashboard Statistics Update.
+
+Do not stop until the complete workflow works correctly using only real PostgreSQL data.

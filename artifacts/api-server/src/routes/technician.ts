@@ -13,6 +13,35 @@ async function requireTechnician(clerkUserId?: string) {
   return user;
 }
 
+/**
+ * GET /technician/profile
+ * Returns the Technician record linked to the logged-in user.
+ * 404 if no Technician record exists — frontend uses this to show the
+ * "No technician profile found. Contact administrator." guard.
+ */
+router.get("/technician/profile", requireAuth, async (req, res): Promise<void> => {
+  await dbConnect();
+  const user = await User.findOne({ clerkId: req.clerkUserId });
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+  if (user.role !== "technician") {
+    res.status(403).json({ error: "Not a technician account" });
+    return;
+  }
+  const { Technician } = await import("../models");
+  const profile = await Technician.findOne({ userId: user._id }).lean();
+  if (!profile) {
+    res.status(404).json({
+      code: "NO_TECHNICIAN_PROFILE",
+      error: "No technician profile found. Contact administrator.",
+    });
+    return;
+  }
+  res.json(profile);
+});
+
 router.get("/technician/jobs", requireAuth, async (req, res): Promise<void> => {
   await dbConnect();
   const tech = await requireTechnician(req.clerkUserId);
@@ -28,6 +57,45 @@ router.get("/technician/jobs", requireAuth, async (req, res): Promise<void> => {
   res.json(jobs);
 });
 
+/**
+ * POST /technician/jobs/:id/en-route
+ * Moves a booking from technician-assigned/confirmed → en-route.
+ * This is the intermediate "Update Status" step the spec requires.
+ */
+router.post("/technician/jobs/:id/en-route", requireAuth, async (req, res): Promise<void> => {
+  await dbConnect();
+  const tech = await requireTechnician(req.clerkUserId);
+  if (!tech) {
+    res.status(403).json({ error: "Technician access required" });
+    return;
+  }
+  const booking = await Booking.findOne({ _id: req.params.id, technicianId: tech._id });
+  if (!booking) {
+    res.status(404).json({ error: "Job not found" });
+    return;
+  }
+  // Only allow from technician-assigned (the canonical post-assignment state)
+  if (booking.status !== "technician-assigned") {
+    res.status(400).json({
+      error: `Cannot mark en-route from status "${booking.status}". Must be "technician-assigned".`,
+    });
+    return;
+  }
+  booking.status = "en-route";
+  booking.statusHistory.push({ status: "en-route", changedBy: tech._id, changedAt: new Date() });
+  await booking.save();
+
+  await createNotification({
+    userId: booking.customerId as never,
+    type: "status_update",
+    title: "Technician en route",
+    message: `Your technician is on the way for booking ${booking.bookingNumber}.`,
+    relatedBookingId: booking._id,
+  });
+
+  res.json(booking);
+});
+
 router.post("/technician/jobs/:id/start", requireAuth, async (req, res): Promise<void> => {
   await dbConnect();
   const tech = await requireTechnician(req.clerkUserId);
@@ -38,6 +106,12 @@ router.post("/technician/jobs/:id/start", requireAuth, async (req, res): Promise
   const booking = await Booking.findOne({ _id: req.params.id, technicianId: tech._id });
   if (!booking) {
     res.status(404).json({ error: "Job not found" });
+    return;
+  }
+  if (booking.status !== "en-route") {
+    res.status(400).json({
+      error: `Cannot start job from status "${booking.status}". Must be "en-route". Mark yourself en-route first.`,
+    });
     return;
   }
   booking.status = "in-progress";
@@ -78,6 +152,12 @@ router.post("/technician/jobs/:id/complete", requireAuth, async (req, res): Prom
   const booking = await Booking.findOne({ _id: req.params.id, technicianId: tech._id });
   if (!booking) {
     res.status(404).json({ error: "Job not found" });
+    return;
+  }
+  if (booking.status !== "in-progress") {
+    res.status(400).json({
+      error: `Cannot complete job from status "${booking.status}". Must be "in-progress". Start the job first.`,
+    });
     return;
   }
 

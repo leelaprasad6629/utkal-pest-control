@@ -43,7 +43,33 @@ router.get("/me", requireAuth, async (req, res): Promise<void> => {
       }
     }
     const role = clerkRole ?? "customer";
-    user = await User.create({ name, email, clerkId: req.clerkUserId, role });
+
+    // Normalize email for case-insensitive dedup.
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // If admin pre-created a User with this email (e.g. when adding a technician),
+    // atomically link the Clerk ID to that existing record instead of creating a duplicate.
+    // We only match records that have no clerkId yet to avoid collisions with existing sessions.
+    if (!normalizedEmail.endsWith("@placeholder.local")) {
+      const linked = await User.findOneAndUpdate(
+        { email: normalizedEmail, clerkId: { $exists: false } },
+        { $set: { clerkId: req.clerkUserId!, ...(role ? { role } : {}) } },
+        { new: true },
+      );
+      if (linked) {
+        user = linked;
+      }
+    }
+
+    if (!user) {
+      // No pre-existing record — create fresh. Use normalizedEmail for consistency.
+      user = await User.create({
+        name,
+        email: normalizedEmail,
+        clerkId: req.clerkUserId,
+        role,
+      });
+    }
   } else if (clerkRole && user.role !== clerkRole) {
     // Clerk is the source of truth — sync the role whenever it drifts
     user.role = clerkRole;

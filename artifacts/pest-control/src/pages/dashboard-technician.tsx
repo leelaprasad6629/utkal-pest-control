@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import type { Booking, ServiceItem } from "@/lib/types";
 import StatusBadge from "@/components/status-badge";
 import { toast } from "@/hooks/use-toast";
@@ -104,20 +104,46 @@ function JobCard({ booking, onAction }: { booking: Booking; onAction: () => void
   const { getToken } = useAuth();
   const customer = typeof booking.customerId === "object" ? booking.customerId : undefined;
   const service = typeof booking.serviceId === "object" ? (booking.serviceId as ServiceItem) : undefined;
+  const [acting, setActing] = useState(false);
+
+  async function markEnRoute() {
+    setActing(true);
+    try {
+      const token = await getToken();
+      await apiFetch(`/technician/jobs/${booking._id}/en-route`, { method: "POST", token });
+      toast({ title: "Status updated to En Route" });
+      onAction();
+    } catch (err) {
+      toast({ title: "Could not update status", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
+    } finally {
+      setActing(false);
+    }
+  }
 
   async function startJob() {
-    const token = await getToken();
-    await apiFetch(`/technician/jobs/${booking._id}/start`, { method: "POST", token });
-    onAction();
+    setActing(true);
+    try {
+      const token = await getToken();
+      await apiFetch(`/technician/jobs/${booking._id}/start`, { method: "POST", token });
+      toast({ title: "Job started" });
+      onAction();
+    } catch (err) {
+      toast({ title: "Could not start job", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
+    } finally {
+      setActing(false);
+    }
   }
 
   const isToday = booking.scheduledDate
     ? new Date(booking.scheduledDate).toDateString() === new Date().toDateString()
     : false;
 
+  const canMarkEnRoute = booking.status === "technician-assigned";
+  const canStart = booking.status === "en-route";
+  const canComplete = booking.status === "in-progress";
+
   return (
     <div
-      key={booking._id}
       className={`rounded-xl border ${isToday ? "border-primary/50 bg-primary/5" : "border-border bg-card"} p-5 shadow-sm`}
       data-testid={`card-job-${booking._id}`}
     >
@@ -135,22 +161,40 @@ function JobCard({ booking, onAction }: { booking: Booking; onAction: () => void
         </div>
         <StatusBadge status={booking.status} />
       </div>
+
+      {/* Job details */}
       <div className="mt-3 text-sm text-text-muted space-y-1">
-        <p>{[booking.address?.line1, booking.address?.city, booking.address?.pincode].filter(Boolean).join(", ") || "—"}</p>
+        <p><span className="font-medium text-foreground/70">Address:</span> {[booking.address?.line1, booking.address?.city, booking.address?.pincode].filter(Boolean).join(", ") || "—"}</p>
         <p>
+          <span className="font-medium text-foreground/70">Date:</span>{" "}
           {booking.scheduledDate ? new Date(booking.scheduledDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}
           {booking.timeSlot && ` · ${booking.timeSlot}`}
         </p>
-        {customer?.phone && <p>Contact: {customer.phone}</p>}
-        {booking.notes && <p>Notes: {booking.notes}</p>}
+        {customer?.phone && <p><span className="font-medium text-foreground/70">Contact:</span> {customer.phone}</p>}
+        {booking.notes && <p><span className="font-medium text-foreground/70">Notes:</span> {booking.notes}</p>}
+        {booking.price && <p><span className="font-medium text-foreground/70">Value:</span> ₹{booking.price.toLocaleString("en-IN")}</p>}
       </div>
-      <div className="mt-4 flex gap-2">
-        {(booking.status === "technician-assigned" || booking.status === "confirmed" || booking.status === "en-route") && (
-          <Button size="sm" variant="outline" onClick={startJob} data-testid={`button-start-${booking._id}`}>
-            Start Job
+
+      {/* Status progress hint */}
+      <div className="mt-3 text-xs text-text-muted/70 flex items-center gap-1">
+        {canMarkEnRoute && <span>Next: Mark yourself En Route → Start Job → Complete</span>}
+        {canStart && <span>Next: Start Job → Complete</span>}
+        {canComplete && <span>Next: Mark Complete (customer signature required)</span>}
+      </div>
+
+      {/* Actions */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        {canMarkEnRoute && (
+          <Button size="sm" variant="outline" onClick={markEnRoute} disabled={acting} data-testid={`button-enroute-${booking._id}`}>
+            {acting ? "Updating..." : "Mark En Route"}
           </Button>
         )}
-        {booking.status === "in-progress" && <CompleteJobDialog booking={booking} onDone={onAction} />}
+        {canStart && (
+          <Button size="sm" variant="outline" onClick={startJob} disabled={acting} data-testid={`button-start-${booking._id}`}>
+            {acting ? "Starting..." : "Start Job"}
+          </Button>
+        )}
+        {canComplete && <CompleteJobDialog booking={booking} onDone={onAction} />}
       </div>
     </div>
   );
@@ -190,13 +234,28 @@ export default function DashboardTechnician() {
   const { user, loading: userLoading } = useUserContext();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { getToken } = useAuth();
 
   async function load() {
     setLoading(true);
+    setProfileError(null);
+    setError(null);
     try {
       const token = await getToken();
+      // Check if this technician has been set up by admin before loading jobs.
+      // A 404 with code NO_TECHNICIAN_PROFILE means admin hasn't created a profile yet.
+      try {
+        await apiFetch("/technician/profile", { token });
+      } catch (profileErr) {
+        if (profileErr instanceof ApiError && profileErr.code === "NO_TECHNICIAN_PROFILE") {
+          setProfileError("No technician profile found. Contact administrator.");
+          return;
+        }
+        // Any other error (403, 500, network) — surface it as a generic error
+        throw profileErr;
+      }
       const data = await apiFetch<Booking[]>("/technician/jobs", { token });
       setBookings(data);
     } catch (err) {
@@ -239,9 +298,23 @@ export default function DashboardTechnician() {
         </div>
       )}
 
+      {/* No Technician profile guard — shown when admin hasn't set up this account yet */}
+      {!loading && profileError && (
+        <div className="rounded-xl border border-warning/40 bg-warning/10 p-8 text-center shadow-sm" data-testid="technician-no-profile">
+          <div className="text-4xl mb-3">⚠️</div>
+          <h3 className="text-foreground">No Technician Profile Found</h3>
+          <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
+            {profileError}
+          </p>
+          <p className="mt-3 text-xs text-text-muted">
+            Your account is logged in as <strong>{user?.email}</strong>. Ask your administrator to add you as a technician in the Admin Dashboard.
+          </p>
+        </div>
+      )}
+
       {error && <p className="text-danger" data-testid="text-error">{error}</p>}
 
-      {!loading && !error && (
+      {!loading && !error && !profileError && (
         <>
           <SummaryCards bookings={bookings} />
 
