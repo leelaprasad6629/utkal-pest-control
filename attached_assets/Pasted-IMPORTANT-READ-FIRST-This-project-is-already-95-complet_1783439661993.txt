@@ -1,0 +1,115 @@
+IMPORTANT - READ FIRST
+
+This project is already 95% complete.
+
+Do NOT rebuild the project.
+Do NOT redesign the UI.
+Do NOT refactor unrelated code.
+Do NOT change the project structure.
+Do NOT replace existing functionality.
+Do NOT modify authentication unless required for the assigned issue.
+Do NOT modify database schema unless absolutely necessary.
+Do NOT rename files or move folders.
+Do NOT generate a new project.
+Do NOT install alternative libraries if the current implementation works.
+
+Assume the existing environment variables (Clerk, MongoDB, Razorpay, etc.) are already configured correctly.
+
+Do NOT ask me for environment variables.
+
+Do NOT modify environment variables.
+
+If an environment variable is missing during testing, simply tell me its name instead of stopping or rebuilding the project.
+
+Ensure the server uses process.env.PORT and listens on 0.0.0.0 so the project works correctly in any Replit workspace without hardcoded ports.
+
+Before making any code changes:
+
+1. Analyze the current implementation.
+2. Identify the exact root cause.
+3. Modify ONLY the files required to fix the issue.
+4. Preserve all existing features and UI.
+
+==========================
+TASKS
+==========================
+
+1. Fix Technician Assignment
+
+When an admin assigns a technician to a booking:
+
+- Save the technician reference correctly in MongoDB.
+- Ensure the logged-in technician is mapped correctly using Clerk (email or Clerk User ID).
+- Technician Dashboard must display only bookings assigned to that technician.
+- Assigned, Pending, Completed and Today's Schedule must be calculated from MongoDB.
+
+2. Remove Demo Data
+
+Remove all hardcoded/mock/seed/demo:
+
+- Customers
+- Technicians
+- Bookings
+- Reviews
+- Dashboard statistics
+
+Delete existing fake records from MongoDB.
+
+Only real users created through the application should appear.
+
+Search and remove:
+
+- mockData
+- dummyData
+- sampleData
+- seedData
+- fakeUsers
+- hardcoded arrays
+
+Replace everything with MongoDB + Mongoose queries.
+
+3. Dashboard Data
+
+Admin Dashboard:
+
+- Total Customers
+- Total Technicians
+- Total Bookings
+- Pending
+- Completed
+- Cancelled
+- Revenue
+
+must all come from MongoDB.
+
+Customer Dashboard must display only the logged-in customer's data.
+
+Technician Dashboard must display only the logged-in technician's assigned jobs.
+
+4. Auto Refresh
+
+After Create, Update, Delete, Assign Technician or Status Change, refresh the UI automatically without requiring a browser refresh.
+
+5. Verification
+
+Test the complete workflow:
+
+Customer Registration
+→ Create Booking
+→ Admin Creates Technician
+→ Admin Assigns Technician
+→ Technician Login
+→ Assigned Booking Appears
+→ Technician Updates Status
+→ Customer Reviews
+→ Dashboard Statistics Update
+
+Fix every issue until this workflow works correctly.
+
+IMPORTANT
+
+Do NOT rebuild anything.
+
+Do NOT replace working code.
+
+Only make minimal changes required to fix these issues while preserving the existing application.
