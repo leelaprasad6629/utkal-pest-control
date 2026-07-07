@@ -15,6 +15,9 @@ async function fetchClerkRole(clerkUserId: string): Promise<"customer" | "techni
   try {
     const clerkUser = await clerkClient.users.getUser(clerkUserId);
     const raw = (clerkUser.publicMetadata as Record<string, unknown>)?.role;
+    // Only return a role when Clerk explicitly has one set.
+    // Returning null here means "no override" — the existing DB role is preserved.
+    if (!raw) return null;
     return normalizeRole(raw);
   } catch {
     return null;
@@ -53,7 +56,10 @@ router.get("/me", requireAuth, async (req, res): Promise<void> => {
     if (!normalizedEmail.endsWith("@placeholder.local")) {
       const linked = await User.findOneAndUpdate(
         { email: normalizedEmail, clerkId: { $exists: false } },
-        { $set: { clerkId: req.clerkUserId!, ...(role ? { role } : {}) } },
+        // Only update the role when Clerk has an explicit role set.
+        // Preserves the admin-assigned role (e.g. "technician") when the
+        // technician signs in via Clerk without Clerk metadata being set.
+        { $set: { clerkId: req.clerkUserId!, ...(clerkRole ? { role: clerkRole } : {}) } },
         { new: true },
       );
       if (linked) {

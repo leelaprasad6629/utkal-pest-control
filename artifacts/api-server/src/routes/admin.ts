@@ -170,12 +170,15 @@ router.post("/admin/technicians", requireAuth, requireAdmin, async (req, res): P
   }
   await dbConnect();
 
+  // Normalize email so it matches /me's lowercased lookup and prevents split-identity
+  const normalizedEmail = parsed.data.email.toLowerCase().trim();
+
   // Create or reuse a User record so bookings can reference a User._id
-  let user = await User.findOne({ email: parsed.data.email });
+  let user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     user = await User.create({
       name: parsed.data.name,
-      email: parsed.data.email,
+      email: normalizedEmail,
       phone: parsed.data.phone,
       role: "technician",
     });
@@ -187,7 +190,7 @@ router.post("/admin/technicians", requireAuth, requireAdmin, async (req, res): P
   const technician = await Technician.create({
     userId: user._id,
     name: parsed.data.name,
-    email: parsed.data.email,
+    email: normalizedEmail,
     phone: parsed.data.phone,
     specialization: parsed.data.specialization,
     experience: parsed.data.experience,
@@ -210,16 +213,21 @@ router.patch("/admin/technicians/:id", requireAuth, requireAdmin, async (req, re
     return;
   }
   await dbConnect();
-  const technician = await Technician.findByIdAndUpdate(req.params.id, parsed.data, { new: true });
+  // Normalize email if provided to match /me linking logic
+  const updateData = parsed.data.email
+    ? { ...parsed.data, email: parsed.data.email.toLowerCase().trim() }
+    : parsed.data;
+  const technician = await Technician.findByIdAndUpdate(req.params.id, updateData, { new: true });
   if (!technician) {
     res.status(404).json({ error: "Technician not found" });
     return;
   }
-  // Sync name/phone to linked User if present
-  if (technician.userId && (parsed.data.name || parsed.data.phone)) {
+  // Sync name/phone/email to linked User if present
+  if (technician.userId && (parsed.data.name || parsed.data.phone || parsed.data.email)) {
     await User.findByIdAndUpdate(technician.userId, {
       ...(parsed.data.name ? { name: parsed.data.name } : {}),
       ...(parsed.data.phone ? { phone: parsed.data.phone } : {}),
+      ...(parsed.data.email ? { email: parsed.data.email.toLowerCase().trim() } : {}),
     });
   }
   res.json(technician);

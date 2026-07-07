@@ -262,7 +262,7 @@ function BookingDetailModal({ booking, onClose }: { booking: Booking; onClose: (
 
 // ─── Bookings tab (with filters + modal) ─────────────────────────────────────
 
-function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
+function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[]; onMutate?: () => void }) {
   const { getToken } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [services, setServices] = useState<ServiceItem[]>([]);
@@ -301,6 +301,7 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
     const token = await getToken();
     await apiFetch(`/bookings/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }), token });
     loadBookings();
+    onMutate?.();
   }
 
   async function assignTechnician(id: string, userId: string) {
@@ -311,6 +312,7 @@ function BookingsTab({ technicians }: { technicians: TechnicianRecord[] }) {
       token,
     });
     loadBookings();
+    onMutate?.();
   }
 
   // Client-side filtering
@@ -918,7 +920,7 @@ export default function DashboardAdmin() {
               <TabsTrigger value="charts" data-testid="tab-admin-charts">Charts</TabsTrigger>
             </TabsList>
             <TabsContent value="bookings">
-              <BookingsTab technicians={technicians} />
+              <BookingsTab technicians={technicians} onMutate={loadData} />
             </TabsContent>
             <TabsContent value="customers">
               <CustomersTab />

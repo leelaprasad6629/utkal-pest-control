@@ -1,0 +1,128 @@
+IMPORTANT - READ FIRST
+
+This project is already 95% complete.
+
+Do NOT rebuild the project.
+Do NOT redesign the UI.
+Do NOT refactor unrelated code.
+Do NOT change the project structure.
+Do NOT replace existing functionality.
+Do NOT rename files or folders.
+Do NOT generate a new project.
+Do NOT modify the database schema unless absolutely necessary.
+
+All required environment secrets (Clerk, MongoDB, Razorpay, etc.) are already configured in Replit Secrets.
+
+Use the existing environment configuration.
+
+Do NOT recreate, modify, or ask for environment variables.
+
+Ensure the application runs using the existing configuration and listens on process.env.PORT (0.0.0.0) so Preview works correctly.
+
+Before making changes:
+
+1. Analyze the current implementation.
+2. Identify the exact root cause.
+3. Modify ONLY the files required.
+4. Preserve all existing features and UI.
+
+================================================
+
+TASK 1 - FIX TECHNICIAN ASSIGNMENT
+
+When an admin assigns a technician to a booking:
+
+- Save the technician reference correctly in MongoDB.
+- Ensure the logged-in technician is correctly mapped using Clerk (Email or Clerk User ID).
+- Technician Dashboard must display only bookings assigned to the logged-in technician.
+- Dashboard statistics (Assigned, Pending, Completed, Today's Schedule) must be calculated from MongoDB.
+
+================================================
+
+TASK 2 - REMOVE DEMO DATA
+
+Remove all demo/mock/seed data from both the database and code.
+
+Delete:
+
+- Fake Customers
+- Fake Technicians
+- Fake Bookings
+- Fake Reviews
+- Fake Dashboard Statistics
+
+Remove all:
+
+- mockData
+- dummyData
+- sampleData
+- seedData
+- hardcoded arrays
+
+Replace everything with MongoDB + Mongoose queries.
+
+Only real users created through the application should appear.
+
+================================================
+
+TASK 3 - REAL DASHBOARD DATA
+
+Admin Dashboard:
+
+- Total Customers
+- Total Technicians
+- Total Bookings
+- Pending
+- Completed
+- Cancelled
+- Revenue
+
+must all come from MongoDB.
+
+Customer Dashboard should display only the logged-in customer's data.
+
+Technician Dashboard should display only the logged-in technician's assigned jobs.
+
+================================================
+
+TASK 4 - AUTO REFRESH
+
+After:
+
+- Create
+- Update
+- Delete
+- Technician Assignment
+- Status Change
+
+Automatically refresh the UI without requiring a browser refresh.
+
+================================================
+
+TASK 5 - VERIFY COMPLETE WORKFLOW
+
+Verify and fix the complete flow:
+
+Customer Registration
+→ Customer Creates Booking
+→ Admin Creates Technician
+→ Admin Assigns Technician
+→ Technician Logs In
+→ Assigned Booking Appears in Technician Dashboard
+→ Technician Updates Status
+→ Customer Submits Review
+→ Dashboard Statistics Update Automatically
+
+================================================
+
+FINAL INSTRUCTIONS
+
+Do NOT rebuild the application.
+
+Do NOT replace working code.
+
+Do NOT change the existing UI or design.
+
+Make only the minimum changes required to fix these issues.
+
+Test the complete workflow before finishing and ensure everything works using the existing MongoDB, Clerk, Razorpay configuration and Replit environment.

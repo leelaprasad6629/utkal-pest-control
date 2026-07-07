@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import mongoose from "mongoose";
 import { z } from "zod";
 import { dbConnect } from "../lib/mongo";
 import { Booking, Invoice, Service, User } from "../models";
@@ -233,7 +234,17 @@ router.patch("/bookings/:id/status", requireAuth, async (req, res): Promise<void
   }
 
   if (parsed.data.technicianId && localUser.role === "admin") {
-    booking.technicianId = parsed.data.technicianId as unknown as typeof booking.technicianId;
+    // Validate technicianId is a real ObjectId and belongs to a technician user
+    if (!mongoose.isValidObjectId(parsed.data.technicianId)) {
+      res.status(400).json({ error: "Invalid technicianId" });
+      return;
+    }
+    const techUser = await User.findOne({ _id: parsed.data.technicianId, role: "technician" }).lean();
+    if (!techUser) {
+      res.status(400).json({ error: "Technician not found or user is not a technician" });
+      return;
+    }
+    booking.technicianId = new mongoose.Types.ObjectId(parsed.data.technicianId) as unknown as typeof booking.technicianId;
   }
 
   booking.status = parsed.data.status;
