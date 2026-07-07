@@ -19,6 +19,7 @@ import BookingDetail from "@/pages/booking-detail";
 import Profile from "@/pages/profile";
 import InvoiceDetail from "@/pages/invoice-detail";
 import { UserProvider, useUserContext, isAdmin, isTechnician } from "@/lib/user-context";
+import Setup from "@/pages/setup";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ function Router() {
         <Route path="/services" component={Services} />
         <Route path="/services/:slug" component={ServiceDetail} />
         <Route path="/quote" component={Quote} />
+        <Route path="/setup" component={Setup} />
 
         {/* Authenticated routes */}
         <Route path="/dashboard">

@@ -23,6 +23,31 @@ async function requireAdmin(req: Request, res: Response, next: NextFunction): Pr
   next();
 }
 
+/**
+ * POST /admin/bootstrap
+ * One-time endpoint: promotes the authenticated caller to "admin" if no admin
+ * user exists in the database yet. Safe to call again — returns 409 once an
+ * admin already exists so it cannot be used to create a second admin silently.
+ */
+router.post("/admin/bootstrap", requireAuth, async (req, res): Promise<void> => {
+  await dbConnect();
+  const existingAdmin = await User.findOne({ role: "admin" }).lean();
+  if (existingAdmin) {
+    res.status(409).json({ error: "An admin already exists. Bootstrap is disabled." });
+    return;
+  }
+  const user = await User.findOneAndUpdate(
+    { clerkId: req.clerkUserId },
+    { $set: { role: "admin" } },
+    { new: true },
+  ).lean<{ email: string; role: string } | null>();
+  if (!user) {
+    res.status(404).json({ error: "Your user record was not found. Sign in to /dashboard first to create it, then retry." });
+    return;
+  }
+  res.json({ message: "You are now an admin.", email: user.email, role: user.role });
+});
+
 router.get("/admin/analytics", requireAuth, requireAdmin, async (_req, res): Promise<void> => {
   await dbConnect();
 
