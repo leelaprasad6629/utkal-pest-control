@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
 import { dbConnect } from "../lib/mongo";
-import { Booking, Invoice, Notification, Payment, Review, Service, User } from "../models";
+import { Booking, Invoice, Notification, Payment, Review, Service, ServiceReport, User } from "../models";
 import { requireAuth, clerkClient, normalizeRole } from "../lib/clerkAuth";
 import { generateBookingNumber, generateInvoiceNumber } from "../lib/ids";
 import { createNotification } from "../lib/notifications";
@@ -451,6 +451,7 @@ router.delete("/bookings/:id", requireAuth, async (req, res): Promise<void> => {
     Invoice.deleteMany({ bookingId: booking._id }),
     Payment.deleteMany({ bookingId: booking._id }),
     Notification.deleteMany({ relatedBookingId: booking._id }),
+    ServiceReport.deleteMany({ bookingId: booking._id }),
   ]);
   await booking.deleteOne();
   res.status(204).end();

@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { z } from "zod";
 import { dbConnect } from "../lib/mongo";
-import { Booking, Invoice, Notification, Payment, Review, Service, Technician, User } from "../models";
+import { Booking, Invoice, Notification, Payment, Review, Service, ServiceReport, Technician, User } from "../models";
 import { requireAuth } from "../lib/clerkAuth";
 
 const router: IRouter = Router();
@@ -347,6 +347,7 @@ router.delete("/admin/customers/:id", requireAuth, requireAdmin, async (req, res
     Notification.deleteMany({ userId: user._id }),
     Invoice.deleteMany({ bookingId: { $in: bookingIds } }),
     Payment.deleteMany({ bookingId: { $in: bookingIds } }),
+    ServiceReport.deleteMany({ bookingId: { $in: bookingIds } }),
   ]);
   await Booking.deleteMany({ customerId: user._id });
   await user.deleteOne();
