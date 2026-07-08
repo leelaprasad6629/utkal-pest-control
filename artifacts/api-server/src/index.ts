@@ -1,4 +1,5 @@
-import app from "./app";
+import express from "express";
+import app, { mountFrontend } from "./app";
 import { logger } from "./lib/logger";
 
 const rawPort = process.env["PORT"];
@@ -22,4 +23,17 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // After the server has started, mount the frontend static assets so that
+  // any errors during static mounting do not prevent the server from listening.
+  try {
+    const mounted = mountFrontend();
+    if (mounted) {
+      logger.info("Frontend mounted after server start");
+    } else {
+      logger.info("Frontend not mounted (dist not found or not in production)");
+    }
+  } catch (err) {
+    logger.warn({ err }, "Failed to mount frontend after server start");
+  }
 });
