@@ -1,4 +1,4 @@
-import express, { type Express, type Request } from "express";
+import express, { type Express, type Request, type NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -71,27 +71,37 @@ app.use("/api", router);
 
 // Serve frontend in production
 // The frontend build output is at: artifacts/pest-control/dist/public (vite build outDir)
-// Use process.cwd() so this works when the server runs from the repository root (Render/containers)
-const clientDist = path.resolve(process.cwd(), "artifacts", "pest-control", "dist", "public");
+// Try multiple candidate paths so the server works whether it's started from the repo root
+// or from the api-server package dir (Render may start with cwd=artifacts/api-server).
+const candidates = [
+  path.resolve(process.cwd(), "artifacts", "pest-control", "dist", "public"),
+  path.resolve(process.cwd(), "..", "artifacts", "pest-control", "dist", "public"),
+  path.resolve(process.cwd(), "..", "..", "artifacts", "pest-control", "dist", "public"),
+];
 
-if (process.env.NODE_ENV === "production") {
-  if (fs.existsSync(clientDist)) {
-    app.use(express.static(clientDist));
-
-    // Catch-all: serve index.html for non-/api routes (SPA routing)
-    app.get("*(?!/api/*)", (req, res) => {
-      // If the request is for an API route, delegate to API (shouldn't reach here due to the pattern)
-      if (req.path.startsWith("/api/") || req.path === "/api") {
-        return res.status(404).send("Not Found");
-      }
-
-      res.sendFile(path.join(clientDist, "index.html"));
-    });
-
-    logger.info({ clientDist }, "Serving frontend from clientDist");
-  } else {
-    logger.warn({ clientDist }, "Client dist not found — frontend will not be served by the API server");
+let clientDist: string | undefined;
+for (const c of candidates) {
+  if (fs.existsSync(c)) {
+    clientDist = c;
+    break;
   }
+}
+
+if (process.env.NODE_ENV === "production" && clientDist) {
+  app.use(express.static(clientDist));
+
+  // SPA catch-all: return index.html for any non-API GET request so client-side routing works.
+  app.get("*", (req: Request, res, next: NextFunction) => {
+    if (req.path.startsWith("/api/") || req.path === "/api") {
+      return next();
+    }
+
+    res.sendFile(path.join(clientDist as string, "index.html"));
+  });
+
+  logger.info({ clientDist }, "Serving frontend from clientDist");
+} else if (process.env.NODE_ENV === "production") {
+  logger.warn({ candidates }, "Client dist not found — frontend will not be served by the API server");
 }
 
 export default app;
