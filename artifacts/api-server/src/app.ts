@@ -1,4 +1,4 @@
-import express, { type Express, type Request, type NextFunction } from "express";
+import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -90,13 +90,24 @@ for (const c of candidates) {
 if (process.env.NODE_ENV === "production" && clientDist) {
   app.use(express.static(clientDist));
 
-  // SPA catch-all: return index.html for any non-API GET request so client-side routing works.
-  app.get("*", (req: Request, res, next: NextFunction) => {
-    if (req.path.startsWith("/api/") || req.path === "/api") {
+  // SPA fallback: use express middleware to serve index.html for non-API GET requests.
+  // Express 5 no longer accepts wildcard route strings like "*" in the same way,
+  // so use app.use and a runtime check to skip API routes and only handle GET requests.
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    // Only handle GET requests for client-side navigation
+    if (req.method !== "GET") return next();
+
+    // Skip API routes entirely so they are handled by the API router
+    if (req.path === "/api" || req.path.startsWith("/api/")) return next();
+
+    // If a static asset exists that matches the request, let express.static serve it first
+    // (express.static was registered above). If not, serve index.html so the SPA can handle the route.
+    const potentialFile = path.join(clientDist, req.path.replace(/^(\/)/, ""));
+    if (fs.existsSync(potentialFile) && fs.statSync(potentialFile).isFile()) {
       return next();
     }
 
-    res.sendFile(path.join(clientDist as string, "index.html"));
+    res.sendFile(path.join(clientDist, "index.html"));
   });
 
   logger.info({ clientDist }, "Serving frontend from clientDist");
