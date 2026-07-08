@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { Link } from "wouter";
 import {
@@ -1211,7 +1211,7 @@ export default function DashboardAdmin() {
               )}
             </TabsContent>
             <TabsContent value="sitemap" className="pt-2">
-              <SitemapTab />
+              <ServiceMapTab />
             </TabsContent>
           </Tabs>
         </div>
