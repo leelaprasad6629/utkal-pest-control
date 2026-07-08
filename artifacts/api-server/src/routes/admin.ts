@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { z } from "zod";
 import { dbConnect } from "../lib/mongo";
-import { Booking, Invoice, Notification, Payment, Review, Service, ServiceReport, Technician, User } from "../models";
+import { Booking, GeoCache, Invoice, Notification, Payment, Review, Service, ServiceReport, Technician, User } from "../models";
 import { requireAuth } from "../lib/clerkAuth";
 
 const router: IRouter = Router();
@@ -323,6 +323,68 @@ router.patch("/admin/services/:id", requireAuth, requireAdmin, async (req, res):
     return;
   }
   res.json(service);
+});
+
+// ─── Service map ────────────────────────────────────────────────────────────────
+
+/** Looks up (and caches) coordinates for a free-text location via OpenStreetMap Nominatim. */
+async function geocode(query: string): Promise<{ lat: number; lng: number } | null> {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return null;
+
+  const cached = await GeoCache.findOne({ query: normalized }).lean<{ lat: number; lng: number } | null>();
+  if (cached) return { lat: cached.lat, lng: cached.lng };
+
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=${encodeURIComponent(query)}`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "UtkalPestControl-AdminMap/1.0 (contact: admin@utkalpestcontrol.example)" },
+    });
+    if (!res.ok) return null;
+    const results = (await res.json()) as Array<{ lat: string; lon: string }>;
+    const first = results[0];
+    if (!first) return null;
+
+    const lat = Number(first.lat);
+    const lng = Number(first.lon);
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+
+    await GeoCache.findOneAndUpdate(
+      { query: normalized },
+      { query: normalized, lat, lng },
+      { upsert: true },
+    );
+    return { lat, lng };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * GET /admin/bookings/map
+ * Aggregates bookings by city and returns geocoded coordinates for each,
+ * so the admin panel can render a real geographical map of service demand.
+ */
+router.get("/admin/bookings/map", requireAuth, requireAdmin, async (_req, res): Promise<void> => {
+  await dbConnect();
+
+  const grouped = await Booking.aggregate<{ _id: string; count: number }>([
+    { $match: { "address.city": { $exists: true, $nin: [null, ""] } } },
+    { $group: { _id: { $toLower: "$address.city" }, count: { $sum: 1 } } },
+  ]);
+
+  const points = [];
+  for (const group of grouped) {
+    const city = group._id;
+    // Sequential to stay within Nominatim's usage policy (max ~1 request/sec); cache
+    // means this only actually calls out for cities never geocoded before.
+    const coords = await geocode(`${city}, India`);
+    if (coords) {
+      points.push({ city, count: group.count, lat: coords.lat, lng: coords.lng });
+    }
+  }
+
+  res.json({ points });
 });
 
 // ─── Customers ────────────────────────────────────────────────────────────────

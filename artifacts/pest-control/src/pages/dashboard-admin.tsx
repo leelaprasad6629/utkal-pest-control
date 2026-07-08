@@ -908,19 +908,23 @@ function TechniciansTab({
 
 // ─── Reviews tab ──────────────────────────────────────────────────────────────
 
-interface SitemapUrlEntry {
-  loc: string;
-  lastmod: string;
-  priority: string;
+interface BookingMapPoint {
+  city: string;
+  count: number;
+  lat: number;
+  lng: number;
 }
 
-function SitemapTab() {
-  const [entries, setEntries] = useState<SitemapUrlEntry[] | null>(null);
+// Default view centered on Odisha, India — the business's home region.
+const DEFAULT_MAP_CENTER: [number, number] = [20.9517, 85.0985];
+const DEFAULT_MAP_ZOOM = 6;
+
+function ServiceMapTab() {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<import("leaflet").Map | null>(null);
+  const [points, setPoints] = useState<BookingMapPoint[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
-
-  const sitemapUrl = `${window.location.origin}/sitemap.xml`;
 
   useEffect(() => {
     let cancelled = false;
@@ -928,24 +932,10 @@ function SitemapTab() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(sitemapUrl);
-        if (!res.ok) throw new Error(`Sitemap request failed (${res.status})`);
-        const xml = await res.text();
-        const doc = new DOMParser().parseFromString(xml, "application/xml");
-        if (doc.getElementsByTagName("parsererror").length > 0) throw new Error("Could not parse sitemap.xml");
-        // The sitemap uses a default XML namespace, so namespace-unaware selectors like
-        // querySelectorAll("url") can silently match nothing. Use getElementsByTagNameNS
-        // with a wildcard namespace to reliably pick up the <url>/<loc>/<lastmod>/<priority> nodes.
-        const firstOf = (parent: Element, tag: string) =>
-          parent.getElementsByTagNameNS("*", tag)[0]?.textContent ?? "";
-        const urls = Array.from(doc.getElementsByTagNameNS("*", "url")).map((el) => ({
-          loc: firstOf(el, "loc"),
-          lastmod: firstOf(el, "lastmod"),
-          priority: firstOf(el, "priority"),
-        }));
-        if (!cancelled) setEntries(urls);
+        const data = await apiFetch<{ points: BookingMapPoint[] }>("/admin/bookings/map");
+        if (!cancelled) setPoints(data.points);
       } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load sitemap");
+        if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load booking locations");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -953,67 +943,87 @@ function SitemapTab() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCopy = () => {
-    void navigator.clipboard.writeText(sitemapUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
+  useEffect(() => {
+    if (!mapContainerRef.current || loading || error) return;
+
+    let cancelled = false;
+    let markers: import("leaflet").CircleMarker[] = [];
+
+    (async () => {
+      const L = await import("leaflet");
+      await import("leaflet/dist/leaflet.css");
+      if (cancelled || !mapContainerRef.current) return;
+
+      if (!mapRef.current) {
+        mapRef.current = L.map(mapContainerRef.current).setView(DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap contributors",
+          maxZoom: 18,
+        }).addTo(mapRef.current);
+      }
+      const map = mapRef.current;
+
+      const maxCount = Math.max(1, ...(points ?? []).map((p) => p.count));
+      markers = (points ?? []).map((point) => {
+        const radius = 8 + (point.count / maxCount) * 20;
+        const marker = L.circleMarker([point.lat, point.lng], {
+          radius,
+          color: "#7c3aed",
+          fillColor: "#7c3aed",
+          fillOpacity: 0.45,
+          weight: 2,
+        }).addTo(map);
+        marker.bindPopup(
+          `<strong>${point.city.replace(/\b\w/g, (c) => c.toUpperCase())}</strong><br/>${point.count} booking${point.count === 1 ? "" : "s"}`,
+        );
+        return marker;
+      });
+
+      if (points && points.length > 0) {
+        const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
+        map.fitBounds(bounds.pad(0.3));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      markers.forEach((m) => m.remove());
+    };
+  }, [points, loading, error]);
+
+  useEffect(() => {
+    return () => {
+      mapRef.current?.remove();
+      mapRef.current = null;
+    };
+  }, []);
 
   return (
-    <div className="space-y-4" data-testid="sitemap-tab">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-border bg-card p-4">
-        <div>
-          <p className="text-sm text-text-muted">Live sitemap URL</p>
-          <p className="font-mono text-sm break-all">{sitemapUrl}</p>
-        </div>
-        <div className="flex gap-2 shrink-0">
-          <Button variant="outline" size="sm" onClick={handleCopy} data-testid="button-copy-sitemap-url">
-            {copied ? "Copied" : "Copy link"}
-          </Button>
-          <Button asChild size="sm" data-testid="button-open-sitemap">
-            <a href={sitemapUrl} target="_blank" rel="noopener noreferrer">
-              Open sitemap.xml
-            </a>
-          </Button>
-        </div>
+    <div className="space-y-4" data-testid="service-map-tab">
+      <div className="rounded-xl border border-border bg-card p-4">
+        <p className="text-sm text-text-muted">
+          Booking locations plotted by city. Marker size reflects booking volume.
+        </p>
       </div>
 
       {loading ? (
-        <div className="rounded-xl border border-border bg-card p-6 text-sm text-text-muted">Loading sitemap…</div>
+        <div className="rounded-xl border border-border bg-card p-6 h-[480px] flex items-center justify-center text-sm text-text-muted">
+          Loading map…
+        </div>
       ) : error ? (
         <div className="rounded-xl border border-border bg-card p-6 text-sm text-destructive">{error}</div>
-      ) : (
-        <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Page URL</TableHead>
-                <TableHead>Last modified</TableHead>
-                <TableHead>Priority</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {entries?.map((entry) => (
-                <TableRow key={entry.loc}>
-                  <TableCell className="font-mono text-xs break-all">
-                    <a href={entry.loc} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                      {entry.loc}
-                    </a>
-                  </TableCell>
-                  <TableCell className="text-sm text-text-muted">{entry.lastmod}</TableCell>
-                  <TableCell className="text-sm text-text-muted">{entry.priority}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <p className="px-4 py-3 text-xs text-text-muted border-t border-border">
-            {entries?.length ?? 0} page{entries?.length === 1 ? "" : "s"} listed. Regenerated automatically from
-            active services on every deploy.
-          </p>
+      ) : points && points.length === 0 ? (
+        <div className="rounded-xl border border-border bg-card p-6 h-[480px] flex items-center justify-center text-sm text-text-muted">
+          No booking locations to show yet.
         </div>
+      ) : (
+        <div
+          ref={mapContainerRef}
+          className="rounded-xl border border-border overflow-hidden h-[480px] w-full"
+          data-testid="service-map-container"
+        />
       )}
     </div>
   );

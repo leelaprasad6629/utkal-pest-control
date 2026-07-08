@@ -27,6 +27,23 @@ const AddressSchema = new Schema<AddressDoc>(
   { _id: false },
 );
 
+export interface GeoCacheDoc extends mongoose.Document {
+  query: string;
+  lat: number;
+  lng: number;
+}
+
+const GeoCacheSchema = new Schema<GeoCacheDoc>(
+  {
+    query: { type: String, unique: true, required: true },
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true },
+  },
+  { timestamps: true },
+);
+
+export const GeoCache = models.GeoCache || model<GeoCacheDoc>("GeoCache", GeoCacheSchema);
+
 export interface UserDoc extends mongoose.Document {
   name: string;
   phone?: string;
