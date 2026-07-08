@@ -429,7 +429,7 @@ router.post("/bookings/:id/reschedule", requireAuth, async (req, res): Promise<v
 router.delete("/bookings/:id", requireAuth, async (req, res): Promise<void> => {
   await dbConnect();
   const localUser = await getLocalUser(req.clerkUserId);
-  if (!localUser || localUser.role !== "admin") {
+  if (!localUser || !isAdminRole(localUser.role)) {
     res.status(403).json({ error: "Admin access required" });
     return;
   }
@@ -445,6 +445,13 @@ router.delete("/bookings/:id", requireAuth, async (req, res): Promise<void> => {
     return;
   }
 
+  // Cascade: remove all records that reference this booking before removing it.
+  await Promise.all([
+    Review.deleteMany({ bookingId: booking._id }),
+    Invoice.deleteMany({ bookingId: booking._id }),
+    Payment.deleteMany({ bookingId: booking._id }),
+    Notification.deleteMany({ relatedBookingId: booking._id }),
+  ]);
   await booking.deleteOne();
   res.status(204).end();
 });

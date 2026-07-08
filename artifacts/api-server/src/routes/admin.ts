@@ -334,8 +334,21 @@ router.delete("/admin/customers/:id", requireAuth, requireAdmin, async (req, res
     res.status(404).json({ error: "Customer not found" });
     return;
   }
-  // Delete associated reviews
-  await Review.deleteMany({ customerId: user._id });
+  if (user.role !== "customer") {
+    res.status(400).json({ error: "Only customer accounts can be deleted from this endpoint" });
+    return;
+  }
+
+  // Cascade: remove all records owned by or referencing this customer.
+  const bookings = await Booking.find({ customerId: user._id }, { _id: 1 }).lean();
+  const bookingIds = bookings.map((b) => b._id);
+  await Promise.all([
+    Review.deleteMany({ customerId: user._id }),
+    Notification.deleteMany({ userId: user._id }),
+    Invoice.deleteMany({ bookingId: { $in: bookingIds } }),
+    Payment.deleteMany({ bookingId: { $in: bookingIds } }),
+  ]);
+  await Booking.deleteMany({ customerId: user._id });
   await user.deleteOne();
   res.status(204).end();
 });
