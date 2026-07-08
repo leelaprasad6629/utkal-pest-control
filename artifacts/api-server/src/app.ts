@@ -6,6 +6,8 @@ import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { attachClerkUser } from "./lib/clerkAuth";
+import path from "path";
+import fs from "fs";
 
 const app: Express = express();
 app.set("trust proxy", 1);
@@ -66,5 +68,30 @@ app.use(express.urlencoded({ extended: true }));
 app.use(attachClerkUser);
 
 app.use("/api", router);
+
+// Serve frontend in production
+// The frontend build output is at: artifacts/pest-control/dist/public (vite build outDir)
+// Use process.cwd() so this works when the server runs from the repository root (Render/containers)
+const clientDist = path.resolve(process.cwd(), "artifacts", "pest-control", "dist", "public");
+
+if (process.env.NODE_ENV === "production") {
+  if (fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+
+    // Catch-all: serve index.html for non-/api routes (SPA routing)
+    app.get("*(?!/api/*)", (req, res) => {
+      // If the request is for an API route, delegate to API (shouldn't reach here due to the pattern)
+      if (req.path.startsWith("/api/") || req.path === "/api") {
+        return res.status(404).send("Not Found");
+      }
+
+      res.sendFile(path.join(clientDist, "index.html"));
+    });
+
+    logger.info({ clientDist }, "Serving frontend from clientDist");
+  } else {
+    logger.warn({ clientDist }, "Client dist not found — frontend will not be served by the API server");
+  }
+}
 
 export default app;
