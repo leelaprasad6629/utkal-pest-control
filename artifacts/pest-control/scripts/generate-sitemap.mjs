@@ -15,15 +15,23 @@ const STATIC_PAGES = [
 ];
 
 function resolveOrigin() {
+  const explicit = process.env.SITE_URL ?? process.env.VITE_SITE_URL;
+  if (explicit) {
+    return explicit.replace(/\/$/, "");
+  }
+  const vercelUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  if (vercelUrl) {
+    return `https://${vercelUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}`;
+  }
   const domains = process.env.REPLIT_DOMAINS ?? process.env.REPLIT_DEV_DOMAIN;
   const domain = domains?.split(",")[0]?.trim();
-  if (!domain) {
-    throw new Error(
-      "[sitemap] Could not determine the site domain (REPLIT_DOMAINS / REPLIT_DEV_DOMAIN are unset). " +
-        "Refusing to generate a sitemap with a placeholder domain.",
-    );
+  if (domain) {
+    return `https://${domain}`;
   }
-  return `https://${domain}`;
+  console.warn(
+    "[sitemap] No site domain found (set SITE_URL, VERCEL_URL, or REPLIT_DOMAINS). Skipping sitemap generation.",
+  );
+  return null;
 }
 
 async function fetchServiceSlugs() {
@@ -69,6 +77,9 @@ function buildSitemapXml(origin, serviceSlugs) {
 
 async function main() {
   const origin = resolveOrigin();
+  if (!origin) {
+    return;
+  }
   const slugs = await fetchServiceSlugs();
   const publicDir = path.resolve(import.meta.dirname, "..", "public");
 

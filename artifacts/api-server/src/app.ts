@@ -44,7 +44,17 @@ app.use(
     },
   }),
 );
-app.use(cors());
+const corsOrigins = process.env.CORS_ORIGINS;
+app.use(
+  cors(
+    corsOrigins
+      ? {
+          origin: corsOrigins.split(",").map((o) => o.trim()).filter(Boolean),
+          credentials: true,
+        }
+      : undefined,
+  ),
+);
 app.use(
   express.json({
     verify: (req: Request & { rawBody?: Buffer }, _res, buf) => {

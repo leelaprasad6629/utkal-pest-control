@@ -1,6 +1,10 @@
 const BASE_URL = import.meta.env.BASE_URL;
+const API_URL = import.meta.env.VITE_API_URL as string | undefined;
 
 function apiUrl(path: string): string {
+  if (API_URL) {
+    return `${API_URL.replace(/\/$/, "")}/api${path}`;
+  }
   return `${BASE_URL}api${path}`;
 }
 
