@@ -50,6 +50,10 @@ Thumbs.db
 .env
 .env.*
 *.env
+!artifacts/api-server/.env
+!artifacts/pest-control/.env
+!.env.example
+!**/.env.example
 credentials.json
 *.pem
 *.key
