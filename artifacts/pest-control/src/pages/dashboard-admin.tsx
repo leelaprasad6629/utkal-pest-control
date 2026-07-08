@@ -269,6 +269,8 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Booking | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -313,6 +315,23 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
     });
     loadBookings();
     onMutate?.();
+  }
+
+  async function deleteBooking() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const token = await getToken();
+      await apiFetch(`/bookings/${deleteTarget._id}`, { method: "DELETE", token });
+      toast({ title: "Booking deleted" });
+      setDeleteTarget(null);
+      loadBookings();
+      onMutate?.();
+    } catch (err) {
+      toast({ title: "Delete failed", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
   }
 
   // Client-side filtering
@@ -432,6 +451,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
             <TableHead>Scheduled</TableHead>
             <TableHead>Technician</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -439,6 +459,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
             const customer = typeof b.customerId === "object" ? b.customerId : undefined;
             const service = typeof b.serviceId === "object" ? b.serviceId : undefined;
             const technician = typeof b.technicianId === "object" ? b.technicianId : undefined;
+            const isDone = b.status === "completed" || b.status === "cancelled";
             return (
               <TableRow
                 key={b._id}
@@ -478,12 +499,24 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
                     </SelectContent>
                   </Select>
                 </TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  {isDone && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => setDeleteTarget(b)}
+                      data-testid={`button-delete-booking-${b._id}`}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </TableCell>
               </TableRow>
             );
           })}
           {filtered.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="text-center text-text-muted py-10">
+              <TableCell colSpan={7} className="text-center text-text-muted py-10">
                 {bookings.length === 0 ? (
                   <span>No bookings yet.</span>
                 ) : (
@@ -499,6 +532,28 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
       {selectedBooking && (
         <BookingDetailModal booking={selectedBooking} onClose={() => setSelectedBooking(null)} />
       )}
+
+      {/* Delete booking confirm */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Booking</AlertDialogTitle>
+            <AlertDialogDescription>
+              Permanently delete booking <strong>{deleteTarget?.bookingNumber}</strong>? This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteBooking}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -509,18 +564,37 @@ function CustomersTab() {
   const { getToken } = useAuth();
   const [customers, setCustomers] = useState<LocalUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<LocalUser | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const token = await getToken();
-        const data = await apiFetch<LocalUser[]>("/admin/customers", { token });
-        setCustomers(data);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  async function loadCustomers() {
+    setLoading(true);
+    try {
+      const token = await getToken();
+      const data = await apiFetch<LocalUser[]>("/admin/customers", { token });
+      setCustomers(data);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { loadCustomers(); }, []);
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const token = await getToken();
+      await apiFetch(`/admin/customers/${deleteTarget._id}`, { method: "DELETE", token });
+      toast({ title: "Customer removed" });
+      setDeleteTarget(null);
+      loadCustomers();
+    } catch (err) {
+      toast({ title: "Delete failed", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   if (loading) return (
     <div className="p-6 space-y-3">
@@ -529,34 +603,61 @@ function CustomersTab() {
   );
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Phone</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {customers.map((c) => (
-          <TableRow key={c._id} data-testid={`row-customer-${c._id}`}>
-            <TableCell>{c.name}</TableCell>
-            <TableCell>{c.email}</TableCell>
-            <TableCell>{c.phone ?? "—"}</TableCell>
-          </TableRow>
-        ))}
-        {customers.length === 0 && (
+    <>
+      <Table>
+        <TableHeader>
           <TableRow>
-            <TableCell colSpan={3} className="text-center text-text-muted py-10">
-              <div>
-                <p className="text-base font-medium">No customers yet</p>
-                <p className="text-sm mt-1">Customers will appear here once they sign up and make a booking.</p>
-              </div>
-            </TableCell>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead></TableHead>
           </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {customers.map((c) => (
+            <TableRow key={c._id} data-testid={`row-customer-${c._id}`}>
+              <TableCell>{c.name}</TableCell>
+              <TableCell>{c.email}</TableCell>
+              <TableCell>{c.phone ?? "—"}</TableCell>
+              <TableCell className="text-right">
+                <Button size="sm" variant="destructive" onClick={() => setDeleteTarget(c)}>Delete</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+          {customers.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center text-text-muted py-10">
+                <div>
+                  <p className="text-base font-medium">No customers yet</p>
+                  <p className="text-sm mt-1">Customers will appear here once they sign up and make a booking.</p>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Customer</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{deleteTarget?.name}</strong>? Their reviews will also be deleted. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Removing..." : "Remove"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
@@ -811,18 +912,37 @@ function ReviewsTab() {
   const { getToken } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<Review | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const token = await getToken();
-        const data = await apiFetch<Review[]>("/admin/reviews", { token });
-        setReviews(data);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+  async function loadReviews() {
+    setLoading(true);
+    try {
+      const token = await getToken();
+      const data = await apiFetch<Review[]>("/admin/reviews", { token });
+      setReviews(data);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { loadReviews(); }, []);
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const token = await getToken();
+      await apiFetch(`/admin/reviews/${deleteTarget._id}`, { method: "DELETE", token });
+      toast({ title: "Review deleted" });
+      setDeleteTarget(null);
+      loadReviews();
+    } catch (err) {
+      toast({ title: "Delete failed", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   if (loading) return (
     <div className="p-6 space-y-3">
@@ -831,28 +951,54 @@ function ReviewsTab() {
   );
 
   return (
-    <div className="space-y-3 p-2">
-      {reviews.map((r) => {
-        const customer = typeof r.customerId === "object" ? r.customerId : undefined;
-        const service = typeof r.serviceId === "object" ? r.serviceId : undefined;
-        return (
-          <div key={r._id} className="rounded-lg border border-border p-4" data-testid={`review-${r._id}`}>
-            <div className="flex items-center justify-between">
-              <p className="font-medium">{customer?.name ?? "Anonymous"}</p>
-              <StarRating value={r.rating} readOnly size="sm" />
+    <>
+      <div className="space-y-3 p-2">
+        {reviews.map((r) => {
+          const customer = typeof r.customerId === "object" ? r.customerId : undefined;
+          const service = typeof r.serviceId === "object" ? r.serviceId : undefined;
+          return (
+            <div key={r._id} className="rounded-lg border border-border p-4" data-testid={`review-${r._id}`}>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <p className="font-medium truncate">{customer?.name ?? "Anonymous"}</p>
+                  <StarRating value={r.rating} readOnly size="sm" />
+                </div>
+                <Button size="sm" variant="destructive" onClick={() => setDeleteTarget(r)} className="shrink-0">Delete</Button>
+              </div>
+              <p className="text-xs text-text-muted mt-0.5">{service?.name}</p>
+              <p className="text-sm mt-2">{r.comment}</p>
             </div>
-            <p className="text-xs text-text-muted mt-0.5">{service?.name}</p>
-            <p className="text-sm mt-2">{r.comment}</p>
+          );
+        })}
+        {reviews.length === 0 && (
+          <div className="py-12 text-center">
+            <p className="text-lg font-medium text-text-muted">No reviews yet</p>
+            <p className="text-sm text-text-muted mt-1">Customer reviews will appear here once services are completed.</p>
           </div>
-        );
-      })}
-      {reviews.length === 0 && (
-        <div className="py-12 text-center">
-          <p className="text-lg font-medium text-text-muted">No reviews yet</p>
-          <p className="text-sm text-text-muted mt-1">Customer reviews will appear here once services are completed.</p>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Review</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this review? This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 

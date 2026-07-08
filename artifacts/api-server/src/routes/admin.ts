@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { z } from "zod";
 import { dbConnect } from "../lib/mongo";
-import { Booking, Payment, Review, Service, Technician, User } from "../models";
+import { Booking, Invoice, Notification, Payment, Review, Service, Technician, User } from "../models";
 import { requireAuth } from "../lib/clerkAuth";
 
 const router: IRouter = Router();
@@ -325,6 +325,21 @@ router.patch("/admin/services/:id", requireAuth, requireAdmin, async (req, res):
   res.json(service);
 });
 
+// ─── Customers ────────────────────────────────────────────────────────────────
+
+router.delete("/admin/customers/:id", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  await dbConnect();
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    res.status(404).json({ error: "Customer not found" });
+    return;
+  }
+  // Delete associated reviews
+  await Review.deleteMany({ customerId: user._id });
+  await user.deleteOne();
+  res.status(204).end();
+});
+
 // ─── Reviews ──────────────────────────────────────────────────────────────────
 
 router.get("/admin/reviews", requireAuth, requireAdmin, async (_req, res): Promise<void> => {
@@ -335,6 +350,16 @@ router.get("/admin/reviews", requireAuth, requireAdmin, async (_req, res): Promi
     .sort({ createdAt: -1 })
     .lean();
   res.json(reviews);
+});
+
+router.delete("/admin/reviews/:id", requireAuth, requireAdmin, async (req, res): Promise<void> => {
+  await dbConnect();
+  const review = await Review.findByIdAndDelete(req.params.id);
+  if (!review) {
+    res.status(404).json({ error: "Review not found" });
+    return;
+  }
+  res.status(204).end();
 });
 
 export default router;

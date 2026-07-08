@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
 import { dbConnect } from "../lib/mongo";
-import { Booking, Invoice, Service, User } from "../models";
+import { Booking, Invoice, Notification, Payment, Review, Service, User } from "../models";
 import { requireAuth, clerkClient, normalizeRole } from "../lib/clerkAuth";
 import { generateBookingNumber, generateInvoiceNumber } from "../lib/ids";
 import { createNotification } from "../lib/notifications";
@@ -420,6 +420,33 @@ router.post("/bookings/:id/reschedule", requireAuth, async (req, res): Promise<v
   });
 
   res.json(booking);
+});
+
+/**
+ * DELETE /bookings/:id
+ * Admin only — permanently removes a completed or cancelled booking record.
+ */
+router.delete("/bookings/:id", requireAuth, async (req, res): Promise<void> => {
+  await dbConnect();
+  const localUser = await getLocalUser(req.clerkUserId);
+  if (!localUser || localUser.role !== "admin") {
+    res.status(403).json({ error: "Admin access required" });
+    return;
+  }
+
+  const booking = await Booking.findById(req.params.id);
+  if (!booking) {
+    res.status(404).json({ error: "Booking not found" });
+    return;
+  }
+
+  if (!["completed", "cancelled"].includes(booking.status)) {
+    res.status(400).json({ error: "Only completed or cancelled bookings can be deleted" });
+    return;
+  }
+
+  await booking.deleteOne();
+  res.status(204).end();
 });
 
 export default router;
