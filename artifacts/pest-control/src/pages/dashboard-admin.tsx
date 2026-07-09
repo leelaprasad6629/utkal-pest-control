@@ -920,6 +920,7 @@ const DEFAULT_MAP_CENTER: [number, number] = [20.9517, 85.0985];
 const DEFAULT_MAP_ZOOM = 6;
 
 function ServiceMapTab() {
+  const { getToken } = useAuth();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<import("leaflet").Map | null>(null);
   const [points, setPoints] = useState<BookingMapPoint[] | null>(null);
@@ -932,7 +933,8 @@ function ServiceMapTab() {
       setLoading(true);
       setError(null);
       try {
-        const data = await apiFetch<{ points: BookingMapPoint[] }>("/admin/bookings/map");
+        const token = await getToken();
+        const data = await apiFetch<{ points: BookingMapPoint[] }>("/admin/bookings/map", { token });
         if (!cancelled) setPoints(data.points);
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load booking locations");
@@ -943,7 +945,7 @@ function ServiceMapTab() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [getToken]);
 
   useEffect(() => {
     if (!mapContainerRef.current || loading || error) return;
