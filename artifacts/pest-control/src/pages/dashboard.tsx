@@ -42,7 +42,7 @@ function statusToStepIndex(status: BookingStatus): number {
 function BookingProgressTracker({ status }: { status: BookingStatus }) {
   if (status === "cancelled") {
     return (
-      <div className="flex items-center gap-2 text-sm text-danger font-medium">
+      <div className="flex items-center gap-2 text-sm text-danger font-medium mt-3">
         <span className="inline-block h-2 w-2 rounded-full bg-danger" />
         Booking Cancelled
       </div>
@@ -52,8 +52,8 @@ function BookingProgressTracker({ status }: { status: BookingStatus }) {
   const activeStep = statusToStepIndex(status);
 
   return (
-    <div className="mt-4">
-      <div className="flex items-center">
+    <div className="mt-4 w-full overflow-x-auto no-scrollbar pb-2">
+      <div className="flex items-center min-w-[440px] px-1">
         {PROGRESS_STAGES.map((stage, idx) => {
           const done = idx < activeStep;
           const current = idx === activeStep;
@@ -81,7 +81,7 @@ function BookingProgressTracker({ status }: { status: BookingStatus }) {
                 </div>
                 <span
                   className={`mt-1 text-[10px] font-medium whitespace-nowrap ${
-                    done || current ? "text-primary" : "text-text-muted/60"
+                    done || current ? "text-primary font-semibold" : "text-text-muted/60"
                   }`}
                 >
                   {stage.label}
@@ -103,125 +103,130 @@ function BookingProgressTracker({ status }: { status: BookingStatus }) {
   );
 }
 
-// ─── Summary cards ───────────────────────────────────────────────────────────
+// ─── Booking card ─────────────────────────────────────────────────────────────
 
-function SummaryCards({ bookings }: { bookings: Booking[] }) {
-  const total = bookings.length;
-  const pending = bookings.filter((b) => !["completed", "cancelled"].includes(b.status)).length;
-  const completed = bookings.filter((b) => b.status === "completed").length;
-  const lastCompleted = bookings
-    .filter((b) => b.status === "completed" && b.scheduledDate)
-    .sort((a, b) => new Date(b.scheduledDate!).getTime() - new Date(a.scheduledDate!).getTime())[0];
-
-  const lastDate = lastCompleted?.scheduledDate
-    ? new Date(lastCompleted.scheduledDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
-    : "—";
-
-  const cards = [
-    { label: "Total Bookings", value: total, icon: "📋" },
-    { label: "Pending Services", value: pending, icon: "⏳" },
-    { label: "Completed", value: completed, icon: "✅" },
-    { label: "Last Service", value: lastDate, icon: "📅" },
-  ];
+function BookingCard({ booking }: { booking: Booking }) {
+  const service = typeof booking.serviceId === "object" ? (booking.serviceId as ServiceItem) : undefined;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      {cards.map((c) => (
-        <div key={c.label} className="rounded-xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xl mb-1">{c.icon}</p>
-          <p className="text-xl font-semibold text-primary">{c.value}</p>
-          <p className="text-xs text-text-muted mt-0.5">{c.label}</p>
+    <div
+      className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-2xs space-y-3"
+      data-testid={`booking-card-${booking._id}`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs sm:text-sm font-semibold text-primary">{booking.bookingNumber}</span>
+            <StatusBadge status={booking.status} />
+          </div>
+          <p className="mt-1 font-semibold text-foreground text-base sm:text-lg">{service?.name ?? "Pest Control Service"}</p>
         </div>
-      ))}
+        <Link href={`/bookings/${booking._id}`}>
+          <Button size="sm" variant="outline" className="w-full sm:w-auto font-medium" data-testid={`button-view-${booking._id}`}>
+            View Details →
+          </Button>
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-text-muted">
+        <div>
+          <span className="font-medium text-foreground">Scheduled Date:</span>{" "}
+          {new Date(booking.scheduledDate).toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}{" "}
+          ({booking.timeSlot})
+        </div>
+        <div className="truncate">
+          <span className="font-medium text-foreground">Address:</span> {booking.address.line1}, {booking.address.city}
+        </div>
+      </div>
+
+      <BookingProgressTracker status={booking.status} />
     </div>
   );
 }
 
-// ─── Booking card with progress tracker ──────────────────────────────────────
+// ─── Summary cards ────────────────────────────────────────────────────────────
 
-function BookingCard({ booking }: { booking: Booking }) {
-  const service = typeof booking.serviceId === "object" ? (booking.serviceId as ServiceItem) : undefined;
+function SummaryCards({ bookings }: { bookings: Booking[] }) {
+  const active = bookings.filter((b) => b.status !== "completed" && b.status !== "cancelled").length;
+  const completed = bookings.filter((b) => b.status === "completed").length;
+
   return (
-    <Link href={`/bookings/${booking._id}`} data-testid={`card-booking-${booking._id}`}>
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm hover:shadow-md hover:border-primary/40 transition-all cursor-pointer">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="font-semibold text-foreground">{service?.name ?? "Service"}</p>
-            <p className="text-xs text-text-muted mt-0.5">{booking.bookingNumber}</p>
-          </div>
-          <StatusBadge status={booking.status} />
-        </div>
-        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-text-muted">
-          <span>
-            {booking.scheduledDate ? new Date(booking.scheduledDate).toLocaleDateString() : "—"}
-            {booking.timeSlot ? ` · ${booking.timeSlot}` : ""}
-          </span>
-          {booking.price !== undefined && <span>₹{booking.price}</span>}
-        </div>
-        {!["completed", "cancelled"].includes(booking.status) && (
-          <BookingProgressTracker status={booking.status} />
-        )}
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+      <div className="rounded-xl border border-border bg-card p-4 shadow-2xs">
+        <p className="text-xs text-text-muted uppercase tracking-wide font-medium">Total Bookings</p>
+        <p className="mt-1 text-2xl font-bold text-primary">{bookings.length}</p>
       </div>
-    </Link>
+      <div className="rounded-xl border border-border bg-card p-4 shadow-2xs">
+        <p className="text-xs text-text-muted uppercase tracking-wide font-medium">Active Services</p>
+        <p className="mt-1 text-2xl font-bold text-primary">{active}</p>
+      </div>
+      <div className="rounded-xl border border-border bg-card p-4 shadow-2xs">
+        <p className="text-xs text-text-muted uppercase tracking-wide font-medium">Completed Services</p>
+        <p className="mt-1 text-2xl font-bold text-primary">{completed}</p>
+      </div>
+    </div>
   );
 }
 
-// ─── Customer dashboard ───────────────────────────────────────────────────────
+// ─── Customer view ───────────────────────────────────────────────────────────
 
 function CustomerDashboard() {
   const { getToken } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
+    async function load() {
       try {
         const token = await getToken();
         const data = await apiFetch<Booking[]>("/bookings", { token });
         setBookings(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load bookings");
+      } catch (consoleError) {
+        console.error(consoleError);
       } finally {
         setLoading(false);
       }
-    })();
-  }, []);
+    }
+    load();
+  }, [getToken]);
 
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="rounded-xl border border-border bg-card p-4 shadow-sm animate-pulse">
-              <div className="h-5 w-8 rounded bg-muted mb-2" />
-              <div className="h-6 w-12 rounded bg-muted mb-1" />
-              <div className="h-3 w-20 rounded bg-muted" />
-            </div>
-          ))}
-        </div>
-        <div className="rounded-xl border border-border bg-card p-5 h-24 animate-pulse" />
-        <div className="rounded-xl border border-border bg-card p-5 h-24 animate-pulse" />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="rounded-xl border border-border bg-card p-5 h-28 animate-pulse" />
+        ))}
       </div>
     );
   }
 
-  if (error) return <p className="text-danger" data-testid="text-error">{error}</p>;
-
-  const upcoming = bookings.filter((b) => !["completed", "cancelled"].includes(b.status));
-  const history = bookings.filter((b) => ["completed", "cancelled"].includes(b.status));
+  const upcoming = bookings.filter((b) => b.status !== "completed" && b.status !== "cancelled");
+  const history = bookings.filter((b) => b.status === "completed" || b.status === "cancelled");
 
   if (bookings.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-card p-10 text-center shadow-sm">
-        <div className="text-4xl mb-4">📋</div>
-        <h3>No bookings yet</h3>
-        <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
+      <div className="rounded-xl border border-border bg-card p-8 sm:p-12 text-center shadow-2xs">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+          <svg viewBox="0 0 24 24" fill="none" className="h-7 w-7" stroke="currentColor" strokeWidth="1.8">
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-foreground">No bookings found</h3>
+        <p className="mt-2 text-text-muted text-sm max-w-sm mx-auto">
           Your bookings and their status will appear here once you request a quote.
         </p>
         <div className="mt-6">
-          <Link href="/quote">
-            <Button data-testid="button-dashboard-get-quote">Get a Quote</Button>
+          <Link href="/quote" className="inline-block w-full sm:w-auto">
+            <Button className="w-full sm:w-auto h-11 px-6 font-semibold" data-testid="button-dashboard-get-quote">
+              Get a Quote
+            </Button>
           </Link>
         </div>
       </div>
@@ -229,19 +234,19 @@ function CustomerDashboard() {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <SummaryCards bookings={bookings} />
       <Tabs defaultValue="upcoming">
-        <div className="flex items-center justify-between mb-4">
-          <TabsList>
-            <TabsTrigger value="upcoming" data-testid="tab-upcoming">Upcoming ({upcoming.length})</TabsTrigger>
-            <TabsTrigger value="history" data-testid="tab-history">History ({history.length})</TabsTrigger>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger value="upcoming" data-testid="tab-upcoming" className="flex-1 sm:flex-none">Upcoming ({upcoming.length})</TabsTrigger>
+            <TabsTrigger value="history" data-testid="tab-history" className="flex-1 sm:flex-none">History ({history.length})</TabsTrigger>
           </TabsList>
-          <Link href="/quote">
-            <Button size="sm" data-testid="button-new-booking">New Booking</Button>
+          <Link href="/quote" className="w-full sm:w-auto">
+            <Button size="sm" className="w-full sm:w-auto h-10 font-semibold" data-testid="button-new-booking">New Booking</Button>
           </Link>
         </div>
-        <TabsContent value="upcoming" className="space-y-3">
+        <TabsContent value="upcoming" className="space-y-3 pt-1">
           {upcoming.length === 0 && (
             <div className="rounded-xl border border-border bg-card p-8 text-center">
               <p className="text-text-muted text-sm">No upcoming bookings.</p>
@@ -252,7 +257,7 @@ function CustomerDashboard() {
           )}
           {upcoming.map((b) => <BookingCard key={b._id} booking={b} />)}
         </TabsContent>
-        <TabsContent value="history" className="space-y-3">
+        <TabsContent value="history" className="space-y-3 pt-1">
           {history.length === 0 && (
             <p className="text-sm text-text-muted py-6 text-center">No past bookings yet.</p>
           )}
@@ -268,21 +273,19 @@ function CustomerDashboard() {
 export default function Dashboard() {
   const { user, loading } = useUserContext();
 
-  // Redirect to role-specific dashboard pages — this keeps admin and technician
-  // UIs at stable, bookmarkable URLs with proper route-level protection.
   if (!loading && isAdmin(user)) return <Redirect to="/dashboard/admin" />;
   if (!loading && isTechnician(user)) return <Redirect to="/dashboard/technician" />;
 
   return (
-    <div className="min-h-screen max-w-5xl mx-auto px-4 md:px-6 py-10 animate-fade-in">
-      <header className="mb-6 flex items-center justify-between">
+    <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in space-y-6 sm:space-y-8">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-primary">My Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">My Dashboard</h1>
           {!loading && user && (
-            <p className="text-sm text-text-muted mt-0.5">Welcome back, {user.name}</p>
+            <p className="text-xs sm:text-sm text-text-muted mt-0.5">Welcome back, {user.name}</p>
           )}
         </div>
-        <Link href="/profile" className="text-sm text-primary hover:underline" data-testid="link-profile">
+        <Link href="/profile" className="text-sm font-semibold text-primary hover:underline" data-testid="link-profile">
           My Profile →
         </Link>
       </header>

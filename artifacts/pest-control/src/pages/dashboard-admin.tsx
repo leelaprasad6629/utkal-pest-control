@@ -1152,12 +1152,12 @@ export default function DashboardAdmin() {
   useEffect(() => { loadData(); }, []);
 
   return (
-    <div className="min-h-screen max-w-5xl mx-auto px-4 md:px-6 py-10 animate-fade-in">
-      <header className="mb-6 flex items-center justify-between">
+    <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in space-y-6 sm:space-y-8">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h1 className="text-primary">Admin Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">Admin Dashboard</h1>
           {!userLoading && user && (
-            <p className="text-sm text-text-muted mt-0.5">Logged in as {user.name} · Admin</p>
+            <p className="text-xs sm:text-sm text-text-muted mt-0.5">Logged in as {user.name} · Admin</p>
           )}
         </div>
       </header>
@@ -1165,7 +1165,7 @@ export default function DashboardAdmin() {
       <div className="space-y-6">
         {/* Analytics cards */}
         {analyticsLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div key={i} className="rounded-xl border border-border bg-card p-4 h-20 animate-pulse" />
             ))}
@@ -1175,20 +1175,22 @@ export default function DashboardAdmin() {
         ) : null}
 
         {/* Management tabs */}
-        <div className="rounded-xl border border-border bg-card shadow-sm">
-          <div className="p-6 border-b border-border">
-            <h3>Admin Overview</h3>
-            <p className="mt-1 text-sm text-text-muted">Manage bookings, customers, technicians, reviews, and analytics.</p>
+        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+          <div className="p-4 sm:p-6 border-b border-border">
+            <h3 className="text-lg font-bold text-foreground">Admin Overview</h3>
+            <p className="mt-1 text-xs sm:text-sm text-text-muted">Manage bookings, customers, technicians, reviews, and analytics.</p>
           </div>
-          <Tabs defaultValue="bookings" className="p-4">
-            <TabsList>
-              <TabsTrigger value="bookings" data-testid="tab-admin-bookings">Bookings</TabsTrigger>
-              <TabsTrigger value="customers" data-testid="tab-admin-customers">Customers</TabsTrigger>
-              <TabsTrigger value="technicians" data-testid="tab-admin-technicians">Technicians</TabsTrigger>
-              <TabsTrigger value="reviews" data-testid="tab-admin-reviews">Reviews</TabsTrigger>
-              <TabsTrigger value="charts" data-testid="tab-admin-charts">Charts</TabsTrigger>
-              <TabsTrigger value="sitemap" data-testid="tab-admin-sitemap">Sitemap</TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="bookings" className="p-3 sm:p-5">
+            <div className="w-full overflow-x-auto no-scrollbar pb-1">
+              <TabsList className="w-max min-w-full inline-flex h-11 items-center justify-start rounded-lg bg-muted p-1 text-muted-foreground">
+                <TabsTrigger value="bookings" data-testid="tab-admin-bookings" className="text-xs sm:text-sm px-3 py-1.5 font-medium">Bookings</TabsTrigger>
+                <TabsTrigger value="customers" data-testid="tab-admin-customers" className="text-xs sm:text-sm px-3 py-1.5 font-medium">Customers</TabsTrigger>
+                <TabsTrigger value="technicians" data-testid="tab-admin-technicians" className="text-xs sm:text-sm px-3 py-1.5 font-medium">Technicians</TabsTrigger>
+                <TabsTrigger value="reviews" data-testid="tab-admin-reviews" className="text-xs sm:text-sm px-3 py-1.5 font-medium">Reviews</TabsTrigger>
+                <TabsTrigger value="charts" data-testid="tab-admin-charts" className="text-xs sm:text-sm px-3 py-1.5 font-medium">Charts</TabsTrigger>
+                <TabsTrigger value="sitemap" data-testid="tab-admin-sitemap" className="text-xs sm:text-sm px-3 py-1.5 font-medium">Sitemap</TabsTrigger>
+              </TabsList>
+            </div>
             <TabsContent value="bookings">
               <BookingsTab technicians={technicians} onMutate={loadData} />
             </TabsContent>

@@ -274,15 +274,15 @@ export default function DashboardTechnician() {
   const completed = bookings.filter((b) => b.status === "completed");
 
   return (
-    <div className="min-h-screen max-w-5xl mx-auto px-4 md:px-6 py-10 animate-fade-in">
-      <header className="mb-6 flex items-center justify-between">
+    <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in space-y-6 sm:space-y-8">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-primary">Technician Portal</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-primary">Technician Portal</h1>
           {!userLoading && user && (
-            <p className="text-sm text-text-muted mt-0.5">Welcome, {user.name} · Technician</p>
+            <p className="text-xs sm:text-sm text-text-muted mt-0.5">Welcome, {user.name} · Technician</p>
           )}
         </div>
-        <Link href="/profile" className="text-sm text-primary hover:underline">My Profile →</Link>
+        <Link href="/profile" className="text-sm font-semibold text-primary hover:underline">My Profile →</Link>
       </header>
 
       {/* Loading skeleton */}
@@ -300,9 +300,9 @@ export default function DashboardTechnician() {
 
       {/* No Technician profile guard — shown when admin hasn't set up this account yet */}
       {!loading && profileError && (
-        <div className="rounded-xl border border-warning/40 bg-warning/10 p-8 text-center shadow-sm" data-testid="technician-no-profile">
+        <div className="rounded-xl border border-warning/40 bg-warning/10 p-6 sm:p-8 text-center shadow-2xs" data-testid="technician-no-profile">
           <div className="text-4xl mb-3">⚠️</div>
-          <h3 className="text-foreground">No Technician Profile Found</h3>
+          <h3 className="text-lg font-bold text-foreground">No Technician Profile Found</h3>
           <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
             {profileError}
           </p>
@@ -319,25 +319,27 @@ export default function DashboardTechnician() {
           <SummaryCards bookings={bookings} />
 
           {bookings.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-12 text-center shadow-sm">
+            <div className="rounded-xl border border-border bg-card p-8 sm:p-12 text-center shadow-2xs">
               <div className="text-5xl mb-4">🔧</div>
-              <h3>No jobs assigned yet</h3>
+              <h3 className="text-xl font-bold text-foreground">No jobs assigned yet</h3>
               <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
                 Your assigned jobs will appear here once the admin assigns bookings to you.
               </p>
             </div>
           ) : (
             <Tabs defaultValue="active">
-              <TabsList className="mb-4">
-                <TabsTrigger value="active">Active ({active.length})</TabsTrigger>
-                <TabsTrigger value="today">Today ({todayJobs.length})</TabsTrigger>
-                <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
-              </TabsList>
+              <div className="w-full overflow-x-auto no-scrollbar mb-4">
+                <TabsList className="w-full sm:w-auto">
+                  <TabsTrigger value="active" className="flex-1 sm:flex-none">Active ({active.length})</TabsTrigger>
+                  <TabsTrigger value="today" className="flex-1 sm:flex-none">Today ({todayJobs.length})</TabsTrigger>
+                  <TabsTrigger value="completed" className="flex-1 sm:flex-none">Completed ({completed.length})</TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="active" className="space-y-4">
                 {active.length === 0 ? (
                   <div className="rounded-xl border border-border bg-card p-8 text-center">
-                    <p className="text-text-muted text-sm">All jobs completed — great work!</p>
+                    <p className="text-text-muted text-sm font-medium">All jobs completed — great work!</p>
                   </div>
                 ) : (
                   active.map((b) => <JobCard key={b._id} booking={b} onAction={load} />)

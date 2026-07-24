@@ -92,31 +92,31 @@ export default function Home() {
     <main className="animate-fade-in">
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary to-[hsl(155,43%,12%)] text-primary-foreground">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-16 md:py-24">
-          <p className="text-sm font-medium uppercase tracking-widest text-accent">{TAGLINE}</p>
-          <h1 className="mt-4 max-w-2xl text-primary-foreground">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 md:py-24">
+          <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-accent">{TAGLINE}</p>
+          <h1 className="mt-3 max-w-2xl text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-primary-foreground leading-tight">
             Protect your home, calmly and thoroughly.
           </h1>
-          <p className="mt-5 max-w-xl text-base md:text-lg text-primary-foreground/80">
+          <p className="mt-4 max-w-xl text-base sm:text-lg text-primary-foreground/80 leading-relaxed">
             {BUSINESS_NAME} provides certified, eco-conscious pest control for homes and
             businesses in {SERVICE_AREAS.join(", ")}. Request a free quote and get a
             technician scheduled in minutes.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/quote">
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <Link href="/quote" className="w-full sm:w-auto">
               <Button
                 size="lg"
-                className="bg-accent text-accent-foreground border-accent hover:brightness-95"
+                className="w-full sm:w-auto h-12 text-base font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm"
                 data-testid="button-home-quote"
               >
                 Get Free Quote
               </Button>
             </Link>
-            <Link href="/services">
+            <Link href="/services" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="outline"
-                className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                className="w-full sm:w-auto h-12 text-base font-semibold border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
                 data-testid="button-home-services"
               >
                 View Services
@@ -128,73 +128,75 @@ export default function Home() {
 
       {/* Stats bar */}
       <section className="border-b border-border bg-secondary/40">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
+          <div className="p-2">
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">
               {stats ? stats.totalCustomers.toLocaleString() : "—"}
             </p>
-            <p className="mt-1 text-xs md:text-sm text-text-muted">Customers served</p>
+            <p className="mt-1 text-xs sm:text-sm text-text-muted">Customers served</p>
           </div>
-          <div>
-            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">15+</p>
-            <p className="mt-1 text-xs md:text-sm text-text-muted">Years of experience</p>
+          <div className="p-2">
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">15+</p>
+            <p className="mt-1 text-xs sm:text-sm text-text-muted">Years experience</p>
           </div>
-          <div>
-            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">
+          <div className="p-2">
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">
               {stats?.averageRating ? `${stats.averageRating.toFixed(1)}/5` : "—"}
             </p>
-            <p className="mt-1 text-xs md:text-sm text-text-muted">Average customer rating</p>
+            <p className="mt-1 text-xs sm:text-sm text-text-muted">Average rating</p>
           </div>
-          <div>
-            <p className="text-2xl md:text-3xl font-display font-semibold text-primary">24/7</p>
-            <p className="mt-1 text-xs md:text-sm text-text-muted">Emergency response</p>
+          <div className="p-2">
+            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">24/7</p>
+            <p className="mt-1 text-xs sm:text-sm text-text-muted">Emergency response</p>
           </div>
         </div>
       </section>
 
       {/* Services */}
-      <section className="max-w-5xl mx-auto px-4 md:px-6 py-14">
-        <h2>Our Services</h2>
-        <p className="mt-2 text-text-muted max-w-xl">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Our Services</h2>
+        <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">
           Every service is backed by certified technicians and a satisfaction guarantee.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-8">
           {(services.length ? services.slice(0, 4) : FEATURED_SERVICES).map((s) => (
             <Link
               key={s.slug}
               href={`/services/${s.slug}`}
-              className="card-interactive block rounded-xl border border-border bg-card p-5 shadow-sm"
+              className="card-interactive block rounded-xl border border-border bg-card p-5 shadow-2xs hover:border-primary/40 transition-all"
               data-testid={`link-service-${s.slug}`}
             >
-              <h3 className="text-primary">{s.name}</h3>
-              <p className="mt-1.5 text-sm text-text-muted">{s.description}</p>
+              <h3 className="text-primary font-bold text-lg">{s.name}</h3>
+              <p className="mt-1.5 text-sm text-text-muted leading-relaxed">{s.description}</p>
             </Link>
           ))}
         </div>
-        <div className="mt-6 text-center">
+        <div className="mt-8 text-center">
           <Link href="/services">
-            <Button variant="outline" data-testid="button-all-services">View All Services</Button>
+            <Button variant="outline" className="h-11 px-6 font-semibold" data-testid="button-all-services">
+              View All Services
+            </Button>
           </Link>
         </div>
       </section>
 
       {/* Why Choose Us */}
       <section className="bg-secondary/30 border-y border-border">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-14">
-          <h2>Why Choose Us</h2>
-          <p className="mt-2 text-text-muted max-w-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Why Choose Us</h2>
+          <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">
             We're committed to delivering safe, effective, and transparent pest control — every time.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8">
             {WHY_CHOOSE_US.map((item) => (
               <div
                 key={item.title}
-                className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                className="rounded-xl border border-border bg-card p-5 shadow-2xs"
                 data-testid={`why-choose-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 <div className="text-3xl mb-3">{item.icon}</div>
-                <h4 className="font-semibold text-foreground">{item.title}</h4>
-                <p className="mt-2 text-sm text-text-muted">{item.description}</p>
+                <h4 className="font-semibold text-foreground text-base">{item.title}</h4>
+                <p className="mt-2 text-sm text-text-muted leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
@@ -202,17 +204,17 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="max-w-5xl mx-auto px-4 md:px-6 py-14">
-        <h2>How It Works</h2>
-        <p className="mt-2 text-text-muted max-w-xl">From booking to warranty, we make pest control simple.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">How It Works</h2>
+        <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">From booking to warranty, we make pest control simple.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {PROCESS_STEPS.map((step, idx) => (
-            <div key={step.title} className="relative">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-semibold">
+            <div key={step.title} className="relative bg-card border border-border rounded-xl p-5 shadow-2xs">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm mb-3">
                 {idx + 1}
               </div>
-              <h4 className="mt-3 text-foreground">{step.title}</h4>
-              <p className="mt-1 text-sm text-text-muted">{step.description}</p>
+              <h4 className="font-semibold text-foreground text-base">{step.title}</h4>
+              <p className="mt-1 text-sm text-text-muted leading-relaxed">{step.description}</p>
             </div>
           ))}
         </div>
@@ -220,29 +222,31 @@ export default function Home() {
 
       {/* Customer Testimonials */}
       <section className="bg-secondary/30 border-y border-border">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-14">
-          <h2>What Our Customers Say</h2>
-          <p className="mt-2 text-text-muted max-w-xl">Real feedback from homeowners and businesses we've served.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">What Our Customers Say</h2>
+          <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">Real feedback from homeowners and businesses we've served.</p>
           {reviews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-8">
               {reviews.map((r) => {
                 const customer = typeof r.customerId === "object" ? r.customerId : undefined;
                 return (
                   <div
                     key={r._id}
-                    className="rounded-xl border border-border bg-card p-5 shadow-sm"
+                    className="rounded-xl border border-border bg-card p-5 shadow-2xs flex flex-col justify-between"
                     data-testid={`testimonial-${r._id}`}
                   >
-                    <Stars value={r.rating} />
-                    <p className="mt-3 text-sm text-foreground/90 leading-relaxed">&ldquo;{r.comment}&rdquo;</p>
-                    <p className="mt-3 text-sm font-medium text-text-muted">— {customer?.name ?? "Verified Customer"}</p>
+                    <div className="space-y-3">
+                      <Stars value={r.rating} />
+                      <p className="text-sm text-foreground/90 leading-relaxed">&ldquo;{r.comment}&rdquo;</p>
+                    </div>
+                    <p className="mt-4 text-xs font-semibold text-text-muted">— {customer?.name ?? "Verified Customer"}</p>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="mt-8 rounded-xl border border-border bg-card p-10 text-center">
-              <p className="text-text-muted">Be the first to share your experience!</p>
+            <div className="mt-8 rounded-xl border border-border bg-card p-8 text-center">
+              <p className="text-text-muted text-sm sm:text-base">Be the first to share your experience!</p>
               <Link href="/quote" className="mt-4 inline-block">
                 <Button variant="outline" size="sm">Book a Service</Button>
               </Link>
@@ -252,13 +256,17 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="max-w-3xl mx-auto px-4 md:px-6 py-14">
-        <h2>Frequently Asked Questions</h2>
-        <Accordion type="single" collapsible className="mt-6">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center">Frequently Asked Questions</h2>
+        <Accordion type="single" collapsible className="mt-8 space-y-2">
           {FAQS.map((faq, idx) => (
-            <AccordionItem key={faq.question} value={`faq-${idx}`}>
-              <AccordionTrigger data-testid={`faq-trigger-${idx}`}>{faq.question}</AccordionTrigger>
-              <AccordionContent>{faq.answer}</AccordionContent>
+            <AccordionItem key={faq.question} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card">
+              <AccordionTrigger data-testid={`faq-trigger-${idx}`} className="text-base font-semibold py-4 hover:no-underline">
+                {faq.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground pb-4 leading-relaxed">
+                {faq.answer}
+              </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
@@ -266,16 +274,16 @@ export default function Home() {
 
       {/* CTA */}
       <section className="bg-primary text-primary-foreground">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-14 text-center">
-          <h2 className="text-primary-foreground">Serving {SERVICE_AREAS.join(", ")}</h2>
-          <p className="mt-3 text-primary-foreground/80 max-w-xl mx-auto">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center space-y-4">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-foreground">Serving {SERVICE_AREAS.join(", ")}</h2>
+          <p className="text-primary-foreground/80 max-w-xl mx-auto text-sm sm:text-base">
             Ready to get started? Book a free inspection and quote today.
           </p>
-          <div className="mt-6">
-            <Link href="/quote">
+          <div className="pt-2">
+            <Link href="/quote" className="inline-block w-full sm:w-auto">
               <Button
                 size="lg"
-                className="bg-accent text-accent-foreground border-accent hover:brightness-95"
+                className="w-full sm:w-auto h-12 px-8 text-base font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm"
                 data-testid="button-cta-quote"
               >
                 Get Free Quote
