@@ -16,7 +16,8 @@ import {
   AlertCircle,
   ShieldCheck,
   Zap,
-  Headphones
+  Headphones,
+  Globe
 } from "lucide-react";
 
 export default function Contact() {
@@ -71,8 +72,8 @@ export default function Contact() {
             <span>Licensed Professionals</span>
           </div>
           <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-2xs">
-            <MapPin className="w-4 h-4 text-primary shrink-0" />
-            <span>Serving All Odisha</span>
+            <Globe className="w-4 h-4 text-primary shrink-0" />
+            <span>Serving Across India</span>
           </div>
         </div>
       </section>
@@ -87,17 +88,16 @@ export default function Contact() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-            {/* Address Card */}
+            {/* Address / Service Network Card */}
             <Card className="hover:border-primary/40 transition-colors shadow-2xs">
               <CardContent className="p-4 sm:p-5 flex items-start gap-4">
                 <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
                   <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-sm font-semibold text-foreground">Headquarters</h3>
+                  <h3 className="text-sm font-semibold text-foreground">Service Coverage</h3>
                   <p className="text-sm text-muted-foreground leading-snug">
-                    Plot No. 124, Saheed Nagar, <br />
-                    Bhubaneswar, Odisha 751007
+                    Serving customers across India. Our support team connects you with the nearest service professional.
                   </p>
                 </div>
               </CardContent>
@@ -111,16 +111,12 @@ export default function Contact() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-sm font-semibold text-foreground">Phone & Hotline</h3>
-                  <div className="flex flex-col text-sm text-muted-foreground">
-                    <a href="tel:+919437012345" className="hover:text-primary transition-colors font-medium text-foreground">
-                      +91 94370 12345
-                    </a>
-                    <a href="tel:+916742501234" className="hover:text-primary transition-colors">
-                      +91 (0674) 250-1234
-                    </a>
+                  <div className="flex flex-col text-sm text-muted-foreground space-y-0.5">
+                    <p className="font-medium text-foreground">Phone: To be updated</p>
+                    <p>Customer Support: To be updated</p>
                   </div>
                   <span className="inline-block text-xs text-emerald-600 dark:text-emerald-400 font-medium pt-1">
-                    24/7 Emergency Line Active
+                    Emergency Line Active
                   </span>
                 </div>
               </CardContent>
@@ -134,13 +130,9 @@ export default function Contact() {
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-sm font-semibold text-foreground">Email Support</h3>
-                  <div className="flex flex-col text-sm">
-                    <a href="mailto:info@utkalpestcontrol.com" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                      info@utkalpestcontrol.com
-                    </a>
-                    <a href="mailto:support@utkalpestcontrol.com" className="text-muted-foreground hover:text-primary transition-colors">
-                      support@utkalpestcontrol.com
-                    </a>
+                  <div className="flex flex-col text-sm text-muted-foreground space-y-0.5">
+                    <p className="font-medium text-foreground">Support: contact@utkalpestcontrol.com</p>
+                    <p>Inquiries: info@utkalpestcontrol.com</p>
                   </div>
                 </div>
               </CardContent>
@@ -293,24 +285,17 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* Map Section */}
+      {/* Pan-India Service Section */}
       <section className="space-y-4 pt-4 sm:pt-6">
-        <div className="text-center max-w-xl mx-auto space-y-1">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Find Us on the Map</h2>
-          <p className="text-sm text-muted-foreground">
-            Visit our central office in Saheed Nagar, Bhubaneswar or request an on-site inspection across Odisha.
+        <Card className="border-border bg-gradient-to-r from-primary/5 via-card to-primary/5 rounded-2xl p-6 sm:p-10 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary mb-4">
+            <Globe className="w-7 h-7" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Nationwide Service Network</h2>
+          <p className="mt-3 text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            We provide pest control services across India. Contact us and we will connect you with the nearest service team.
           </p>
-        </div>
-
-        <div className="relative w-full h-[320px] sm:h-[400px] rounded-2xl overflow-hidden border border-border shadow-sm bg-muted">
-          <iframe
-            title="Utkal Pest Control Office Location"
-            src="https://maps.google.com/maps?q=Saheed+Nagar+Bhubaneswar+Odisha&t=&z=14&ie=UTF8&iwloc=&output=embed"
-            className="w-full h-full border-0"
-            loading="lazy"
-            allowFullScreen
-          />
-        </div>
+        </Card>
       </section>
     </main>
   );
