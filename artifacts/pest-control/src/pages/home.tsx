@@ -6,6 +6,7 @@ import { BUSINESS_NAME, TAGLINE, SERVICE_AREAS } from "@/config/business";
 import { apiFetch } from "@/lib/api";
 import type { PublicStats, Review, ServiceItem } from "@/lib/types";
 import StarRating from "@/components/star-rating";
+import { getServiceImage } from "@/config/service-images";
 
 const FEATURED_SERVICES = [
   { slug: "residential-pest-control", name: "Residential", description: "Safe, thorough protection for your home." },
@@ -163,11 +164,21 @@ export default function Home() {
             <Link
               key={s.slug}
               href={`/services/${s.slug}`}
-              className="card-interactive block rounded-xl border border-border bg-card p-5 shadow-2xs hover:border-primary/40 transition-all"
+              className="group card-interactive block rounded-xl border border-border bg-card overflow-hidden shadow-2xs hover:border-primary/40 transition-all"
               data-testid={`link-service-${s.slug}`}
             >
-              <h3 className="text-primary font-bold text-lg">{s.name}</h3>
-              <p className="mt-1.5 text-sm text-text-muted leading-relaxed">{s.description}</p>
+              <div className="overflow-hidden h-40 w-full relative bg-secondary/20">
+                <img
+                  src={getServiceImage(s.slug)}
+                  alt={s.name}
+                  loading="lazy"
+                  className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="text-primary font-bold text-lg">{s.name}</h3>
+                <p className="mt-1.5 text-sm text-text-muted leading-relaxed">{s.description}</p>
+              </div>
             </Link>
           ))}
         </div>

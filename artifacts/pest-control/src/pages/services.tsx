@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { apiFetch } from "@/lib/api";
 import type { ServiceItem } from "@/lib/types";
+import { getServiceImage } from "@/config/service-images";
 
 export default function Services() {
   const [services, setServices] = useState<ServiceItem[]>([]);
@@ -29,18 +30,28 @@ export default function Services() {
           <Link
             key={s._id}
             href={`/services/${s.slug}`}
-            className="card-interactive block rounded-xl border border-border bg-card p-5 shadow-sm"
+            className="group card-interactive block rounded-xl border border-border bg-card overflow-hidden shadow-sm"
             data-testid={`link-service-${s.slug}`}
           >
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-primary">{s.name}</h3>
-              {typeof s.basePrice === "number" && (
-                <span className="shrink-0 text-sm font-semibold text-accent-foreground bg-accent/25 px-2.5 py-1 rounded-full">
-                  ₹{s.basePrice}+
-                </span>
-              )}
+            <div className="overflow-hidden h-48 w-full relative bg-secondary/20">
+              <img
+                src={getServiceImage(s.slug)}
+                alt={s.name}
+                loading="lazy"
+                className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
-            {s.description && <p className="text-sm mt-2 text-text-muted">{s.description}</p>}
+            <div className="p-5">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-primary font-bold">{s.name}</h3>
+                {typeof s.basePrice === "number" && (
+                  <span className="shrink-0 text-sm font-semibold text-accent-foreground bg-accent/25 px-2.5 py-1 rounded-full">
+                    ₹{s.basePrice}+
+                  </span>
+                )}
+              </div>
+              {s.description && <p className="text-sm mt-2 text-text-muted">{s.description}</p>}
+            </div>
           </Link>
         ))}
         {services.length === 0 && !error && (
