@@ -324,8 +324,14 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(245,240,232,0.9) 100%);
+    min-height: 100vh;
   }
 
   h1 {
@@ -345,23 +351,65 @@
   }
 
   a, button {
-    @apply transition-colors duration-150;
+    @apply transition-all duration-200 ease-out;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
   }
 
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 }
 
 @layer utilities {
   .animate-fade-in {
-    animation: fade-in 400ms ease-out both;
+    animation: fade-in 500ms ease-out both;
+  }
+
+  .animate-float-slow {
+    animation: float-slow 5s ease-in-out infinite;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .section-shell {
+    @apply rounded-[1.75rem] border border-border/70 bg-card/85 shadow-[0_18px_50px_-24px_rgba(28,28,28,0.25)] backdrop-blur-sm;
+  }
+
+  .soft-divider {
+    @apply relative overflow-hidden before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-transparent before:via-primary/20 before:to-transparent;
   }
 
   .card-interactive {
-    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/30;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_-22px_rgba(28,28,28,0.35)] hover:border-primary/30;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 18px 45px -24px rgba(28, 28, 28, 0.28);
+  }
+
+  .hero-image-shell {
+    @apply relative overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80 shadow-soft;
+  }
+
+  .hero-image-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent;
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
   }
 }
 

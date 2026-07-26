@@ -20,6 +20,7 @@ import Profile from "@/pages/profile";
 import InvoiceDetail from "@/pages/invoice-detail";
 import { UserProvider, useUserContext, isAdmin, isTechnician } from "@/lib/user-context";
 import Setup from "@/pages/setup";
+import FloatingWhatsAppButton from "@/components/floating-whatsapp-button";
 
 const queryClient = new QueryClient();
 
@@ -109,14 +110,17 @@ function Router() {
 function App() {
   if (!clerkPublishableKey) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-xl font-bold text-gray-900">Missing Clerk configuration</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Set the VITE_CLERK_PUBLISHABLE_KEY environment variable to enable authentication.
-          </p>
+      <>
+        <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4">
+          <div className="text-center max-w-md">
+            <h1 className="text-xl font-bold text-gray-900">Missing Clerk configuration</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Set the VITE_CLERK_PUBLISHABLE_KEY environment variable to enable authentication.
+            </p>
+          </div>
         </div>
-      </div>
+        <FloatingWhatsAppButton />
+      </>
     );
   }
 
@@ -127,6 +131,7 @@ function App() {
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <UserProvider>
               <Router />
+              <FloatingWhatsAppButton />
             </UserProvider>
           </WouterRouter>
           <Toaster />

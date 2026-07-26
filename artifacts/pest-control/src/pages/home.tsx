@@ -8,7 +8,7 @@ import type { PublicStats, Review, ServiceItem } from "@/lib/types";
 import StarRating from "@/components/star-rating";
 import ServiceCardImage from "@/components/service-card-image";
 import { motion } from "framer-motion";
-import { Award, UserCheck, Leaf, Zap, Tag, Globe, Headphones, ThumbsUp } from "lucide-react";
+import { Award, UserCheck, Leaf, Zap, Tag, Globe, Headphones, ThumbsUp, ShieldCheck, ArrowRight, Sparkles, Home as HomeIcon, Building2, Sprout, Shield } from "lucide-react";
 
 const FEATURED_SERVICES = [
   { slug: "residential-pest-control", name: "Residential", description: "Safe, thorough protection for your home." },
@@ -67,6 +67,33 @@ const WHY_CHOOSE_US = [
   },
 ];
 
+const HERO_IMAGE_PALETTE = [
+  {
+    title: "Residential protection",
+    description: "Trusted home treatments with careful inspection and eco-safe products.",
+    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80",
+    icon: HomeIcon,
+  },
+  {
+    title: "Commercial pest control",
+    description: "Discreet service plans for offices, retail spaces, and facilities.",
+    image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+    icon: Building2,
+  },
+  {
+    title: "Eco-friendly spraying",
+    description: "Low-impact applications that protect families, pets, and the environment.",
+    image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=80",
+    icon: Sprout,
+  },
+  {
+    title: "Certified technicians",
+    description: "Skilled professionals bring precision treatment and dependable follow-through.",
+    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80",
+    icon: Shield,
+  },
+] as const;
+
 const FAQS = [
   {
     question: "Are your treatments safe for children and pets?",
@@ -119,85 +146,167 @@ export default function Home() {
       {/* Page Content */}
       <main className="relative z-10 animate-fade-in">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary to-[hsl(155,43%,12%)] text-primary-foreground">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 md:py-24">
-          <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-accent">{TAGLINE}</p>
-          <h1 className="mt-3 max-w-2xl text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-primary-foreground leading-tight">
-            Protect your home, calmly and thoroughly.
-          </h1>
-          <p className="mt-4 max-w-xl text-base sm:text-lg text-primary-foreground/80 leading-relaxed">
-            {BUSINESS_NAME} provides certified, eco-conscious pest control for homes and
-            businesses in {SERVICE_AREAS.join(", ")}. Request a free quote and get a
-            technician scheduled in minutes.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <Link href="/quote" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-12 text-base font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm"
-                data-testid="button-home-quote"
-              >
-                Get Free Quote
-              </Button>
-            </Link>
-            <Link href="/services" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto h-12 text-base font-semibold border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-                data-testid="button-home-services"
-              >
-                View Services
-              </Button>
-            </Link>
+      <section className="relative overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground">
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80"
+            alt="Pest control technician treating a home"
+            loading="eager"
+            decoding="async"
+            className="h-full w-full object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-linear-to-r from-primary/95 via-primary/80 to-primary/40" />
+        </div>
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-10 px-4 py-12 sm:px-6 sm:py-20 lg:px-8 lg:py-24 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/15 bg-primary-foreground/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+              <Sparkles className="h-3.5 w-3.5" />
+              {TAGLINE}
+            </div>
+            <h1 className="mt-5 text-balance text-3xl font-bold leading-tight text-primary-foreground sm:text-4xl lg:text-5xl">
+              Protect your home, calmly and thoroughly.
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
+              {BUSINESS_NAME} provides certified, eco-conscious pest control for homes and
+              businesses in {SERVICE_AREAS.join(", ")}. Request a free quote and get a
+              technician scheduled in minutes.
+            </p>
+            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+              <Link href="/quote" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="h-12 w-full bg-accent text-accent-foreground border-accent text-base font-semibold shadow-[0_16px_40px_-20px_rgba(212,163,115,0.8)] hover:brightness-95 sm:w-auto"
+                  data-testid="button-home-quote"
+                >
+                  Get Free Quote
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/services" className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 w-full border-primary-foreground/25 bg-primary-foreground/10 text-base font-semibold text-primary-foreground hover:bg-primary-foreground/15 sm:w-auto"
+                  data-testid="button-home-services"
+                >
+                  View Services
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="section-shell w-full max-w-xl border-primary-foreground/10 bg-card/80 p-5 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Trusted by local families</p>
+                <p className="text-sm text-text-muted">Certified inspections, safe treatments, and a workmanship guarantee.</p>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-border/80 bg-background/80 p-4">
+                <p className="text-2xl font-semibold text-primary">24/7</p>
+                <p className="mt-1 text-sm text-text-muted">Rapid response for urgent infestations</p>
+              </div>
+              <div className="rounded-2xl border border-border/80 bg-background/80 p-4">
+                <p className="text-2xl font-semibold text-primary">100%</p>
+                <p className="mt-1 text-sm text-text-muted">Transparent quotes with no hidden surprises</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Stats bar */}
-      <section className="border-b border-border bg-secondary/20 backdrop-blur-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
-          <div className="p-2">
-            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">
+      <section className="soft-divider border-b border-border/70 bg-secondary/30 backdrop-blur-sm">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 px-4 py-6 sm:grid-cols-4 sm:gap-4 sm:px-6 sm:py-8 lg:px-8">
+          <div className="rounded-2xl border border-border/80 bg-card/80 p-3 text-center shadow-sm">
+            <p className="text-2xl font-display font-semibold text-primary sm:text-3xl">
               {stats ? stats.totalCustomers.toLocaleString() : "—"}
             </p>
-            <p className="mt-1 text-xs sm:text-sm text-text-muted">Customers served</p>
+            <p className="mt-1 text-xs text-text-muted sm:text-sm">Customers served</p>
           </div>
-          <div className="p-2">
-            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">15+</p>
-            <p className="mt-1 text-xs sm:text-sm text-text-muted">Years experience</p>
+          <div className="rounded-2xl border border-border/80 bg-card/80 p-3 text-center shadow-sm">
+            <p className="text-2xl font-display font-semibold text-primary sm:text-3xl">15+</p>
+            <p className="mt-1 text-xs text-text-muted sm:text-sm">Years experience</p>
           </div>
-          <div className="p-2">
-            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">
+          <div className="rounded-2xl border border-border/80 bg-card/80 p-3 text-center shadow-sm">
+            <p className="text-2xl font-display font-semibold text-primary sm:text-3xl">
               {stats?.averageRating ? `${stats.averageRating.toFixed(1)}/5` : "—"}
             </p>
-            <p className="mt-1 text-xs sm:text-sm text-text-muted">Average rating</p>
+            <p className="mt-1 text-xs text-text-muted sm:text-sm">Average rating</p>
           </div>
-          <div className="p-2">
-            <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">24/7</p>
-            <p className="mt-1 text-xs sm:text-sm text-text-muted">Emergency response</p>
+          <div className="rounded-2xl border border-border/80 bg-card/80 p-3 text-center shadow-sm">
+            <p className="text-2xl font-display font-semibold text-primary sm:text-3xl">24/7</p>
+            <p className="mt-1 text-xs text-text-muted sm:text-sm">Emergency response</p>
           </div>
         </div>
       </section>
 
       {/* Services */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Our Services</h2>
-        <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">
-          Every service is backed by certified technicians and a satisfaction guarantee.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-8">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mb-8 grid gap-4 lg:grid-cols-4">
+          {HERO_IMAGE_PALETTE.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <motion.article
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.35, delay: index * 0.06 }}
+                className="group overflow-hidden rounded-[1.25rem] border border-border bg-card shadow-sm"
+              >
+                <div className="relative h-44 overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-primary/80 via-primary/10 to-transparent" />
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Icon className="h-4 w-4" />
+                    <h3 className="text-base font-semibold text-foreground">{item.title}</h3>
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-text-muted">{item.description}</p>
+                </div>
+              </motion.article>
+            );
+          })}
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground sm:text-3xl">Our Services</h2>
+            <p className="mt-2 max-w-xl text-sm text-text-muted sm:text-base">
+              Every service is backed by certified technicians and a satisfaction guarantee.
+            </p>
+          </div>
+          <div className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+            <ShieldCheck className="h-4 w-4" />
+            Trusted, thorough, and discreet service
+          </div>
+        </div>
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
           {(services.length ? services.slice(0, 4) : FEATURED_SERVICES).map((s) => (
             <Link
               key={s.slug}
               href={`/services/${s.slug}`}
-              className="group card-interactive block rounded-xl border border-border bg-card overflow-hidden shadow-2xs hover:border-primary/40 transition-all"
+              className="group card-interactive block overflow-hidden rounded-[1.25rem] border border-border bg-card shadow-sm"
               data-testid={`link-service-${s.slug}`}
             >
               <ServiceCardImage slug={s.slug} alt={s.name} />
               <div className="p-5">
-                <h3 className="text-primary font-bold text-lg">{s.name}</h3>
-                <p className="mt-1.5 text-sm text-text-muted leading-relaxed">{s.description}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-lg font-bold text-primary">{s.name}</h3>
+                  <ArrowRight className="h-4 w-4 text-primary transition-transform duration-300 group-hover:translate-x-1" />
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-text-muted">{s.description}</p>
               </div>
             </Link>
           ))}
@@ -212,9 +321,9 @@ export default function Home() {
       </section>
 
       {/* Customer Testimonials */}
-      <section className="bg-secondary/20 border-y border-border backdrop-blur-xs" data-testid="section-testimonials">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <section className="border-y border-border/70 bg-secondary/25 backdrop-blur-sm" data-testid="section-testimonials">
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Customer Testimonials</h2>
               <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">
@@ -222,7 +331,7 @@ export default function Home() {
               </p>
             </div>
             {avgRating !== null && totalReviewsCount > 0 && (
-              <div className="flex items-center gap-3 bg-card border border-border px-4 py-2.5 rounded-xl shadow-2xs self-start sm:self-auto" data-testid="rating-summary">
+              <div className="flex items-center gap-3 self-start rounded-2xl border border-border/80 bg-card/90 px-4 py-2.5 shadow-sm sm:self-auto" data-testid="rating-summary">
                 <Stars value={Math.round(avgRating)} />
                 <div className="text-sm">
                   <span className="font-bold text-foreground" data-testid="text-overall-rating">{avgRating.toFixed(1)}/5</span>
@@ -248,7 +357,7 @@ export default function Home() {
                 return (
                   <div
                     key={r._id}
-                    className="rounded-xl border border-border bg-card p-5 shadow-2xs flex flex-col justify-between"
+                    className="flex flex-col justify-between rounded-[1.15rem] border border-border/80 bg-card p-5 shadow-sm"
                     data-testid={`testimonial-${r._id}`}
                   >
                     <div className="space-y-3">
@@ -267,7 +376,7 @@ export default function Home() {
               })}
             </div>
           ) : (
-            <div className="mt-8 rounded-xl border border-border bg-card p-8 text-center" data-testid="no-reviews-message">
+            <div className="mt-8 rounded-[1.25rem] border border-border/80 bg-card p-8 text-center shadow-sm" data-testid="no-reviews-message">
               <p className="text-foreground font-semibold text-base">No reviews yet</p>
               <p className="mt-1 text-text-muted text-sm max-w-md mx-auto">
                 Be the first to share your experience after booking a service with us!
@@ -283,16 +392,16 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="bg-secondary/20 border-y border-border overflow-hidden backdrop-blur-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <div className="text-center max-w-3xl mx-auto">
+      <section className="overflow-hidden border-y border-border/70 bg-secondary/25 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">Why Choose Utkal Pest Control?</h2>
             <p className="mt-4 text-text-muted text-base sm:text-lg">
               With over 15 years of industry leadership, we deliver the most reliable, safe, and professional pest control services for residential and commercial spaces across the country.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 mt-16">
+          <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
             {WHY_CHOOSE_US.map((item, idx) => {
               const IconComponent = item.icon;
               return (
@@ -302,10 +411,10 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: idx * 0.05 }}
-                  className="flex gap-4 p-5 rounded-xl bg-card border border-border hover:shadow-md transition-all duration-200"
+                  className="flex gap-4 rounded-[1.2rem] border border-border/80 bg-card p-5 shadow-sm transition-all duration-300 hover:shadow-md"
                   data-testid={`why-choose-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 animate-pulse-slow">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary animate-float-slow">
                     <IconComponent className="h-6 w-6" />
                   </div>
                   <div>
@@ -320,28 +429,28 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">How It Works</h2>
-        <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">From booking to warranty, we make pest control simple.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <h2 className="text-2xl font-bold text-foreground sm:text-3xl">How It Works</h2>
+        <p className="mt-2 max-w-xl text-sm text-text-muted sm:text-base">From booking to warranty, we make pest control simple.</p>
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {PROCESS_STEPS.map((step, idx) => (
-            <div key={step.title} className="relative bg-card border border-border rounded-xl p-5 shadow-2xs">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm mb-3">
+            <div key={step.title} className="relative rounded-[1.2rem] border border-border/80 bg-card p-5 shadow-sm">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
                 {idx + 1}
               </div>
-              <h4 className="font-semibold text-foreground text-base">{step.title}</h4>
-              <p className="mt-1 text-sm text-text-muted leading-relaxed">{step.description}</p>
+              <h4 className="text-base font-semibold text-foreground">{step.title}</h4>
+              <p className="mt-1 text-sm leading-relaxed text-text-muted">{step.description}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center">Frequently Asked Questions</h2>
+      <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <h2 className="text-center text-2xl font-bold text-foreground sm:text-3xl">Frequently Asked Questions</h2>
         <Accordion type="single" collapsible className="mt-8 space-y-2">
           {FAQS.map((faq, idx) => (
-            <AccordionItem key={faq.question} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card">
+            <AccordionItem key={faq.question} value={`faq-${idx}`} className="rounded-2xl border border-border/80 bg-card px-4 shadow-sm">
               <AccordionTrigger data-testid={`faq-trigger-${idx}`} className="text-base font-semibold py-4 hover:no-underline">
                 {faq.question}
               </AccordionTrigger>
@@ -355,21 +464,24 @@ export default function Home() {
 
       {/* CTA */}
       <section className="bg-primary text-primary-foreground">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center space-y-4">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-foreground">Serving {SERVICE_AREAS.join(", ")}</h2>
-          <p className="text-primary-foreground/80 max-w-xl mx-auto text-sm sm:text-base">
-            Ready to get started? Book a free inspection and quote today.
-          </p>
-          <div className="pt-2">
-            <Link href="/quote" className="inline-block w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-12 px-8 text-base font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm"
-                data-testid="button-cta-quote"
-              >
-                Get Free Quote
-              </Button>
-            </Link>
+        <div className="mx-auto max-w-5xl px-4 py-12 text-center sm:px-6 sm:py-16 lg:px-8">
+          <div className="rounded-[1.75rem] border border-primary-foreground/15 bg-primary/95 p-8 shadow-soft sm:p-10">
+            <h2 className="text-2xl font-bold text-primary-foreground sm:text-3xl lg:text-4xl">Serving {SERVICE_AREAS.join(", ")}</h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-primary-foreground/80 sm:text-base">
+              Ready to get started? Book a free inspection and quote today.
+            </p>
+            <div className="pt-6">
+              <Link href="/quote" className="inline-block w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="h-12 w-full bg-accent px-8 text-base font-semibold text-accent-foreground border-accent shadow-[0_16px_40px_-20px_rgba(212,163,115,0.8)] hover:brightness-95 sm:w-auto"
+                  data-testid="button-cta-quote"
+                >
+                  Get Free Quote
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

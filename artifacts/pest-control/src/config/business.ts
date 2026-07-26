@@ -4,3 +4,5 @@ export const TAGLINE =
 export const SERVICE_AREAS = (import.meta.env.VITE_SERVICE_AREAS ?? "Pan-India")
   .split(",")
   .map((s: string) => s.trim());
+export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER ?? "917093823752";
+export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER.replace(/[^\d]/g, "")}`;
