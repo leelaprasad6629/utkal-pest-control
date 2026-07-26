@@ -6,7 +6,7 @@ import { BUSINESS_NAME, TAGLINE, SERVICE_AREAS } from "@/config/business";
 import { apiFetch } from "@/lib/api";
 import type { PublicStats, Review, ServiceItem } from "@/lib/types";
 import StarRating from "@/components/star-rating";
-import { getServiceImage } from "@/config/service-images";
+import ServiceCardImage from "@/components/service-card-image";
 import { motion } from "framer-motion";
 import { Award, UserCheck, Leaf, Zap, Tag, Globe, Headphones, ThumbsUp } from "lucide-react";
 
@@ -194,14 +194,7 @@ export default function Home() {
               className="group card-interactive block rounded-xl border border-border bg-card overflow-hidden shadow-2xs hover:border-primary/40 transition-all"
               data-testid={`link-service-${s.slug}`}
             >
-              <div className="overflow-hidden h-40 w-full relative bg-secondary/20">
-                <img
-                  src={getServiceImage(s.slug)}
-                  alt={s.name}
-                  loading="lazy"
-                  className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+              <ServiceCardImage slug={s.slug} alt={s.name} />
               <div className="p-5">
                 <h3 className="text-primary font-bold text-lg">{s.name}</h3>
                 <p className="mt-1.5 text-sm text-text-muted leading-relaxed">{s.description}</p>

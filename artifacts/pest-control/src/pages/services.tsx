@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { apiFetch } from "@/lib/api";
 import type { ServiceItem } from "@/lib/types";
-import { getServiceImage } from "@/config/service-images";
+import ServiceCardImage from "@/components/service-card-image";
 
 export default function Services() {
   const [services, setServices] = useState<ServiceItem[]>([]);
@@ -45,14 +45,7 @@ export default function Services() {
               className="group card-interactive block rounded-xl border border-border bg-card/90 overflow-hidden shadow-sm backdrop-blur-xs"
               data-testid={`link-service-${s.slug}`}
             >
-              <div className="overflow-hidden h-48 w-full relative bg-secondary/20">
-                <img
-                  src={getServiceImage(s.slug)}
-                  alt={s.name}
-                  loading="lazy"
-                  className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
+              <ServiceCardImage slug={s.slug} alt={s.name} />
               <div className="p-5">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="text-primary font-bold">{s.name}</h3>
