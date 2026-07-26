@@ -105,7 +105,19 @@ export default function Home() {
   const totalReviewsCount = stats?.reviewCount ?? reviews.length;
 
   return (
-    <main className="animate-fade-in">
+    <div className="relative min-h-screen w-full">
+      {/* Fixed Background Image */}
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
+        style={{ 
+          backgroundImage: "url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=80')" 
+        }}
+      />
+      {/* Themed Overlay for Readability */}
+      <div className="fixed inset-0 z-0 bg-background/92 backdrop-blur-[1.5px] pointer-events-none" />
+
+      {/* Page Content */}
+      <main className="relative z-10 animate-fade-in">
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary to-[hsl(155,43%,12%)] text-primary-foreground">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 md:py-24">
@@ -143,7 +155,7 @@ export default function Home() {
       </section>
 
       {/* Stats bar */}
-      <section className="border-b border-border bg-secondary/40">
+      <section className="border-b border-border bg-secondary/20 backdrop-blur-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
           <div className="p-2">
             <p className="text-2xl sm:text-3xl font-display font-semibold text-primary">
@@ -207,7 +219,7 @@ export default function Home() {
       </section>
 
       {/* Customer Testimonials */}
-      <section className="bg-secondary/30 border-y border-border" data-testid="section-testimonials">
+      <section className="bg-secondary/20 border-y border-border backdrop-blur-xs" data-testid="section-testimonials">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
@@ -278,7 +290,7 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="bg-secondary/30 border-y border-border overflow-hidden">
+      <section className="bg-secondary/20 border-y border-border overflow-hidden backdrop-blur-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="text-center max-w-3xl mx-auto">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">Why Choose Utkal Pest Control?</h2>
@@ -368,6 +380,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </div>
   );
 }
