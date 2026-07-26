@@ -84,10 +84,13 @@ export default function Home() {
   const [stats, setStats] = useState<PublicStats | null>(null);
 
   useEffect(() => {
-    apiFetch<Review[]>("/reviews").then((data) => setReviews(data.slice(0, 3))).catch(() => setReviews([]));
+    apiFetch<Review[]>("/reviews").then((data) => setReviews(data.slice(0, 6))).catch(() => setReviews([]));
     apiFetch<ServiceItem[]>("/services").then(setServices).catch(() => setServices([]));
     apiFetch<PublicStats>("/stats").then(setStats).catch(() => setStats(null));
   }, []);
+
+  const avgRating = stats?.averageRating ?? (reviews.length ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length : null);
+  const totalReviewsCount = stats?.reviewCount ?? reviews.length;
 
   return (
     <main className="animate-fade-in">
@@ -191,8 +194,79 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Customer Testimonials */}
+      <section className="bg-secondary/30 border-y border-border" data-testid="section-testimonials">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Customer Testimonials</h2>
+              <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">
+                Real feedback from homeowners and businesses we've served.
+              </p>
+            </div>
+            {avgRating !== null && totalReviewsCount > 0 && (
+              <div className="flex items-center gap-3 bg-card border border-border px-4 py-2.5 rounded-xl shadow-2xs self-start sm:self-auto" data-testid="rating-summary">
+                <Stars value={Math.round(avgRating)} />
+                <div className="text-sm">
+                  <span className="font-bold text-foreground" data-testid="text-overall-rating">{avgRating.toFixed(1)}/5</span>
+                  <span className="text-text-muted ml-1 font-medium" data-testid="text-reviews-count">({totalReviewsCount} {totalReviewsCount === 1 ? "review" : "reviews"})</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {reviews.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8">
+              {reviews.map((r) => {
+                const customer = typeof r.customerId === "object" ? r.customerId : undefined;
+                const service = typeof r.serviceId === "object" ? r.serviceId : undefined;
+                const dateStr = r.createdAt
+                  ? new Date(r.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
+                  : null;
+
+                return (
+                  <div
+                    key={r._id}
+                    className="rounded-xl border border-border bg-card p-5 shadow-2xs flex flex-col justify-between"
+                    data-testid={`testimonial-${r._id}`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <Stars value={r.rating} />
+                        {dateStr && <span className="text-xs text-text-muted">{dateStr}</span>}
+                      </div>
+                      <p className="text-sm text-foreground/90 leading-relaxed">&ldquo;{r.comment}&rdquo;</p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                      <span className="font-semibold text-foreground">— {customer?.name ?? "Verified Customer"}</span>
+                      {service?.name && <span className="text-text-muted font-medium">{service.name}</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-8 rounded-xl border border-border bg-card p-8 text-center" data-testid="no-reviews-message">
+              <p className="text-foreground font-semibold text-base">No reviews yet</p>
+              <p className="mt-1 text-text-muted text-sm max-w-md mx-auto">
+                Be the first to share your experience after booking a service with us!
+              </p>
+              <Link href="/quote" className="mt-4 inline-block">
+                <Button variant="outline" size="sm" data-testid="button-book-service">
+                  Book a Service
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Why Choose Us */}
-      <section className="bg-secondary/30 border-y border-border">
+      <section className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Why Choose Us</h2>
           <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">
@@ -228,41 +302,6 @@ export default function Home() {
               <p className="mt-1 text-sm text-text-muted leading-relaxed">{step.description}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Customer Testimonials */}
-      <section className="bg-secondary/30 border-y border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">What Our Customers Say</h2>
-          <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">Real feedback from homeowners and businesses we've served.</p>
-          {reviews.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-8">
-              {reviews.map((r) => {
-                const customer = typeof r.customerId === "object" ? r.customerId : undefined;
-                return (
-                  <div
-                    key={r._id}
-                    className="rounded-xl border border-border bg-card p-5 shadow-2xs flex flex-col justify-between"
-                    data-testid={`testimonial-${r._id}`}
-                  >
-                    <div className="space-y-3">
-                      <Stars value={r.rating} />
-                      <p className="text-sm text-foreground/90 leading-relaxed">&ldquo;{r.comment}&rdquo;</p>
-                    </div>
-                    <p className="mt-4 text-xs font-semibold text-text-muted">— {customer?.name ?? "Verified Customer"}</p>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="mt-8 rounded-xl border border-border bg-card p-8 text-center">
-              <p className="text-text-muted text-sm sm:text-base">Be the first to share your experience!</p>
-              <Link href="/quote" className="mt-4 inline-block">
-                <Button variant="outline" size="sm">Book a Service</Button>
-              </Link>
-            </div>
-          )}
         </div>
       </section>
 

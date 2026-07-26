@@ -10,6 +10,7 @@ import { useUserContext, isAdmin, isTechnician } from "@/lib/user-context";
 import { Menu } from "lucide-react";
 
 const NAV_LINKS = [
+  { href: "/", label: "Home", testId: "link-home-nav" },
   { href: "/services", label: "Services", testId: "link-services" },
   { href: "/about", label: "About", testId: "link-about" },
   { href: "/contact", label: "Contact", testId: "link-contact" },
