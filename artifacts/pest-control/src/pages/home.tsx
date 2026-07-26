@@ -7,6 +7,8 @@ import { apiFetch } from "@/lib/api";
 import type { PublicStats, Review, ServiceItem } from "@/lib/types";
 import StarRating from "@/components/star-rating";
 import { getServiceImage } from "@/config/service-images";
+import { motion } from "framer-motion";
+import { Award, UserCheck, Leaf, Zap, Tag, Globe, Headphones, ThumbsUp } from "lucide-react";
 
 const FEATURED_SERVICES = [
   { slug: "residential-pest-control", name: "Residential", description: "Safe, thorough protection for your home." },
@@ -24,34 +26,44 @@ const PROCESS_STEPS = [
 
 const WHY_CHOOSE_US = [
   {
-    icon: "🌿",
-    title: "Eco-Friendly Products",
-    description: "We use government-approved, low-toxicity formulations that are safe for children and pets.",
+    icon: Award,
+    title: "15+ Years of Experience",
+    description: "Trusted by thousands of homeowners and businesses with over a decade of proven pest control excellence.",
   },
   {
-    icon: "🎓",
-    title: "Certified Technicians",
-    description: "Every technician is trained, certified, and background-verified before joining our team.",
+    icon: UserCheck,
+    title: "Certified & Trained Professionals",
+    description: "Every technician is background-verified, certified, and regularly trained on the latest industry standards.",
   },
   {
-    icon: "🛡️",
-    title: "Service Warranty",
-    description: "Most treatments come with a warranty. If pests return, so do we — at no extra charge.",
+    icon: Leaf,
+    title: "Safe & Eco-Friendly Treatments",
+    description: "We use WHO-approved, low-toxicity formulations that are safe for your family, pets, and the environment.",
   },
   {
-    icon: "⚡",
-    title: "24/7 Emergency Response",
-    description: "Urgent infestation? We offer same-day emergency visits across all service areas.",
+    icon: Zap,
+    title: "Same-Day Service",
+    description: "Urgent infestation? We offer fast response times to inspect and treat active pest problems immediately.",
   },
   {
-    icon: "💰",
-    title: "Transparent Pricing",
-    description: "No hidden fees. All pricing is shared upfront during the free inspection.",
+    icon: Tag,
+    title: "Affordable Pricing",
+    description: "Transparent upfront quotes with zero hidden charges, ensuring the best value for your budget.",
   },
   {
-    icon: "📱",
-    title: "Easy Online Booking",
-    description: "Book, track, and manage your services entirely online — no phone calls required.",
+    icon: Globe,
+    title: "PAN India Service",
+    description: "Extensive networks and operations serving major cities and surrounding local suburbs nationwide.",
+  },
+  {
+    icon: Headphones,
+    title: "24×7 Customer Support",
+    description: "Round-the-clock dedicated helpdesk to assist you with booking requests and support queries.",
+  },
+  {
+    icon: ThumbsUp,
+    title: "Customer Satisfaction Guarantee",
+    description: "If pests return during the warranty period, we treat your property again at no extra charge.",
   },
 ];
 
@@ -266,24 +278,38 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Why Choose Us</h2>
-          <p className="mt-2 text-text-muted max-w-xl text-sm sm:text-base">
-            We're committed to delivering safe, effective, and transparent pest control — every time.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-8">
-            {WHY_CHOOSE_US.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-xl border border-border bg-card p-5 shadow-2xs"
-                data-testid={`why-choose-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
-              >
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <h4 className="font-semibold text-foreground text-base">{item.title}</h4>
-                <p className="mt-2 text-sm text-text-muted leading-relaxed">{item.description}</p>
-              </div>
-            ))}
+      <section className="bg-secondary/30 border-y border-border overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground">Why Choose Utkal Pest Control?</h2>
+            <p className="mt-4 text-text-muted text-base sm:text-lg">
+              With over 15 years of industry leadership, we deliver the most reliable, safe, and professional pest control services for residential and commercial spaces across the country.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 mt-16">
+            {WHY_CHOOSE_US.map((item, idx) => {
+              const IconComponent = item.icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.05 }}
+                  className="flex gap-4 p-5 rounded-xl bg-card border border-border hover:shadow-md transition-all duration-200"
+                  data-testid={`why-choose-${item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0 animate-pulse-slow">
+                    <IconComponent className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground text-base sm:text-lg">{item.title}</h4>
+                    <p className="mt-2 text-sm text-text-muted leading-relaxed">{item.description}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
