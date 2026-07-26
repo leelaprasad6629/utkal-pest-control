@@ -395,11 +395,12 @@
   }
 
   .hero-image-shell {
-    @apply relative overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80 shadow-soft;
+    @apply relative overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/80;
+    box-shadow: 0 18px 45px -24px rgba(28, 28, 28, 0.28);
   }
 
   .hero-image-overlay {
-    @apply absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent;
+    @apply absolute inset-0 bg-linear-to-t from-primary/80 via-primary/20 to-transparent;
   }
 }
 
