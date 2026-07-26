@@ -266,20 +266,28 @@ export default function Quote() {
       <div className="fixed inset-0 z-0 bg-background/92 backdrop-blur-[1.5px] pointer-events-none" />
 
       {/* Hero Banner Section */}
-      <section className="relative z-10 overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground py-16 sm:py-24 border-b border-border/10">
-        <div className="absolute inset-0 z-0 opacity-15 mix-blend-overlay bg-cover bg-center pointer-events-none"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=80')" }}
+      <section className="relative z-10 overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[350px] md:min-h-[400px] flex items-center border-b border-border/10">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
+          style={{ 
+            backgroundImage: "url('/images/heroes/quote-hero.jpg')" 
+          }}
         />
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+        {/* Dark Overlay (40-60%) */}
+        <div className="absolute inset-0 z-0 bg-black/55 pointer-events-none" />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center space-y-4 w-full">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
             Reliable Pest Solutions
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight max-w-3xl mx-auto leading-tight">
-            Book a Professional Pest Control Service
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight max-w-3xl mx-auto leading-tight text-white">
+            Book Your Pest Control Service
           </h1>
-          <p className="max-w-xl mx-auto text-sm sm:text-base text-primary-foreground/80 leading-relaxed">
-            Protect your property from termites, cockroaches, rodents, and other harmful pests. Plan your custom schedule and book in minutes.
+          <p className="max-w-xl mx-auto text-sm sm:text-base text-white/85 leading-relaxed">
+            Request a free inspection and receive a customized quote from our experts.
           </p>
           <div className="pt-2">
             <Button

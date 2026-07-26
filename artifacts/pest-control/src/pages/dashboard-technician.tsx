@@ -20,6 +20,7 @@ import type { Booking, ServiceItem } from "@/lib/types";
 import StatusBadge from "@/components/status-badge";
 import { toast } from "@/hooks/use-toast";
 import { useUserContext } from "@/lib/user-context";
+import { Wrench } from "lucide-react";
 
 // ─── Complete job dialog ──────────────────────────────────────────────────────
 
@@ -274,16 +275,43 @@ export default function DashboardTechnician() {
   const completed = bookings.filter((b) => b.status === "completed");
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in space-y-6 sm:space-y-8">
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary">Technician Portal</h1>
-          {!userLoading && user && (
-            <p className="text-xs sm:text-sm text-text-muted mt-0.5">Welcome, {user.name} · Technician</p>
-          )}
+    <div className="min-h-screen w-full bg-background/95">
+      {/* Premium Full-Width Hero Section */}
+      <div className="relative overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[300px] md:min-h-[400px] flex items-center border-b border-border/10">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
+          style={{ 
+            backgroundImage: "url('/images/heroes/technician-hero.jpg')" 
+          }}
+        />
+        {/* Dark Overlay (40-60%) */}
+        <div className="absolute inset-0 z-0 bg-black/55 pointer-events-none" />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 w-full flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
+            <div className="h-16 w-16 rounded-2xl bg-white/10 text-white flex items-center justify-center shrink-0 border border-white/20 animate-pulse-slow">
+              <Wrench className="w-8 h-8" />
+            </div>
+            <div className="space-y-1">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">Technician Dashboard</h1>
+              <p className="text-sm sm:text-base text-white/80 max-w-xl leading-relaxed">
+                View assigned jobs, update service status, and manage daily tasks.
+              </p>
+              {!userLoading && user && (
+                <p className="text-xs text-white/60">Welcome, {user.name} · Technician</p>
+              )}
+            </div>
+          </div>
+          <Link href="/profile" className="text-sm font-semibold bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full border border-white/25 shrink-0 transition-colors shadow-xs">
+            My Profile →
+          </Link>
         </div>
-        <Link href="/profile" className="text-sm font-semibold text-primary hover:underline">My Profile →</Link>
-      </header>
+      </div>
+
+      {/* Main Grid Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8 relative z-10 animate-fade-in">
 
       {/* Loading skeleton */}
       {loading && (
@@ -368,6 +396,7 @@ export default function DashboardTechnician() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
