@@ -51,10 +51,10 @@ export default function SiteHeader() {
                 href={link.href}
                 data-testid={link.testId}
                 className={cn(
-                  "px-3 py-2 rounded-md font-medium text-sm transition-colors duration-150",
+                  "px-3.5 py-1.5 rounded-full font-medium text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
                   isActive
-                    ? "text-primary bg-secondary border-b-2 border-primary"
-                    : "text-foreground/70 hover:text-foreground hover:bg-muted border-b-2 border-transparent"
+                    ? "text-primary bg-secondary/85 font-semibold shadow-2xs border border-primary/5"
+                    : "text-foreground/75 hover:text-foreground hover:bg-secondary/40"
                 )}
               >
                 {link.label}
@@ -67,10 +67,10 @@ export default function SiteHeader() {
               href={dashHref}
               data-testid="link-dashboard"
               className={cn(
-                "px-3 py-2 rounded-md font-medium text-sm transition-colors duration-150",
+                "px-3.5 py-1.5 rounded-full font-medium text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
                 isDashActive
-                  ? "text-primary bg-secondary border-b-2 border-primary"
-                  : "text-foreground/70 hover:text-foreground hover:bg-muted border-b-2 border-transparent"
+                  ? "text-primary bg-secondary/85 font-semibold shadow-2xs border border-primary/5"
+                  : "text-foreground/75 hover:text-foreground hover:bg-secondary/40"
               )}
             >
               {dashLabel}

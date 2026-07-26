@@ -14,27 +14,15 @@ function wikimedia(fileName: string): string {
   return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(fileName)}?width=${CARD_WIDTH}`;
 }
 
-/**
- * One unique, pest-control-specific image per canonical service slug.
- * Sources: Pexels, Unsplash, Wikimedia Commons (royalty-free).
- */
 export const SERVICE_IMAGES: Record<string, string> = {
-  /** Technician spraying pesticide indoors */
-  "residential-pest-control": pexels(5691544),
-  /** Pest control service in a commercial/office setting */
-  "commercial-pest-control": pexels(6474489),
-  /** Cockroach close-up for targeted treatment */
-  "cockroach-control": pexels(2608958),
-  /** Outdoor mosquito fogging / fumigation */
-  "mosquito-fumigation": pexels(19789837),
-  /** Bed bug (Cimex lectularius) — CDC public domain */
-  "bed-bug-treatment": wikimedia("Adult_bed_bug,_Cimex_lectularius.jpg"),
-  /** Rat / rodent control */
-  "rodent-control": unsplash("photo-1598300042247-d088f8ab3a91"),
-  /** Fumigation of wooden furniture / structural treatment */
-  "termite-control": pexels(4176545),
-  /** Agricultural pesticide spraying */
-  "agri-advisory": pexels(6345502),
+  "residential-pest-control": "/images/services/residential-pest-control.jpg",
+  "commercial-pest-control": "/images/services/commercial-pest-control.jpg",
+  "cockroach-control": "/images/services/cockroach-control.jpg",
+  "mosquito-fumigation": "/images/services/mosquito-fumigation.jpg",
+  "bed-bug-treatment": "/images/services/bed-bug-treatment.jpg",
+  "rodent-control": "/images/services/rodent-control.jpg",
+  "termite-control": "/images/services/termite-control.jpg",
+  "agri-advisory": "/images/services/agri-advisory.jpg",
 };
 
 /** Maps legacy DB slugs to canonical slugs (same image, no duplicate URLs). */
