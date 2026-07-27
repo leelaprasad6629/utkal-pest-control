@@ -56,54 +56,56 @@ function TechnicianRoute({ component: Component }: { component: React.ComponentT
 
 function Router() {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <SiteHeader />
-      <Switch>
-        {/* Public routes */}
-        <Route path="/" component={Home} />
-        <Route path="/about" component={About} />
-        <Route path="/contact" component={Contact} />
-        <Route path="/services" component={Services} />
-        <Route path="/services/:slug" component={ServiceDetail} />
-        <Route path="/quote" component={Quote} />
-        <Route path="/setup" component={Setup} />
+      <main className="flex-grow">
+        <Switch>
+          {/* Public routes */}
+          <Route path="/" component={Home} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/services" component={Services} />
+          <Route path="/services/:slug" component={ServiceDetail} />
+          <Route path="/quote" component={Quote} />
+          <Route path="/setup" component={Setup} />
 
-        {/* Authenticated routes */}
-        <Route path="/dashboard">
-          <AuthRequired>
-            <Dashboard />
-          </AuthRequired>
-        </Route>
-        <Route path="/dashboard/admin">
-          <AuthRequired>
-            <AdminRoute component={DashboardAdmin} />
-          </AuthRequired>
-        </Route>
-        <Route path="/dashboard/technician">
-          <AuthRequired>
-            <TechnicianRoute component={DashboardTechnician} />
-          </AuthRequired>
-        </Route>
-        <Route path="/bookings/:id">
-          <AuthRequired>
-            <BookingDetail />
-          </AuthRequired>
-        </Route>
-        <Route path="/profile">
-          <AuthRequired>
-            <Profile />
-          </AuthRequired>
-        </Route>
-        <Route path="/invoices/:id">
-          <AuthRequired>
-            <InvoiceDetail />
-          </AuthRequired>
-        </Route>
+          {/* Authenticated routes */}
+          <Route path="/dashboard">
+            <AuthRequired>
+              <Dashboard />
+            </AuthRequired>
+          </Route>
+          <Route path="/dashboard/admin">
+            <AuthRequired>
+              <AdminRoute component={DashboardAdmin} />
+            </AuthRequired>
+          </Route>
+          <Route path="/dashboard/technician">
+            <AuthRequired>
+              <TechnicianRoute component={DashboardTechnician} />
+            </AuthRequired>
+          </Route>
+          <Route path="/bookings/:id">
+            <AuthRequired>
+              <BookingDetail />
+            </AuthRequired>
+          </Route>
+          <Route path="/profile">
+            <AuthRequired>
+              <Profile />
+            </AuthRequired>
+          </Route>
+          <Route path="/invoices/:id">
+            <AuthRequired>
+              <InvoiceDetail />
+            </AuthRequired>
+          </Route>
 
-        <Route component={NotFound} />
-      </Switch>
+          <Route component={NotFound} />
+        </Switch>
+      </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }
 

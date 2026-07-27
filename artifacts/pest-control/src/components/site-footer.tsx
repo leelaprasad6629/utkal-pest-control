@@ -4,8 +4,8 @@ import { LogoLockup } from "@/components/logo";
 
 export default function SiteFooter() {
   return (
-    <footer className="mt-16 bg-primary text-primary-foreground">
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 grid gap-8 md:grid-cols-3">
+    <footer className="w-full bg-primary text-primary-foreground">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         <div>
           <LogoLockup size={30} textClass="text-primary-foreground text-base" />
           <p className="mt-3 text-sm text-primary-foreground/75">{TAGLINE}</p>
