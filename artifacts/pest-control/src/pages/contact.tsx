@@ -102,7 +102,6 @@ export default function Contact() {
             <span>Serving Across India</span>
           </div>
         </div>
-      </main>
 
       {/* Contact Info Cards - Balanced 4-Column Grid */}
       <section className="max-w-6xl mx-auto relative z-10">
