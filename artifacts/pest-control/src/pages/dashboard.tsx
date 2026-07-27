@@ -277,7 +277,7 @@ export default function Dashboard() {
   if (!loading && isTechnician(user)) return <Redirect to="/dashboard/technician" />;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in space-y-6 sm:space-y-8">
+    <div className="min-h-[calc(100vh-4rem)] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 animate-fade-in space-y-6 sm:space-y-8">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-primary">My Dashboard</h1>

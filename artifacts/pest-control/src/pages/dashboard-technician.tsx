@@ -275,7 +275,7 @@ export default function DashboardTechnician() {
   const completed = bookings.filter((b) => b.status === "completed");
 
   return (
-    <div className="min-h-screen w-full bg-background/95">
+    <div className="min-h-[calc(100vh-4rem)] w-full bg-background/95">
       {/* Premium Full-Width Hero Section */}
       <div className="relative overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[300px] md:min-h-[400px] flex items-center border-b border-border/10">
         {/* Background Image */}

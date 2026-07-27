@@ -254,7 +254,7 @@ export default function Quote() {
   };
 
   return (
-    <div className="relative min-h-screen w-full">
+    <div className="relative min-h-[calc(100vh-4rem)] w-full">
       {/* Fixed Page Background */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"

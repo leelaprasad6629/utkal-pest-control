@@ -15,7 +15,7 @@ export default function Services() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full">
+    <div className="relative min-h-[calc(100vh-4rem)] w-full">
       {/* Fixed Background Image */}
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"

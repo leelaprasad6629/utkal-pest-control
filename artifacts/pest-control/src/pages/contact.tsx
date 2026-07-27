@@ -46,40 +46,66 @@ export default function Contact() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 animate-fade-in space-y-10 sm:space-y-14">
-      {/* Hero / Header Section */}
-      <section className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-semibold tracking-wide uppercase">
-          <Headphones className="w-4 h-4" />
-          Get In Touch
-        </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
-          We're Here to Protect Your Space
-        </h1>
-        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-          Have a question about our pest control services, need a free inspection quote, or require immediate assistance? 
-          Send us a message and our team will respond promptly.
-        </p>
+    <div className="relative min-h-[calc(100vh-4rem)] w-full">
+      {/* Fixed Background Image */}
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
+        style={{ 
+          backgroundImage: "url('/images/heroes/contact-hero.jpg')" 
+        }}
+      />
+      {/* Readability Overlay */}
+      <div className="fixed inset-0 z-0 bg-background/92 backdrop-blur-[1.5px] pointer-events-none" />
 
+      {/* Hero Banner Section */}
+      <section className="relative z-10 overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[300px] flex items-center border-b border-border/10">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
+          style={{ 
+            backgroundImage: "url('/images/heroes/contact-hero.jpg')" 
+          }}
+        />
+        {/* Dark Overlay (40-60%) */}
+        <div className="absolute inset-0 z-0 bg-black/55 pointer-events-none" />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center space-y-4 w-full">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent text-xs sm:text-sm font-semibold tracking-wide uppercase">
+            <Headphones className="w-4 h-4" />
+            Get In Touch
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+            We're Here to Protect Your Space
+          </h1>
+          <p className="text-base sm:text-lg text-white/90 leading-relaxed max-w-3xl mx-auto">
+            Have a question about our pest control services, need a free inspection quote, or require immediate assistance? 
+            Send us a message and our team will respond promptly.
+          </p>
+        </div>
+      </section>
+
+      {/* Main Content Section */}
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-10 sm:space-y-14">
         {/* Feature Badges */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium text-muted-foreground">
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-2xs">
+        <div className="-mt-16 sm:-mt-22 relative z-20 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium text-muted-foreground">
+          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-sm">
             <Zap className="w-4 h-4 text-amber-500 shrink-0" />
             <span>Fast 24/7 Response</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-2xs">
+          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-sm">
             <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>Licensed Professionals</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-2xs">
+          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-sm">
             <Globe className="w-4 h-4 text-primary shrink-0" />
             <span>Serving Across India</span>
           </div>
         </div>
-      </section>
+      </main>
 
       {/* Contact Info Cards - Balanced 4-Column Grid */}
-      <section className="max-w-6xl mx-auto">
+      <section className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Service Coverage Card */}
           <Card className="hover:border-primary/40 transition-colors shadow-2xs">
@@ -283,6 +309,7 @@ export default function Contact() {
         </Card>
       </section>
     </main>
+    </div>
   );
 }
 
