@@ -12,6 +12,7 @@ import technicianRouter from "./technician";
 import adminRouter from "./admin";
 import paymentsRouter from "./payments";
 import statsRouter from "./stats";
+import chatRouter from "./chat";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(invoicesRouter);
 router.use(technicianRouter);
 router.use(adminRouter);
 router.use(paymentsRouter);
+router.use(chatRouter);
 
 export default router;

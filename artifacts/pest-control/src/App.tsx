@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { lazy, Suspense } from "react";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 import NotFound from "@/pages/not-found";
@@ -21,6 +22,9 @@ import InvoiceDetail from "@/pages/invoice-detail";
 import { UserProvider, useUserContext, isAdmin, isTechnician } from "@/lib/user-context";
 import Setup from "@/pages/setup";
 import FloatingWhatsAppButton from "@/components/floating-whatsapp-button";
+
+// Lazy-load the AI support chatbot so it never affects initial page load speed.
+const SupportChatbot = lazy(() => import("@/components/support-chatbot"));
 
 const queryClient = new QueryClient();
 
@@ -134,6 +138,9 @@ function App() {
             <UserProvider>
               <Router />
               <FloatingWhatsAppButton />
+              <Suspense fallback={null}>
+                <SupportChatbot />
+              </Suspense>
             </UserProvider>
           </WouterRouter>
           <Toaster />
