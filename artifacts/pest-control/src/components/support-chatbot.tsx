@@ -20,18 +20,31 @@ import { WHATSAPP_URL, WHATSAPP_NUMBER } from "@/config/business";
 
 type Role = "user" | "assistant";
 
+interface ChatButton {
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  kind: "navigate" | "link" | "phone";
+  value: string;
+}
+
 interface ChatMessage {
   id: string;
   role: Role;
   content: string;
   timestamp: number;
+  /** Optional action buttons rendered below the message bubble */
+  buttons?: ChatButton[];
 }
 
 interface QuickAction {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  kind: "navigate" | "message" | "link";
+  kind: "navigate" | "response" | "link";
   value: string;
+  /** Predefined response text for "response" kind */
+  response?: string;
+  /** Optional action buttons for the response */
+  buttons?: ChatButton[];
 }
 
 const WELCOME_TEXT =
@@ -41,6 +54,129 @@ const FALLBACK_REPLY =
   "Sorry, I'm currently unavailable. Please contact us through WhatsApp.";
 
 const PHONE_DISPLAY = "+91 70938 23752";
+const PHONE_TEL = "+917093823752";
+const EMAIL_1 = "contact@utkalpestcontrol.com";
+const EMAIL_2 = "info@utkalpestcontrol.com";
+const WORKING_HOURS = "Mon – Sat: 8:00 AM – 8:00 PM\nSunday: Emergency Only";
+
+/** WhatsApp deep link with a pre-filled support message */
+const WHATSAPP_SUPPORT_URL = `${WHATSAPP_URL}?text=${encodeURIComponent(
+  "Hi, I need help regarding pest control services."
+)}`;
+
+/* ── Predefined quick-action responses ─────────────────────────────── */
+
+const PRICING_RESPONSE = [
+  "📋 Our Pest Control Service Pricing (Starting Prices):",
+  "",
+  "1. Cockroach & General Pest Control — ₹999+",
+  "2. Mosquito & Fumigation — ₹1,299+",
+  "3. Residential Pest Control — ₹1,499+",
+  "4. Rodent Control — ₹1,799+",
+  "5. Bed Bug Treatment — ₹2,499+",
+  "6. Agricultural Pest Advisory — ₹2,500+",
+  "7. Commercial Pest Control — ₹4,999+",
+  "8. Termite Control — ₹4,999+",
+  "",
+  "Note: Final pricing depends on inspection and property size. Book a free inspection for an accurate quote!",
+].join("\n");
+
+const PRICING_BUTTONS: ChatButton[] = [
+  { label: "Book a Service", icon: Calendar, kind: "navigate", value: "/quote" },
+];
+
+const CONTACT_RESPONSE = [
+  "📞 Contact Support — Utkal Pest Control",
+  "",
+  `Phone: ${PHONE_DISPLAY}`,
+  `WhatsApp: ${PHONE_DISPLAY}`,
+  `Email: ${EMAIL_1}`,
+  `        ${EMAIL_2}`,
+  "Working Hours:",
+  WORKING_HOURS,
+  "",
+  "Tap below to call or chat with us on WhatsApp!",
+].join("\n");
+
+const CONTACT_BUTTONS: ChatButton[] = [
+  { label: "Call Now", icon: Phone, kind: "phone", value: PHONE_TEL },
+  { label: "WhatsApp", icon: FaWhatsapp, kind: "link", value: WHATSAPP_SUPPORT_URL },
+];
+
+const SERVICE_AREAS_RESPONSE = [
+  "📍 Service Areas",
+  "",
+  "We currently provide pest control services across Odisha and nearby locations.",
+  "Contact us to confirm availability in your area.",
+  "",
+  `📞 Call us at ${PHONE_DISPLAY} or reach out via WhatsApp for quick confirmation!`,
+].join("\n");
+
+const SAFETY_RESPONSE = [
+  "🛡️ Safety Information",
+  "",
+  "Our treatments are safe when instructions are followed.",
+  "",
+  "• Keep children and pets away during treatment if required.",
+  "• Follow the technician's safety instructions carefully.",
+  "• Ventilate rooms before reuse when applicable.",
+  "",
+  "If you have any concerns, our technicians are happy to guide you on-site.",
+].join("\n");
+
+const SAFETY_BUTTONS: ChatButton[] = [
+  { label: "Book a Service", icon: Calendar, kind: "navigate", value: "/quote" },
+];
+
+/* ── Quick-action button definitions ───────────────────────────────── */
+
+const QUICK_ACTIONS: QuickAction[] = [
+  { label: "Book a Service", icon: Calendar, kind: "navigate", value: "/quote" },
+  { label: "Services", icon: HelpCircle, kind: "navigate", value: "/services" },
+  {
+    label: "Pricing",
+    icon: HelpCircle,
+    kind: "response",
+    value: "Pricing",
+    response: PRICING_RESPONSE,
+    buttons: PRICING_BUTTONS,
+  },
+  {
+    label: "Contact Support",
+    icon: Phone,
+    kind: "response",
+    value: "Contact Support",
+    response: CONTACT_RESPONSE,
+    buttons: CONTACT_BUTTONS,
+  },
+  {
+    label: "Service Areas",
+    icon: MapPin,
+    kind: "response",
+    value: "Service Areas",
+    response: SERVICE_AREAS_RESPONSE,
+  },
+  {
+    label: "Safety Information",
+    icon: Shield,
+    kind: "response",
+    value: "Safety Information",
+    response: SAFETY_RESPONSE,
+    buttons: SAFETY_BUTTONS,
+  },
+  {
+    label: "WhatsApp Support",
+    icon: FaWhatsapp,
+    kind: "link",
+    value: WHATSAPP_SUPPORT_URL,
+  },
+];
+
+let idCounter = 0;
+function makeId(): string {
+  idCounter += 1;
+  return "m" + Date.now() + "_" + idCounter;
+}
 
 function formatPhone(raw: string): string {
   const digits = raw.replace(/\D/g, "");
@@ -55,37 +191,6 @@ function formatTime(ts: number): string {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-const QUICK_ACTIONS: QuickAction[] = [
-  { label: "Book a Service", icon: Calendar, kind: "navigate", value: "/quote" },
-  { label: "Services", icon: HelpCircle, kind: "navigate", value: "/services" },
-  {
-    label: "Pricing",
-    icon: HelpCircle,
-    kind: "message",
-    value: "What are your service charges and pricing?",
-  },
-  { label: "Contact Support", icon: Phone, kind: "navigate", value: "/contact" },
-  {
-    label: "Service Areas",
-    icon: MapPin,
-    kind: "message",
-    value: "Which areas do you provide pest control services in?",
-  },
-  {
-    label: "Safety Information",
-    icon: Shield,
-    kind: "message",
-    value: "Is your pest control treatment safe for children and pets?",
-  },
-  { label: "WhatsApp Support", icon: FaWhatsapp, kind: "link", value: WHATSAPP_URL },
-];
-
-let idCounter = 0;
-function makeId(): string {
-  idCounter += 1;
-  return "m" + Date.now() + "_" + idCounter;
 }
 
 export default function SupportChatbot() {
@@ -164,18 +269,57 @@ export default function SupportChatbot() {
 
   const handleQuickAction = useCallback(
     (action: QuickAction) => {
+      // Link: open external URL (WhatsApp, etc.)
       if (action.kind === "link") {
         window.open(action.value, "_blank", "noopener,noreferrer");
         return;
       }
+      // Navigate: close chat and navigate to an internal route
       if (action.kind === "navigate") {
         setIsOpen(false);
         navigate(action.value);
         return;
       }
-      sendMessage(action.value);
+      // Response: show a predefined assistant message inline (no API call)
+      if (action.kind === "response") {
+        setShowQuickActions(false);
+        const userMsg: ChatMessage = {
+          id: makeId(),
+          role: "user",
+          content: action.value,
+          timestamp: Date.now(),
+        };
+        const botMsg: ChatMessage = {
+          id: makeId(),
+          role: "assistant",
+          content: action.response || "",
+          timestamp: Date.now(),
+          buttons: action.buttons,
+        };
+        setMessages((prev) => [...prev, userMsg, botMsg]);
+        return;
+      }
     },
-    [navigate, sendMessage]
+    [navigate]
+  );
+
+  const handleChatButton = useCallback(
+    (btn: ChatButton) => {
+      if (btn.kind === "navigate") {
+        setIsOpen(false);
+        navigate(btn.value);
+        return;
+      }
+      if (btn.kind === "link") {
+        window.open(btn.value, "_blank", "noopener,noreferrer");
+        return;
+      }
+      if (btn.kind === "phone") {
+        window.location.href = `tel:${btn.value}`;
+        return;
+      }
+    },
+    [navigate]
   );
 
   const clearChat = useCallback(() => {
@@ -291,7 +435,7 @@ export default function SupportChatbot() {
                 </span>
               </div>
 
-              {/* Quick action buttons */}
+              {/* Quick-action buttons (shown until first interaction) */}
               {showQuickActions && (
                 <div className="flex flex-wrap gap-1.5 pl-9">
                   {QUICK_ACTIONS.map((action) => {
@@ -339,6 +483,27 @@ export default function SupportChatbot() {
                       {m.content}
                     </div>
                   </div>
+
+                  {/* Action buttons attached to this message */}
+                  {m.buttons && m.buttons.length > 0 && (
+                    <div className={"flex flex-wrap gap-1.5 " + (m.role === "user" ? "justify-end pr-9" : "pl-9")}>
+                      {m.buttons.map((btn) => {
+                        const Icon = btn.icon;
+                        return (
+                          <button
+                            key={btn.label}
+                            type="button"
+                            onClick={() => handleChatButton(btn)}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1.5 text-[11px] font-medium text-primary transition-colors hover:bg-primary/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {Icon && <Icon className="h-3 w-3" />}
+                            {btn.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   <span
                     className={
                       "text-[10px] text-muted-foreground " +
