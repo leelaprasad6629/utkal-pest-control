@@ -106,7 +106,7 @@ const CONTACT_BUTTONS: ChatButton[] = [
 const SERVICE_AREAS_RESPONSE = [
   "📍 Service Areas",
   "",
-  "We currently provide pest control services across Odisha and nearby locations.",
+  "We provide pest control services across India.",
   "Contact us to confirm availability in your area.",
   "",
   `📞 Call us at ${PHONE_DISPLAY} or reach out via WhatsApp for quick confirmation!`,
