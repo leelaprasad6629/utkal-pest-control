@@ -3,15 +3,22 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import type { ServiceItem } from "@/lib/types";
+import { STATIC_SERVICES } from "@/config/static-services";
 
 export default function ServiceDetail({ params }: { params: { slug: string } }) {
-  const [service, setService] = useState<ServiceItem | null>(null);
+  // Look up the service from static data first so the page renders instantly.
+  const staticMatch = STATIC_SERVICES.find((s) => s.slug === params.slug) ?? null;
+  const [service, setService] = useState<ServiceItem | null>(staticMatch);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    // Try the API for richer data (features, FAQs, etc.); fall back to static.
     apiFetch<ServiceItem>(`/services/${params.slug}`)
-      .then(setService)
-      .catch(() => setNotFound(true));
+      .then((data) => setService(data))
+      .catch(() => {
+        // If static data had a match, keep it; otherwise show not-found.
+        if (!staticMatch) setNotFound(true);
+      });
   }, [params.slug]);
 
   if (notFound) {

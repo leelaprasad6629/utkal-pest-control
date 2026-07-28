@@ -3,14 +3,22 @@ import { Link } from "wouter";
 import { apiFetch } from "@/lib/api";
 import type { ServiceItem } from "@/lib/types";
 import ServiceCardImage from "@/components/service-card-image";
+import { STATIC_SERVICES } from "@/config/static-services";
 
 export default function Services() {
-  const [services, setServices] = useState<ServiceItem[]>([]);
+  // Render static data instantly — no loading spinner, no blank state.
+  const [services, setServices] = useState<ServiceItem[]>(STATIC_SERVICES);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch from the API in the background; if it succeeds, replace static
+    // data with live DB records. If it fails, keep the static list.
     apiFetch<ServiceItem[]>("/services")
-      .then(setServices)
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setServices(data);
+        }
+      })
       .catch((err) => setError(err.message));
   }, []);
 
@@ -59,9 +67,6 @@ export default function Services() {
               </div>
             </Link>
           ))}
-          {services.length === 0 && !error && (
-            <p className="text-text-muted">No services available yet.</p>
-          )}
         </div>
       </main>
     </div>
