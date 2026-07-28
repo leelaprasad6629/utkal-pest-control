@@ -12,6 +12,7 @@ import {
   MapPin,
   Phone,
   HelpCircle,
+  MessageSquare,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { useLocation } from "wouter";
@@ -101,6 +102,7 @@ const CONTACT_RESPONSE = [
 const CONTACT_BUTTONS: ChatButton[] = [
   { label: "Call Now", icon: Phone, kind: "phone", value: PHONE_TEL },
   { label: "WhatsApp", icon: FaWhatsapp, kind: "link", value: WHATSAPP_SUPPORT_URL },
+  { label: "Visit Contact Page", icon: MessageSquare, kind: "navigate", value: "/contact" },
 ];
 
 const SERVICE_AREAS_RESPONSE = [
