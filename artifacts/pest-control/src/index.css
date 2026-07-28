@@ -562,3 +562,11 @@ html, body {
   scrollbar-width: none;
 }
 
+
+
+/* Disable background-attachment: fixed on mobile — iOS Safari renders it broken */
+@media (max-width: 768px) {
+  .bg-fixed {
+    background-attachment: scroll;
+  }
+}

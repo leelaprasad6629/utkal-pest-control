@@ -45,13 +45,13 @@ export default function InvoiceDetail() {
   const service = booking && typeof booking.serviceId === "object" ? (booking.serviceId as ServiceItem) : undefined;
 
   return (
-    <main className="max-w-3xl mx-auto px-4 md:px-6 py-14 animate-fade-in print:py-0">
+    <main className="max-w-3xl mx-auto px-4 md:px-6 py-8 md:py-14 animate-fade-in print:py-0">
       <div className="flex items-center justify-between mb-8 print:hidden">
         <Link href="/dashboard" className="text-sm text-primary hover:underline">← Back to dashboard</Link>
         <Button onClick={() => window.print()} data-testid="button-print-invoice">Download / Print</Button>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-10 shadow-sm print:border-0 print:shadow-none">
+      <div className="rounded-xl border border-border bg-card p-5 sm:p-8 md:p-10 shadow-sm print:border-0 print:shadow-none">
         <div className="flex items-start justify-between border-b border-border pb-6 mb-6">
           <div>
             <h2 className="text-primary">{BUSINESS_NAME}</h2>
@@ -66,7 +66,7 @@ export default function InvoiceDetail() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-8 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 text-sm">
           <div>
             <p className="text-text-muted uppercase text-xs tracking-wide mb-1">Billed to</p>
             <p className="font-medium">{customer?.name ?? "—"}</p>
@@ -79,7 +79,8 @@ export default function InvoiceDetail() {
           </div>
         </div>
 
-        <table className="w-full text-sm mb-8">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm mb-8">
           <thead>
             <tr className="border-b border-border text-left text-text-muted">
               <th className="py-2 font-medium">Description</th>
@@ -103,6 +104,7 @@ export default function InvoiceDetail() {
             </tr>
           </tfoot>
         </table>
+        </div>
 
         <p className="text-xs text-text-muted">Thank you for choosing {BUSINESS_NAME}.</p>
       </div>

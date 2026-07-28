@@ -490,7 +490,7 @@ export default function Quote() {
                   </div>
 
                   {/* City & Pincode */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="city" className="text-xs font-semibold text-foreground">City <span className="text-danger">*</span></Label>
                       <Input 
@@ -518,7 +518,7 @@ export default function Quote() {
                   </div>
 
                   {/* Property Type & Area Size */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="property-type" className="text-xs font-semibold text-foreground">Property Type</Label>
                       <Select value={propertyType} onValueChange={(v) => setPropertyType(v as "residential" | "commercial")}>

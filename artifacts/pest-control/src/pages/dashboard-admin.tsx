@@ -752,7 +752,7 @@ function TechniciansTab({
   }
 
   const formFields = (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div className="space-y-1 col-span-2 md:col-span-1">
         <Label htmlFor="t-name">Full Name *</Label>
         <Input id="t-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
