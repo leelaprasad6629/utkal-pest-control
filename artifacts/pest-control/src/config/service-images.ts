@@ -42,5 +42,5 @@ export const SERVICE_CARD_IMAGE = {
   width: CARD_WIDTH,
   height: CARD_HEIGHT,
   className: "object-cover w-full h-full transition-transform duration-500 group-hover:scale-105",
-  containerClassName: "overflow-hidden h-48 w-full relative bg-secondary/20",
+  containerClassName: "overflow-hidden h-48 w-full relative bg-secondary/20 rounded-t-2xl",
 } as const;

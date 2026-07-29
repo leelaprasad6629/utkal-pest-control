@@ -1,36 +1,19 @@
 /**
  * Reusable PageHero component.
- *
- * Renders a premium hero banner that occupies only the top ~45-50% of the
- * first viewport (h-[45vh] min-h-[280px]). The rest of the page flows
- * naturally on a clean background.
- *
- * Features:
- *  - background-size: cover with proper positioning
- *  - dark overlay 40-60% for text readability
- *  - smooth fade from hero into page content
- *  - fully responsive on desktop / tablet / mobile
- *  - centered, properly-spaced content
+ * Premium hero banner occupying ~50% of the first viewport.
+ * Consistent across all pages with dark gradient overlay.
  */
 
 import type { ReactNode } from "react";
 
 interface PageHeroProps {
-  /** Background image URL. Leave empty for a gradient-only hero. */
   backgroundImage?: string;
-  /** Overlay opacity (0-100). Default: 55 (≈ mid-range for readability). */
   overlayOpacity?: number;
-  /** Optional badge text shown above the title (small pill). */
   badge?: ReactNode;
-  /** Hero title. */
   title: ReactNode;
-  /** Hero subtitle / description. */
   subtitle?: ReactNode;
-  /** Optional CTA buttons row. */
   actions?: ReactNode;
-  /** Extra content below the subtitle (e.g. stat cards). */
   children?: ReactNode;
-  /** Override default min-height. Default: "min-h-[280px] h-[45vh]". */
   className?: string;
 }
 
@@ -46,9 +29,9 @@ export default function PageHero({
 }: PageHeroProps) {
   return (
     <section
-      className={`relative overflow-hidden flex items-center justify-center text-center text-white ${className ?? "min-h-[280px] h-[45vh]"}`}
+      className={`relative overflow-hidden flex items-center justify-center text-center text-white min-h-[320px] h-[50vh] ${className ?? ""}`}
     >
-      {/* Background image (covers only the hero area, not the whole page) */}
+      {/* Background image */}
       {backgroundImage && (
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
@@ -56,22 +39,22 @@ export default function PageHero({
         />
       )}
 
-      {/* Gradient fallback / base color when no image */}
+      {/* Gradient fallback */}
       {!backgroundImage && (
-        <div className="absolute inset-0 z-0 bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)]" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
       )}
 
       {/* Dark overlay for readability */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity / 100})` }}
+        className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-black/40 via-black/40 to-black/60"
+        style={overlayOpacity !== 55 ? { backgroundColor: `rgba(0,0,0,${overlayOpacity / 100})` } : undefined}
       />
 
       {/* Content */}
-      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-4 w-full">
+      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-4 w-full">
         {badge && (
           <div className="flex justify-center">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent text-xs sm:text-sm font-semibold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 border border-white/25 text-white text-xs sm:text-sm font-semibold uppercase tracking-wider backdrop-blur-sm">
               {badge}
             </div>
           </div>
@@ -92,8 +75,8 @@ export default function PageHero({
         {children}
       </div>
 
-      {/* Fade transition from hero into white page content */}
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent to-background pointer-events-none z-5" />
+      {/* Smooth fade into page content */}
+      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-b from-transparent to-background pointer-events-none z-[5]" />
     </section>
   );
 }

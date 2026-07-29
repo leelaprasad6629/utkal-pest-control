@@ -257,7 +257,7 @@ export default function Quote() {
   return (
     <>
       <PageHero
-        backgroundImage="/images/heroes/quote-hero.jpg"
+        backgroundImage="https://images.unsplash.com/photo-1591285643087-97c7a5b1d3e4?auto=format&fit=crop&w=1600&q=80"
         overlayOpacity={55}
         badge={<><Sparkles className="w-3.5 h-3.5 animate-pulse" /> Reliable Pest Solutions</>}
         title="Book Your Pest Control Service"
@@ -290,9 +290,9 @@ export default function Quote() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                 {TRUST_POINTS.map((point) => (
-                  <div key={point.title} className="flex gap-3 bg-card border border-border rounded-xl p-4 shadow-2xs">
+                  <div key={point.title} className="flex gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
                     <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-4.5 h-4.5" />
+                      <ShieldCheck className="w-4 h-4" />
                     </div>
                     <div className="space-y-1">
                       <h4 className="text-sm font-semibold text-foreground leading-snug">{point.title}</h4>
@@ -308,7 +308,7 @@ export default function Quote() {
               {STATS_ITEMS.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="bg-card border border-border p-4 rounded-xl text-center space-y-1 hover:border-primary/20 transition-all shadow-2xs">
+                  <div key={item.label} className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
                     <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Icon className="w-5 h-5" />
                     </div>
@@ -331,7 +331,7 @@ export default function Quote() {
                 ].map((s) => {
                   const StepIcon = s.icon;
                   return (
-                    <div key={s.step} className="relative bg-card border border-border p-4 rounded-xl text-center space-y-2">
+                    <div key={s.step} className="relative rounded-2xl border border-border bg-card p-5 text-center shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
                       <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xs">
                         {s.step}
                       </div>
@@ -349,7 +349,7 @@ export default function Quote() {
               <h2 className="text-2xl font-bold text-foreground">Frequently Asked Questions</h2>
               <Accordion type="single" collapsible className="space-y-2">
                 {FAQS.map((faq, idx) => (
-                  <AccordionItem key={faq.q} value={`faq-${idx}`} className="border border-border/80 rounded-xl px-4 bg-card shadow-2xs hover:border-primary/20 transition-all duration-300">
+                  <AccordionItem key={faq.q} value={`faq-${idx}`} className="rounded-xl border border-border px-4 bg-card shadow-sm hover:shadow-md transition-all duration-300">
                     <AccordionTrigger className="text-sm font-semibold py-3.5 hover:no-underline text-foreground text-left">
                       {faq.q}
                     </AccordionTrigger>
