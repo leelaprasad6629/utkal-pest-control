@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/api";
 import type { ServiceItem } from "@/lib/types";
 import ServiceCardImage from "@/components/service-card-image";
 import { STATIC_SERVICES } from "@/config/static-services";
+import PageHero from "@/components/page-hero";
 
 export default function Services() {
   // Render static data instantly — no loading spinner, no blank state.
@@ -23,34 +24,26 @@ export default function Services() {
   }, []);
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] w-full">
-      {/* Fixed Background Image */}
-      <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1920&q=80')" 
-        }}
+    <>
+      <PageHero
+        backgroundImage="/images/heroes/contact-hero.jpg"
+        overlayOpacity={55}
+        title="Our Services"
+        subtitle="Browse our pest control offerings and pick the right fit for your home or business."
       />
-      {/* Themed Overlay for Readability */}
-      <div className="fixed inset-0 z-0 bg-background/92 backdrop-blur-[1.5px] pointer-events-none" />
 
-      {/* Page Content */}
-      <main className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 py-12 animate-fade-in">
-        <h1>Services</h1>
-        <p className="mt-2 text-text-muted max-w-xl">
-          Browse our pest control offerings and pick the right fit for your home or business.
-        </p>
+      <main className="max-w-5xl mx-auto px-4 md:px-6 py-12 animate-fade-in">
         {error && (
-          <p className="mt-4 text-danger" data-testid="text-error">
+          <p className="mb-4 text-danger" data-testid="text-error">
             {error}
           </p>
         )}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {services.map((s) => (
             <Link
               key={s._id}
               href={`/services/${s.slug}`}
-              className="group card-interactive block rounded-xl border border-border bg-card/90 overflow-hidden shadow-sm backdrop-blur-xs"
+              className="group card-interactive block rounded-xl border border-border bg-card overflow-hidden shadow-sm transition-shadow hover:shadow-md"
               data-testid={`link-service-${s.slug}`}
             >
               <ServiceCardImage slug={s.slug} alt={s.name} />
@@ -69,6 +62,6 @@ export default function Services() {
           ))}
         </div>
       </main>
-    </div>
+    </>
   );
 }

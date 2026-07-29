@@ -1159,12 +1159,12 @@ export default function DashboardAdmin() {
   useEffect(() => { loadData(); }, []);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] w-full bg-background/95">
+    <div className="w-full">
       {/* Premium Full-Width Hero Section */}
-      <div className="relative overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[300px] md:min-h-[400px] flex items-center border-b border-border/10">
+      <div className="relative overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[280px] h-[45vh] flex items-center border-b border-border/10">
         {/* Background Image */}
         <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
           style={{ 
             backgroundImage: "url('/images/heroes/admin-hero.jpg')" 
           }}

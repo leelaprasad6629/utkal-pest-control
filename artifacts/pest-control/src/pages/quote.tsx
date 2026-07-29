@@ -9,8 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { apiFetch } from "@/lib/api";
-import type { ServiceItem, Review, PublicStats } from "@/lib/types";
+import type { ServiceItem } from "@/lib/types";
 import { motion } from "framer-motion";
+import PageHero from "@/components/page-hero";
 import { 
   ShieldCheck, 
   Award, 
@@ -106,7 +107,7 @@ function BookingConfirmation({
     <motion.div 
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full rounded-2xl border border-border bg-card/90 p-6 sm:p-8 shadow-md backdrop-blur-xs text-center"
+      className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-md text-center"
     >
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success/15 mb-4 animate-bounce-slow">
         <CheckCircle2 className="h-7 w-7 text-success" aria-hidden="true" />
@@ -254,59 +255,30 @@ export default function Quote() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] w-full">
-      {/* Fixed Page Background */}
-      <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=80')" 
-        }}
+    <>
+      <PageHero
+        backgroundImage="/images/heroes/quote-hero.jpg"
+        overlayOpacity={55}
+        badge={<><Sparkles className="w-3.5 h-3.5 animate-pulse" /> Reliable Pest Solutions</>}
+        title="Book Your Pest Control Service"
+        subtitle="Request a free inspection and receive a customized quote from our experts."
+        actions={
+          <Button
+            onClick={handleHeroCtaClick}
+            size="lg"
+            className="h-12 px-8 font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm rounded-lg"
+          >
+            Book Service Now
+          </Button>
+        }
       />
-      {/* Readability Overlay */}
-      <div className="fixed inset-0 z-0 bg-background/92 backdrop-blur-[1.5px] pointer-events-none" />
-
-      {/* Hero Banner Section */}
-      <section className="relative z-10 overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[350px] md:min-h-[400px] flex items-center border-b border-border/10">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
-          style={{ 
-            backgroundImage: "url('/images/heroes/quote-hero.jpg')" 
-          }}
-        />
-        {/* Dark Overlay (40-60%) */}
-        <div className="absolute inset-0 z-0 bg-black/55 pointer-events-none" />
-
-        {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 text-center space-y-4 w-full">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            Reliable Pest Solutions
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight max-w-3xl mx-auto leading-tight text-white">
-            Book Your Pest Control Service
-          </h1>
-          <p className="max-w-xl mx-auto text-sm sm:text-base text-white/85 leading-relaxed">
-            Request a free inspection and receive a customized quote from our experts.
-          </p>
-          <div className="pt-2">
-            <Button
-              onClick={handleHeroCtaClick}
-              size="lg"
-              className="h-12 px-8 font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm rounded-lg"
-            >
-              Book Service Now
-            </Button>
-          </div>
-        </div>
-      </section>
 
       {/* Main Two-Column Content */}
-      <div id="booking-container" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20">
+      <div id="booking-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 animate-fade-in">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Left Column: Trust, Stats, How it Works, FAQs */}
-          <div className="lg:col-span-7 space-y-12">
+          <div className="lg:col-span-7 space-y-10">
             
             {/* Why Choose Us */}
             <section className="space-y-6">
@@ -318,7 +290,7 @@ export default function Quote() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                 {TRUST_POINTS.map((point) => (
-                  <div key={point.title} className="flex gap-3 bg-card/60 border border-border/80 rounded-xl p-4 shadow-2xs backdrop-blur-xs">
+                  <div key={point.title} className="flex gap-3 bg-card border border-border rounded-xl p-4 shadow-2xs">
                     <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                       <ShieldCheck className="w-4.5 h-4.5" />
                     </div>
@@ -336,7 +308,7 @@ export default function Quote() {
               {STATS_ITEMS.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="bg-card/75 border border-border p-4 rounded-xl text-center space-y-1 hover:border-primary/20 transition-all shadow-2xs">
+                  <div key={item.label} className="bg-card border border-border p-4 rounded-xl text-center space-y-1 hover:border-primary/20 transition-all shadow-2xs">
                     <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Icon className="w-5 h-5" />
                     </div>
@@ -359,7 +331,7 @@ export default function Quote() {
                 ].map((s) => {
                   const StepIcon = s.icon;
                   return (
-                    <div key={s.step} className="relative bg-card/60 border border-border p-4 rounded-xl text-center space-y-2 backdrop-blur-xs">
+                    <div key={s.step} className="relative bg-card border border-border p-4 rounded-xl text-center space-y-2">
                       <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xs">
                         {s.step}
                       </div>
@@ -377,7 +349,7 @@ export default function Quote() {
               <h2 className="text-2xl font-bold text-foreground">Frequently Asked Questions</h2>
               <Accordion type="single" collapsible className="space-y-2">
                 {FAQS.map((faq, idx) => (
-                  <AccordionItem key={faq.q} value={`faq-${idx}`} className="border border-border/80 rounded-xl px-4 bg-card/80 shadow-2xs hover:border-primary/20 transition-all duration-300">
+                  <AccordionItem key={faq.q} value={`faq-${idx}`} className="border border-border/80 rounded-xl px-4 bg-card shadow-2xs hover:border-primary/20 transition-all duration-300">
                     <AccordionTrigger className="text-sm font-semibold py-3.5 hover:no-underline text-foreground text-left">
                       {faq.q}
                     </AccordionTrigger>
@@ -409,7 +381,7 @@ export default function Quote() {
               <motion.div 
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full rounded-2xl border border-border bg-card/90 p-6 sm:p-8 shadow-md backdrop-blur-xs space-y-6"
+                className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-md space-y-6"
               >
                 <div className="text-center space-y-3">
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -450,7 +422,7 @@ export default function Quote() {
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full rounded-2xl border border-border bg-card/95 p-6 sm:p-8 shadow-md backdrop-blur-xs space-y-5"
+                className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-md space-y-5"
               >
                 <div className="space-y-1">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">Request a Quote</h2>
@@ -522,7 +494,9 @@ export default function Quote() {
                     <div className="space-y-1.5">
                       <Label htmlFor="property-type" className="text-xs font-semibold text-foreground">Property Type</Label>
                       <Select value={propertyType} onValueChange={(v) => setPropertyType(v as "residential" | "commercial")}>
-                        <SelectTrigger id="property-type" data-testid="select-property-type" className="h-10 text-sm"><SelectValue /></SelectTrigger>
+                        <SelectTrigger id="property-type" className="h-10 text-sm rounded-lg">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="residential">Residential</SelectItem>
                           <SelectItem value="commercial">Commercial</SelectItem>
@@ -531,95 +505,104 @@ export default function Quote() {
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="area-size" className="text-xs font-semibold text-foreground">Area Size (sq ft)</Label>
-                      <Input
-                        id="area-size"
-                        type="number"
-                        min="0"
-                        value={areaSize}
+                      <Input 
+                        id="area-size" 
+                        type="number" 
+                        value={areaSize} 
                         onChange={(e) => setAreaSize(e.target.value)}
-                        data-testid="input-area-size"
                         placeholder="e.g. 1200"
                         className="h-10 text-sm rounded-lg"
                       />
                     </div>
                   </div>
 
-                  {/* Preferred Date */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="date" className="text-xs font-semibold text-foreground">Preferred Date <span className="text-danger">*</span></Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={date}
-                      min={new Date().toISOString().slice(0, 10)}
-                      onChange={(e) => setDate(e.target.value)}
-                      data-testid="input-date"
-                      className="h-10 text-sm rounded-lg"
-                    />
-                    <FieldError msg={validationErrors.date} />
-                  </div>
-
-                  {/* Time slot */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="time-slot" className="text-xs font-semibold text-foreground">Preferred Time Slot</Label>
-                    <Select value={timeSlot} onValueChange={setTimeSlot}>
-                      <SelectTrigger id="time-slot" data-testid="select-time-slot" className="h-10 text-sm"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="09:00-11:00">9:00 AM – 11:00 AM</SelectItem>
-                        <SelectItem value="11:00-13:00">11:00 AM – 1:00 PM</SelectItem>
-                        <SelectItem value="14:00-16:00">2:00 PM – 4:00 PM</SelectItem>
-                        <SelectItem value="16:00-18:00">4:00 PM – 6:00 PM</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  {/* Date & Time Slot */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="date" className="text-xs font-semibold text-foreground">Preferred Date <span className="text-danger">*</span></Label>
+                      <Input 
+                        id="date" 
+                        type="date" 
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        data-testid="input-date"
+                        className="h-10 text-sm rounded-lg"
+                      />
+                      <FieldError msg={validationErrors.date} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="time-slot" className="text-xs font-semibold text-foreground">Time Slot</Label>
+                      <Select value={timeSlot} onValueChange={setTimeSlot}>
+                        <SelectTrigger id="time-slot" className="h-10 text-sm rounded-lg">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="09:00-11:00">9:00 AM – 11:00 AM</SelectItem>
+                          <SelectItem value="11:00-13:00">11:00 AM – 1:00 PM</SelectItem>
+                          <SelectItem value="14:00-16:00">2:00 PM – 4:00 PM</SelectItem>
+                          <SelectItem value="16:00-18:00">4:00 PM – 6:00 PM</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   {/* Notes */}
                   <div className="space-y-1.5">
                     <Label htmlFor="notes" className="text-xs font-semibold text-foreground">Additional Notes</Label>
-                    <Textarea
-                      id="notes"
+                    <Textarea 
+                      id="notes" 
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Describe the pest issue, access details, etc."
-                      data-testid="input-notes"
-                      className="text-xs min-h-[80px]"
+                      placeholder="Any specific concerns, access instructions, pest type, etc."
+                      rows={3}
+                      className="text-sm rounded-lg resize-y"
                     />
                   </div>
 
-                  {/* Emergency */}
-                  <div className="flex items-center gap-2 pt-1.5">
-                    <Checkbox
-                      id="emergency"
+                  {/* Emergency Checkbox */}
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="emergency" 
                       checked={emergency}
-                      onCheckedChange={(v) => setEmergency(Boolean(v))}
-                      data-testid="checkbox-emergency"
+                      onCheckedChange={(v) => setEmergency(v === true)}
                     />
-                    <Label htmlFor="emergency" className="text-xs font-medium cursor-pointer text-foreground select-none">
-                      This is an urgent / emergency request
+                    <Label htmlFor="emergency" className="text-xs font-medium text-foreground cursor-pointer">
+                      This is an emergency request
                     </Label>
                   </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full h-11 text-sm font-semibold rounded-lg mt-3"
-                    disabled={status === "submitting"}
-                    data-testid="button-request-quote"
-                  >
-                    {status === "submitting" ? "Submitting Request..." : "Request Free Quote"}
-                  </Button>
-
-                  {status === "error" && (
-                    <p className="text-xs text-danger font-medium mt-2 flex items-center gap-1.5" data-testid="text-error">
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>{errorMessage ?? "Error creating quote. Try again later."}</span>
-                    </p>
+                  {/* Error Message */}
+                  {status === "error" && errorMessage && (
+                    <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-xs font-medium animate-fade-in" role="alert">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        <span>{errorMessage}</span>
+                      </div>
+                    </div>
                   )}
+
+                  {/* Submit */}
+                  <Button 
+                    type="submit" 
+                    disabled={status === "submitting"}
+                    className="w-full h-12 text-base font-semibold rounded-lg shadow-sm"
+                    data-testid="button-submit-booking"
+                  >
+                    {status === "submitting" ? (
+                      <span className="flex items-center gap-2">
+                        <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin inline-block" />
+                        Submitting...
+                      </span>
+                    ) : (
+                      "Request Quote"
+                    )}
+                  </Button>
                 </form>
               </motion.div>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

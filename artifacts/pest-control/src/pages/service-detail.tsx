@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import type { ServiceItem } from "@/lib/types";
 import { STATIC_SERVICES } from "@/config/static-services";
+import PageHero from "@/components/page-hero";
 
 export default function ServiceDetail({ params }: { params: { slug: string } }) {
   // Look up the service from static data first so the page renders instantly.
@@ -24,7 +25,7 @@ export default function ServiceDetail({ params }: { params: { slug: string } }) 
   if (notFound) {
     return (
       <main className="max-w-5xl mx-auto px-4 md:px-6 py-14 animate-fade-in">
-        <h1>Service not found</h1>
+        <h1 className="text-2xl font-bold text-foreground">Service not found</h1>
         <p className="mt-2 text-text-muted">
           The service you're looking for doesn't exist.{" "}
           <Link href="/services" className="text-primary underline underline-offset-4">
@@ -44,24 +45,33 @@ export default function ServiceDetail({ params }: { params: { slug: string } }) 
     );
   }
 
+  const heroImage = `/images/services/${service.slug}.jpg`;
+
   return (
-    <main className="max-w-5xl mx-auto px-4 md:px-6 py-14 animate-fade-in">
-      <div className="max-w-2xl rounded-xl border border-border bg-card p-8 shadow-sm">
-        <h1 className="text-primary">{service.name}</h1>
-        <p className="mt-3 text-text-muted">{service.description}</p>
-        {typeof service.basePrice === "number" && (
-          <p className="mt-4 inline-block text-sm font-semibold text-accent-foreground bg-accent/25 px-3 py-1.5 rounded-full">
-            Starting at ₹{service.basePrice}
-          </p>
-        )}
-        <div className="mt-6">
-          <Link href="/quote">
-            <Button size="lg" data-testid="button-book-now">
-              Book Now
-            </Button>
-          </Link>
+    <>
+      <PageHero
+        backgroundImage={heroImage}
+        overlayOpacity={55}
+        title={service.name}
+        subtitle={service.description}
+      />
+
+      <main className="max-w-5xl mx-auto px-4 md:px-6 py-12 sm:py-16 animate-fade-in">
+        <div className="max-w-2xl rounded-xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+          {typeof service.basePrice === "number" && (
+            <p className="mb-4 inline-block text-sm font-semibold text-accent-foreground bg-accent/25 px-3 py-1.5 rounded-full">
+              Starting at ₹{service.basePrice}
+            </p>
+          )}
+          <div>
+            <Link href="/quote">
+              <Button size="lg" data-testid="button-book-now">
+                Book Now
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
