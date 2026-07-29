@@ -156,7 +156,7 @@ function ChartsSection({ analytics }: { analytics: AdminAnalytics }) {
       </div>
 
       {/* Revenue Trend */}
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm md:col-span-2">
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm md:col-span-1 sm:col-span-2">
         <h4 className="text-sm font-semibold mb-4">Revenue Trend (last 6 months)</h4>
         {analytics.revenueByMonth.length === 0 ? (
           <p className="text-sm text-text-muted py-8 text-center">No revenue data yet. Revenue is tracked from completed payments.</p>
@@ -389,11 +389,11 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
             placeholder="Search booking # or customer..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
+            className="w-full sm:max-w-xs"
             data-testid="input-bookings-search"
           />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[160px]" data-testid="select-filter-status">
+            <SelectTrigger className="w-full sm:w-[160px]" data-testid="select-filter-status">
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
             <SelectContent>
@@ -402,7 +402,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
             </SelectContent>
           </Select>
           <Select value={serviceFilter} onValueChange={setServiceFilter}>
-            <SelectTrigger className="w-[160px]" data-testid="select-filter-service">
+            <SelectTrigger className="w-full sm:w-[160px]" data-testid="select-filter-service">
               <SelectValue placeholder="All services" />
             </SelectTrigger>
             <SelectContent>
@@ -411,7 +411,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
             </SelectContent>
           </Select>
           <Select value={technicianFilter} onValueChange={setTechnicianFilter}>
-            <SelectTrigger className="w-[160px]" data-testid="select-filter-technician">
+            <SelectTrigger className="w-full sm:w-[160px]" data-testid="select-filter-technician">
               <SelectValue placeholder="All technicians" />
             </SelectTrigger>
             <SelectContent>
@@ -423,11 +423,11 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
         <div className="flex flex-wrap gap-3 items-center">
           <div className="flex items-center gap-2 text-sm text-text-muted">
             <Label className="text-xs">From</Label>
-            <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-36 h-8 text-xs" data-testid="input-filter-date-from" />
+            <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full sm:w-36 h-8 text-xs" data-testid="input-filter-date-from" />
           </div>
           <div className="flex items-center gap-2 text-sm text-text-muted">
             <Label className="text-xs">To</Label>
-            <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-36 h-8 text-xs" data-testid="input-filter-date-to" />
+            <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full sm:w-36 h-8 text-xs" data-testid="input-filter-date-to" />
           </div>
           {(search || statusFilter !== "all" || serviceFilter !== "all" || technicianFilter !== "all" || dateFrom || dateTo) && (
             <Button
@@ -443,6 +443,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
       </div>
 
       {/* Table */}
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -480,7 +481,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
                 <TableCell>{b.scheduledDate ? new Date(b.scheduledDate).toLocaleDateString() : "—"}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select value={technician?._id ?? ""} onValueChange={(v) => assignTechnician(b._id, v)}>
-                    <SelectTrigger className="w-[140px]" data-testid={`select-technician-${b._id}`}>
+                    <SelectTrigger className="w-full sm:w-[140px]" data-testid={`select-technician-${b._id}`}>
                       <SelectValue placeholder="Assign" />
                     </SelectTrigger>
                     <SelectContent>
@@ -492,7 +493,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
                 </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select value={b.status} onValueChange={(v) => updateStatus(b._id, v as BookingStatus)}>
-                    <SelectTrigger className="w-[150px]" data-testid={`select-status-${b._id}`}>
+                    <SelectTrigger className="w-full sm:w-[150px]" data-testid={`select-status-${b._id}`}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -528,6 +529,7 @@ function BookingsTab({ technicians, onMutate }: { technicians: TechnicianRecord[
           )}
         </TableBody>
       </Table>
+      </div>
 
       {/* Booking detail modal */}
       {selectedBooking && (
@@ -605,6 +607,7 @@ function CustomersTab() {
 
   return (
     <>
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -637,6 +640,7 @@ function CustomersTab() {
           )}
         </TableBody>
       </Table>
+      </div>
 
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
         <AlertDialogContent>
@@ -753,11 +757,11 @@ function TechniciansTab({
 
   const formFields = (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div className="space-y-1 col-span-2 md:col-span-1">
+      <div className="space-y-1 col-span-1 sm:col-span-1">
         <Label htmlFor="t-name">Full Name *</Label>
         <Input id="t-name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
       </div>
-      <div className="space-y-1 col-span-2 md:col-span-1">
+      <div className="space-y-1 col-span-1 sm:col-span-1">
         <Label htmlFor="t-email">Email *</Label>
         <Input id="t-email" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
       </div>
@@ -777,11 +781,11 @@ function TechniciansTab({
         <Label htmlFor="t-exp">Experience (years)</Label>
         <Input id="t-exp" type="number" min={0} value={form.experience} onChange={(e) => setForm((f) => ({ ...f, experience: e.target.value }))} />
       </div>
-      <div className="space-y-1 col-span-2">
+      <div className="space-y-1 col-span-1 sm:col-span-2">
         <Label htmlFor="t-specialties">Specialties (comma-separated)</Label>
         <Input id="t-specialties" value={form.specialties} onChange={(e) => setForm((f) => ({ ...f, specialties: e.target.value }))} placeholder="Termite, Rodent, Cockroach" />
       </div>
-      <div className="space-y-1 col-span-2">
+      <div className="space-y-1 col-span-1 sm:col-span-2">
         <Label htmlFor="t-image">Profile Image URL</Label>
         <Input id="t-image" value={form.profileImage} onChange={(e) => setForm((f) => ({ ...f, profileImage: e.target.value }))} placeholder="https://..." />
       </div>
@@ -793,6 +797,7 @@ function TechniciansTab({
       <div className="flex justify-end p-3 border-b border-border">
         <Button size="sm" onClick={openAdd} data-testid="button-add-technician">+ Add Technician</Button>
       </div>
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -846,6 +851,7 @@ function TechniciansTab({
           )}
         </TableBody>
       </Table>
+      </div>
 
       {/* Add Dialog */}
       <Dialog open={addOpen} onOpenChange={(o) => { if (!o) closeDialogs(); }}>
@@ -1012,19 +1018,19 @@ function ServiceMapTab() {
       </div>
 
       {loading ? (
-        <div className="rounded-xl border border-border bg-card p-6 h-[480px] flex items-center justify-center text-sm text-text-muted">
+        <div className="rounded-xl border border-border bg-card p-6 h-[300px] sm:h-[480px] flex items-center justify-center text-sm text-text-muted">
           Loading map…
         </div>
       ) : error ? (
         <div className="rounded-xl border border-border bg-card p-6 text-sm text-destructive">{error}</div>
       ) : points && points.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-6 h-[480px] flex items-center justify-center text-sm text-text-muted">
+        <div className="rounded-xl border border-border bg-card p-6 h-[300px] sm:h-[480px] flex items-center justify-center text-sm text-text-muted">
           No booking locations to show yet.
         </div>
       ) : (
         <div
           ref={mapContainerRef}
-          className="rounded-xl border border-border overflow-hidden h-[480px] w-full"
+          className="rounded-xl border border-border overflow-hidden h-[300px] sm:h-[480px] w-full"
           data-testid="service-map-container"
         />
       )}

@@ -51,7 +51,7 @@ export default function InvoiceDetail() {
         <Button onClick={() => window.print()} data-testid="button-print-invoice">Download / Print</Button>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-5 sm:p-8 md:p-10 shadow-sm print:border-0 print:shadow-none">
+      <div className="rounded-xl border border-border bg-card p-6 sm:p-10 shadow-sm print:border-0 print:shadow-none">
         <div className="flex items-start justify-between border-b border-border pb-6 mb-6">
           <div>
             <h2 className="text-primary">{BUSINESS_NAME}</h2>

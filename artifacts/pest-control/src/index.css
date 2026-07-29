@@ -563,10 +563,11 @@ html, body {
 }
 
 
-
-/* Disable background-attachment: fixed on mobile — iOS Safari renders it broken */
+/* Disable background-attachment: fixed on mobile for iOS Safari performance */
 @media (max-width: 768px) {
   .bg-fixed {
-    background-attachment: scroll;
+    background-attachment: scroll !important;
+  }
+}
   }
 }
