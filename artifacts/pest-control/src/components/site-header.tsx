@@ -35,10 +35,10 @@ export default function SiteHeader() {
     location === "/dashboard/technician";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/90 backdrop-blur-md shadow-sm transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-primary shadow-md transition-all duration-300">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
         <Link href="/" data-testid="link-home">
-          <LogoLockup size={30} textClass="text-primary text-base inline" />
+          <LogoLockup size={30} textClass="text-white text-base inline" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -53,8 +53,8 @@ export default function SiteHeader() {
                 className={cn(
                   "px-3.5 py-1.5 rounded-full font-medium text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ease-in-out border border-transparent",
                   isActive
-                    ? "text-primary bg-secondary font-semibold shadow-xs border-primary/10"
-                    : "text-foreground/75 hover:text-primary hover:bg-secondary/60"
+                    ? "text-primary-foreground bg-white/20 font-semibold shadow-xs border-white/20"
+                    : "text-white/80 hover:text-white hover:bg-white/15"
                 )}
               >
                 {link.label}
@@ -69,8 +69,8 @@ export default function SiteHeader() {
               className={cn(
                 "px-3.5 py-1.5 rounded-full font-medium text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ease-in-out border border-transparent",
                 isDashActive
-                  ? "text-primary bg-secondary font-semibold shadow-xs border-primary/10"
-                  : "text-foreground/75 hover:text-primary hover:bg-secondary/60"
+                  ? "text-primary-foreground bg-white/20 font-semibold shadow-xs border-white/20"
+                  : "text-white/80 hover:text-white hover:bg-white/15"
               )}
             >
               {dashLabel}
@@ -78,14 +78,14 @@ export default function SiteHeader() {
           </SignedIn>
 
           <Link href="/quote" className="ml-1 md:ml-2">
-            <Button size="sm" data-testid="button-get-quote">
+            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 border-0" data-testid="button-get-quote">
               Get Quote
             </Button>
           </Link>
 
           <SignedOut>
             <SignInButton mode="modal">
-              <Button size="sm" variant="outline" className="ml-1" data-testid="button-sign-in">
+              <Button size="sm" variant="outline" className="ml-1 border-white/40 text-white hover:bg-white/15 hover:text-white" data-testid="button-sign-in">
                 Sign in
               </Button>
             </SignInButton>
@@ -107,7 +107,7 @@ export default function SiteHeader() {
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 p-0" aria-label="Toggle Navigation Menu">
+              <Button variant="ghost" size="icon" className="h-9 w-9 p-0 text-white hover:bg-white/10 hover:text-white" aria-label="Toggle Navigation Menu">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -180,4 +180,3 @@ export default function SiteHeader() {
     </header>
   );
 }
-

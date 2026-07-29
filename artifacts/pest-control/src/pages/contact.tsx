@@ -5,7 +5,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api";
-import PageHero from "@/components/page-hero";
 import { 
   MapPin, 
   Phone, 
@@ -47,27 +46,41 @@ export default function Contact() {
   }
 
   return (
-    <>
-      <PageHero
-        backgroundImage="/images/heroes/contact-hero.jpg"
-        overlayOpacity={55}
-        badge={<><Headphones className="w-4 h-4" /> Get In Touch</>}
-        title="We're Here to Protect Your Space"
-        subtitle="Have a question about our pest control services, need a free inspection quote, or require immediate assistance? Send us a message and our team will respond promptly."
+    <div className="relative">
+      {/* Full-page fixed background image */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/heroes/contact-hero.jpg')" }}
       />
+      <div className="fixed inset-0 z-0 bg-black/55 pointer-events-none" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-10 sm:space-y-12 animate-fade-in">
+      {/* Hero section */}
+      <section className="relative z-10 min-h-[45vh] flex items-center justify-center text-center text-white px-4 py-16">
+        <div className="max-w-3xl mx-auto space-y-4">
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 border border-white/25 text-white text-xs sm:text-sm font-semibold uppercase tracking-wider">
+              <Headphones className="w-4 h-4" /> Get In Touch
+            </div>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight">We're Here to Protect Your Space</h1>
+          <p className="text-white/85 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+            Have a question about our pest control services, need a free inspection quote, or require immediate assistance? Send us a message and our team will respond promptly.
+          </p>
+        </div>
+      </section>
+
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-10 sm:space-y-12 animate-fade-in">
         {/* Feature Badges */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium text-muted-foreground">
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-sm">
+          <div className="flex items-center gap-1.5 bg-white/15 border border-white/25 text-white px-3 py-1.5 rounded-lg shadow-sm">
             <Zap className="w-4 h-4 text-amber-500 shrink-0" />
             <span>Fast 24/7 Response</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-sm">
+          <div className="flex items-center gap-1.5 bg-white/15 border border-white/25 text-white px-3 py-1.5 rounded-lg shadow-sm">
             <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>Licensed Professionals</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-sm">
+          <div className="flex items-center gap-1.5 bg-white/15 border border-white/25 text-white px-3 py-1.5 rounded-lg shadow-sm">
             <Globe className="w-4 h-4 text-primary shrink-0" />
             <span>Serving Across India</span>
           </div>
@@ -76,7 +89,7 @@ export default function Contact() {
         {/* Contact Info Cards */}
         <section className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="hover:border-primary/40 transition-colors shadow-2xs">
+            <Card className="hover:border-primary/40 transition-colors shadow-2xs bg-card/90 backdrop-blur-sm">
               <CardContent className="p-4 sm:p-5 flex items-start gap-3.5">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
                   <MapPin className="w-5 h-5" />
@@ -90,7 +103,7 @@ export default function Contact() {
               </CardContent>
             </Card>
 
-            <Card className="hover:border-primary/40 transition-colors shadow-2xs">
+            <Card className="hover:border-primary/40 transition-colors shadow-2xs bg-card/90 backdrop-blur-sm">
               <CardContent className="p-4 sm:p-5 flex items-start gap-3.5">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
                   <Phone className="w-5 h-5" />
@@ -105,7 +118,7 @@ export default function Contact() {
               </CardContent>
             </Card>
 
-            <Card className="hover:border-primary/40 transition-colors shadow-2xs">
+            <Card className="hover:border-primary/40 transition-colors shadow-2xs bg-card/90 backdrop-blur-sm">
               <CardContent className="p-4 sm:p-5 flex items-start gap-3.5">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
                   <Mail className="w-5 h-5" />
@@ -118,7 +131,7 @@ export default function Contact() {
               </CardContent>
             </Card>
 
-            <Card className="hover:border-primary/40 transition-colors shadow-2xs">
+            <Card className="hover:border-primary/40 transition-colors shadow-2xs bg-card/90 backdrop-blur-sm">
               <CardContent className="p-4 sm:p-5 flex items-start gap-3.5">
                 <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
                   <Clock className="w-5 h-5" />
@@ -135,7 +148,7 @@ export default function Contact() {
 
         {/* Centered Contact Form Section */}
         <section className="max-w-2xl sm:max-w-3xl mx-auto w-full">
-          <Card className="shadow-md border-border/80 rounded-2xl overflow-hidden">
+          <Card className="shadow-md border-border/80 rounded-2xl overflow-hidden bg-card/95 backdrop-blur-sm">
             <CardHeader className="p-6 sm:p-8 bg-muted/30 border-b border-border/60 text-center">
               <CardTitle className="text-xl sm:text-2xl font-bold text-foreground">Send Us a Message</CardTitle>
               <CardDescription className="text-sm text-muted-foreground max-w-lg mx-auto">
@@ -257,7 +270,7 @@ export default function Contact() {
 
         {/* Pan-India Service Section */}
         <section className="max-w-3xl mx-auto space-y-4 pt-2">
-          <Card className="border-border bg-gradient-to-r from-primary/5 via-card to-primary/5 rounded-2xl p-6 sm:p-8 text-center shadow-sm">
+          <Card className="border-border bg-card/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 text-center shadow-sm">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary mb-3">
               <Globe className="w-6 h-6" />
             </div>
@@ -268,6 +281,6 @@ export default function Contact() {
           </Card>
         </section>
       </main>
-    </>
+    </div>
   );
 }
