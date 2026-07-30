@@ -679,7 +679,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="bg-muted text-foreground py-16 sm:py-20 relative overflow-hidden border-t border-border"
+        className="bg-background text-foreground py-16 sm:py-20 relative overflow-hidden border-t-4 border-accent"
       >
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8 relative z-10">
           <div className="rounded-3xl border border-border bg-card p-8 sm:p-12 shadow-xl">

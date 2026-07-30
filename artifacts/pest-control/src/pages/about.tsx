@@ -551,7 +551,7 @@ export default function About() {
       </section>
 
       {/* CALL TO ACTION BOTTOM BANNER */}
-      <section className="py-12 md:py-16 bg-muted border-t border-border text-foreground">
+      <section className="py-12 md:py-16 bg-background border-t-4 border-accent text-foreground">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
             Ready to live & work pest-free?

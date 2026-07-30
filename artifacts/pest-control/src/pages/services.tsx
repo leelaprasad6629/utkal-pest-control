@@ -272,7 +272,7 @@ export default function Services() {
         </section>
 
         {/* CTA Banner */}
-        <section className="mt-16 rounded-3xl overflow-hidden bg-muted border border-border text-foreground p-8 sm:p-12 shadow-xl relative">
+        <section className="mt-16 rounded-3xl overflow-hidden bg-background border-2 border-accent/40 text-foreground p-8 sm:p-12 shadow-xl relative">
           <div className="relative z-10 max-w-2xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 backdrop-blur-md text-xs font-semibold uppercase tracking-wider text-primary mb-4">
               <Sparkles className="w-3.5 h-3.5" /> Fast & Reliable

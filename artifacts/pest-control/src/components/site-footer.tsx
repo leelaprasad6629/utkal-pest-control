@@ -57,7 +57,7 @@ export default function SiteFooter() {
   return (
     <footer className="relative w-full bg-primary text-primary-foreground overflow-hidden">
       {/* Decorative top wave */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-accent/50 to-accent" />
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-accent/60 via-accent to-accent/60" />
 
       {/* Main footer content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
