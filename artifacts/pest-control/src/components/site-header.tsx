@@ -106,7 +106,7 @@ export default function SiteHeader() {
             </Link>
           </SignedIn>
 
-          <Link href="/quote" className="ml-1 md:ml-2">
+          <Link href="/quote" className="ml-2">
             <Button
               size="sm"
               className="btn-shine bg-primary/90 text-primary-foreground hover:bg-primary border border-primary/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"

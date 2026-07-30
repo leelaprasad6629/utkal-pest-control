@@ -320,10 +320,10 @@
 /* ─── Custom utility classes ──────────────────────────────── */
 @layer utilities {
   .glass-nav {
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
   }
   .dark .glass-nav {
     background: rgba(17, 25, 20, 0.72);
@@ -346,7 +346,10 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
   .hero-overlay {
-    background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.55) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.65) 100%);
+  }
+  .dark .hero-overlay {
+    background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.65) 40%, rgba(0,0,0,0.75) 100%);
   }
   .section-gradient-green {
     background: linear-gradient(180deg, hsl(var(--secondary)) 0%, hsl(var(--background)) 100%);
@@ -426,6 +429,29 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary) / 0.5);
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .pre-footer {
+    background: hsl(var(--muted));
+  }
+  .dark .pre-footer {
+    background: hsl(155 15% 14%);
+  }
+  .footer-compact {
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+  }
+  .scroll-snap-container {
+    scroll-snap-type: y proximity;
+  }
+  .scroll-snap-section {
+    scroll-snap-align: start;
   }
 }
 

@@ -60,10 +60,10 @@ export default function SiteFooter() {
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-accent/50 to-accent" />
 
       {/* Main footer content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
           {/* Brand & About */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <LogoLockup size={34} textClass="text-primary-foreground text-lg" />
             <p className="text-sm text-primary-foreground/70 leading-relaxed max-w-xs">
               {TAGLINE}. Serving homes and businesses with certified, safe, and effective pest management solutions.
@@ -178,7 +178,7 @@ export default function SiteFooter() {
 
       {/* Bottom bar */}
       <div className="border-t border-primary-foreground/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-primary-foreground/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-primary-foreground/50">
           <p>
             © {new Date().getFullYear()} {BUSINESS_NAME}. All rights reserved.
           </p>

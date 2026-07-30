@@ -486,7 +486,7 @@ export default function Quote() {
                       <SelectContent>
                         {services.map((s) => (
                           <SelectItem key={s._id} value={s._id}>
-                            {s.name} ({s.pricing})
+                            {s.name}{typeof s.basePrice === 'number' ? ` (from ₹${s.basePrice})` : ''}
                           </SelectItem>
                         ))}
                       </SelectContent>

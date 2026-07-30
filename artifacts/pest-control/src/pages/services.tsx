@@ -272,15 +272,15 @@ export default function Services() {
         </section>
 
         {/* CTA Banner */}
-        <section className="mt-16 rounded-3xl overflow-hidden bg-gradient-to-br from-primary via-[hsl(155,43%,16%)] to-[hsl(155,43%,10%)] text-white p-8 sm:p-12 shadow-xl relative">
+        <section className="mt-16 rounded-3xl overflow-hidden bg-muted border border-border text-foreground p-8 sm:p-12 shadow-xl relative">
           <div className="relative z-10 max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold uppercase tracking-wider text-accent mb-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 backdrop-blur-md text-xs font-semibold uppercase tracking-wider text-primary mb-4">
               <Sparkles className="w-3.5 h-3.5" /> Fast & Reliable
             </span>
             <h2 className="text-2xl sm:text-4xl font-bold leading-tight">
               Unsure which treatment fits your home or office?
             </h2>
-            <p className="mt-3 text-white/80 text-sm sm:text-base leading-relaxed">
+            <p className="mt-3 text-muted-foreground text-sm sm:text-base leading-relaxed">
               Our pest control specialists offer free on-site inspections and custom consultations with no obligation.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -289,7 +289,7 @@ export default function Services() {
                   Request Free Inspection
                 </Button>
               </Link>
-              <a href="tel:+919876543210" className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-accent transition-colors px-4 py-2">
+              <a href="tel:+919876543210" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors px-4 py-2">
                 <Phone className="w-4 h-4 text-accent" /> Call Expert Now
               </a>
             </div>

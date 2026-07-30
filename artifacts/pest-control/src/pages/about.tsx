@@ -144,7 +144,7 @@ export default function About() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground">
       {/* 1. HERO SECTION */}
       <PageHero
         backgroundImage="/images/heroes/about-hero.jpg"
@@ -484,7 +484,7 @@ export default function About() {
             className="p-8 rounded-2xl bg-card border border-border shadow-md max-w-4xl mx-auto"
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {SERVICE_AREAS.map((area) => (
+              {SERVICE_AREAS.map((area: string) => (
                 <div
                   key={area}
                   className="flex items-center gap-2.5 p-3 rounded-xl bg-muted/50 border border-border/50 text-sm font-medium text-foreground hover:bg-primary/10 hover:text-primary transition-colors"
@@ -551,12 +551,12 @@ export default function About() {
       </section>
 
       {/* CALL TO ACTION BOTTOM BANNER */}
-      <section className="py-12 md:py-16 bg-gradient-to-r from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-white">
+      <section className="py-12 md:py-16 bg-muted border-t border-border text-foreground">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
             Ready to live & work pest-free?
           </h2>
-          <p className="text-white/80 max-w-xl mx-auto text-sm sm:text-base">
+          <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
             Contact our expert team today for a free inspection or instant quote tailored to your property.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
@@ -568,7 +568,7 @@ export default function About() {
             </Link>
             <Link
               href="/contact"
-              className="px-6 py-3 rounded-xl bg-white/10 text-white font-semibold text-sm hover:bg-white/20 transition-colors border border-white/20 w-full sm:w-auto flex items-center justify-center gap-2"
+              className="px-6 py-3 rounded-xl bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-colors border border-primary/20 w-full sm:w-auto flex items-center justify-center gap-2"
             >
               <Phone className="w-4 h-4" />
               Contact Us
