@@ -104,36 +104,6 @@ const STATS = [
   { label: "Client Satisfaction", value: "98%", icon: Award, description: "Positive rating and recurring contracts" },
 ];
 
-const TEAM = [
-  {
-    name: "Rajesh Kumar",
-    role: "Founder & Managing Director",
-    initials: "RK",
-    bgColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-    bio: "18+ years experience in urban pest management, spearheading sustainable pest control practices.",
-  },
-  {
-    name: "Dr. Sunita Mohanty",
-    role: "Chief Entomologist",
-    initials: "SM",
-    bgColor: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
-    bio: "Ph.D. in Entomology, directing research in non-toxic chemical formulations and safe urban protocols.",
-  },
-  {
-    name: "Amitabh Roy",
-    role: "Head of Field Operations",
-    initials: "AR",
-    bgColor: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
-    bio: "Oversees dispatch logistics, safety compliance audits, and emergency response teams across regions.",
-  },
-  {
-    name: "Priya Sharma",
-    role: "Client Relations Manager",
-    initials: "PS",
-    bgColor: "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300",
-    bio: "Ensures seamless customer support, service guarantees, and quick resolution for all client inquiries.",
-  },
-];
 
 export default function About() {
   const scrollReveal = {
@@ -419,47 +389,6 @@ export default function About() {
               );
             })}
           </motion.div>
-        </div>
-      </section>
-
-      {/* 7. TEAM SECTION */}
-      <section className="py-16 md:py-24 section-gradient-gray">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div {...scrollReveal} className="text-center max-w-3xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wide uppercase mb-3">
-              <Users className="w-3.5 h-3.5" />
-              Leadership & Expertise
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Meet Our Team
-            </h2>
-            <p className="text-muted-foreground mt-3 text-base sm:text-lg">
-              Experienced entomologists, field specialists, and support professionals driving quality.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM.map((member, idx) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="p-6 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all text-center flex flex-col items-center"
-              >
-                {/* Initials Avatar */}
-                <div
-                  className={`w-20 h-20 rounded-full ${member.bgColor} flex items-center justify-center font-bold text-2xl shadow-inner mb-4`}
-                >
-                  {member.initials}
-                </div>
-                <h3 className="text-lg font-bold text-foreground mb-1">{member.name}</h3>
-                <span className="text-xs font-semibold text-primary mb-3 block">{member.role}</span>
-                <p className="text-xs text-muted-foreground leading-relaxed">{member.bio}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 
