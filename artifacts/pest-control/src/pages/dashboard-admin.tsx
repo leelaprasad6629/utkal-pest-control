@@ -1161,12 +1161,15 @@ export default function DashboardAdmin() {
   return (
     <div className="w-full">
       {/* Premium Full-Width Hero Section */}
-      <div className="relative overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[280px] h-[45vh] flex items-center border-b border-border/10">
+      <div className="relative bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground min-h-[280px] h-[45vh] flex items-center border-b border-border/10">
         {/* Background Image */}
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
           style={{ 
-            backgroundImage: "url('/images/heroes/admin-hero.jpg')" 
+            backgroundImage: "url('/images/heroes/admin-hero.jpg')",
+            backgroundAttachment: "fixed",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
           }}
         />
         {/* Dark Overlay (40-60%) */}

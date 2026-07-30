@@ -9,7 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 import type { AppNotification } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -49,23 +48,35 @@ export default function NotificationBell() {
   return (
     <DropdownMenu open={open} onOpenChange={(v) => { setOpen(v); if (v) load(); }}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" data-testid="button-notification-bell">
-          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
-            <path
-              d="M6 8a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 6.5H4.5C4.5 13.5 6 12 6 8Z"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinejoin="round"
-            />
-            <path d="M9.5 17.5a2.5 2.5 0 0 0 5 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        {/* 44×44px minimum touch target; visible circular bg for contrast on both light & dark navbars */}
+        <button
+          type="button"
+          data-testid="button-notification-bell"
+          aria-label="Notifications"
+          className="relative inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/15 border border-white/30 shadow-sm hover:bg-white/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+        >
+          {/* Bell SVG — 22px, white for max contrast on the green navbar */}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            className="w-[22px] h-[22px] text-white"
+            aria-hidden="true"
+            strokeWidth="2"
+            stroke="currentColor"
+          >
+            <path d="M6 8a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 6.5H4.5C4.5 13.5 6 12 6 8Z" strokeLinejoin="round" />
+            <path d="M9.5 17.5a2.5 2.5 0 0 0 5 0" strokeLinecap="round" />
           </svg>
+
+          {/* Unread badge */}
           {unreadCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white">
+            <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 border-2 border-primary px-1 text-[10px] font-bold text-white leading-none shadow-sm">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end" className="w-80">
         <div className="flex items-center justify-between px-2 py-1.5">
           <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
@@ -82,7 +93,7 @@ export default function NotificationBell() {
         <DropdownMenuSeparator />
         <div className="max-h-80 overflow-y-auto">
           {notifications.length === 0 && (
-            <p className="px-3 py-6 text-center text-sm text-text-muted">No notifications yet.</p>
+            <p className="px-3 py-6 text-center text-sm text-muted-foreground">No notifications yet.</p>
           )}
           {notifications.map((n) => (
             <DropdownMenuItem key={n._id} asChild className="cursor-pointer">
@@ -91,8 +102,8 @@ export default function NotificationBell() {
                 className={cn("flex flex-col items-start gap-0.5 whitespace-normal py-2", !n.read && "bg-secondary/50")}
               >
                 <span className="text-sm font-medium">{n.title}</span>
-                <span className="text-xs text-text-muted">{n.message}</span>
-                <span className="text-[10px] text-text-muted/70">{new Date(n.createdAt).toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">{n.message}</span>
+                <span className="text-[10px] text-muted-foreground/70">{new Date(n.createdAt).toLocaleString()}</span>
               </Link>
             </DropdownMenuItem>
           ))}
