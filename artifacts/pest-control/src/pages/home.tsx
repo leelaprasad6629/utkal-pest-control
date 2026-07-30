@@ -681,7 +681,6 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="bg-muted text-foreground py-16 sm:py-20 relative overflow-hidden border-t border-border"
       >
-        <div 
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8 relative z-10">
           <div className="rounded-3xl border border-border bg-card p-8 sm:p-12 shadow-xl">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1 text-xs font-bold text-primary">
