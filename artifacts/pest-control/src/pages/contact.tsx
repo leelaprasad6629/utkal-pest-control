@@ -412,7 +412,6 @@ export default function Contact() {
               <span className="px-3 py-1 rounded-lg bg-background border border-border">Delhi NCR</span>
               <span className="px-3 py-1 rounded-lg bg-background border border-border">Mumbai</span>
               <span className="px-3 py-1 rounded-lg bg-background border border-border">Bengaluru</span>
-              <span className="px-3 py-1 rounded-lg bg-background border border-border">Hyderabad</span>
               <span className="px-3 py-1 rounded-lg bg-background border border-border">+ 20 More Cities</span>
             </div>
           </div>
