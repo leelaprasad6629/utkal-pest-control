@@ -144,7 +144,7 @@ export default function About() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-[#F8FAFC] to-[#EFF6FF] text-foreground">
       {/* 1. HERO SECTION */}
       <PageHero
         backgroundImage="/images/heroes/about-hero.jpg"
