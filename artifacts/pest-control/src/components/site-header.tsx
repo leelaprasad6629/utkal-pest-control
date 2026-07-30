@@ -124,7 +124,7 @@ export default function SiteHeader() {
                 className={cn(
                   "ml-1 transition-all duration-300 hover:scale-105",
                   scrolled
-                    ? "border-white/40 text-white hover:bg-white/15 hover:text-white"
+                    ? "border-white/50 text-white bg-transparent hover:bg-white/15 hover:text-white"
                     : "border-primary/30 text-primary hover:bg-primary/10"
                 )}
                 data-testid="button-sign-in"
