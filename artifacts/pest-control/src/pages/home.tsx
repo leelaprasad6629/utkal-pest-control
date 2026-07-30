@@ -679,25 +679,25 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="bg-gradient-to-br from-[#1B4332] via-[#143623] to-[#0B2116] text-white py-16 sm:py-20 relative overflow-hidden"
+        className="bg-muted text-foreground py-16 sm:py-20 relative overflow-hidden border-t border-border"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,163,115,0.15),transparent_50%)] pointer-events-none" />
+        <div 
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8 relative z-10">
-          <div className="rounded-3xl border border-white/15 bg-white/5 p-8 backdrop-blur-md sm:p-12 shadow-2xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/20 px-3.5 py-1 text-xs font-bold text-accent">
+          <div className="rounded-3xl border border-border bg-card p-8 sm:p-12 shadow-xl">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3.5 py-1 text-xs font-bold text-primary">
               <Sparkles className="h-3.5 w-3.5" /> Rapid Response Team
             </span>
-            <h2 className="mt-4 text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
+            <h2 className="mt-4 text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
               Serving {SERVICE_AREAS.join(", ")}
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-white/80 sm:text-base leading-relaxed">
+            <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground sm:text-base leading-relaxed">
               Ready to safeguard your property from pests? Get a instant free quote and schedule your certified inspection today.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/quote" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="h-12 w-full bg-accent px-8 text-base font-semibold text-accent-foreground border-accent shadow-md hover:brightness-105 btn-shine sm:w-auto"
+                  className="h-12 w-full bg-primary px-8 text-base font-semibold text-primary-foreground border-primary shadow-md hover:brightness-110 btn-shine sm:w-auto"
                   data-testid="button-cta-quote"
                 >
                   Get Free Quote
@@ -708,7 +708,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-12 w-full border-white/30 bg-white/10 text-white font-semibold hover:bg-white/20 sm:w-auto"
+                  className="h-12 w-full border-primary/30 text-primary font-semibold hover:bg-primary/10 sm:w-auto"
                 >
                   Explore Services
                 </Button>

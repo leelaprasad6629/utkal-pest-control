@@ -109,7 +109,7 @@ export default function SiteHeader() {
           <Link href="/quote" className="ml-1 md:ml-2">
             <Button
               size="sm"
-              className="btn-shine bg-accent text-accent-foreground hover:bg-accent/90 border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+              className="btn-shine bg-primary/90 text-primary-foreground hover:bg-primary border border-primary/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
               data-testid="button-get-quote"
             >
               Get Quote

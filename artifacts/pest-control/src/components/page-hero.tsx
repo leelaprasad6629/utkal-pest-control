@@ -58,7 +58,7 @@ export default function PageHero({
 
   return (
     <section
-      className={`relative overflow-hidden flex items-center justify-center text-center text-white ${className ?? "min-h-[300px] h-[50vh]"}`}
+      className={`relative overflow-hidden flex items-center justify-center text-center text-white ${className ?? "min-h-screen h-screen"}`}
     >
       {/* Background image with zoom + parallax */}
       {backgroundImage && (
