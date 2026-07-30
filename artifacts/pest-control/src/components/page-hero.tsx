@@ -4,8 +4,7 @@
  * Features:
  *  - Background image with slow zoom animation (parallax-like)
  *  - Balanced dark gradient overlay (not green-tinted) for premium look
- *  - Smooth fade transition into page content
- *  - Fully responsive (~55vh height — occupies ~55% of first viewport)
+ *  - Full 100vh height — nothing below is visible until the user scrolls
  *  - Centered content with consistent typography
  *  - Badge, title, subtitle, CTA actions
  */
@@ -58,7 +57,7 @@ export default function PageHero({
 
   return (
     <section
-      className={`relative overflow-hidden flex items-center justify-center text-center text-white h-[55vh] min-h-[380px] ${className ?? ""}`}
+      className={`relative overflow-hidden flex items-center justify-center text-center text-white h-screen min-h-screen ${className ?? ""}`}
     >
       {/* Background image with zoom + parallax */}
       {backgroundImage && (
@@ -105,8 +104,13 @@ export default function PageHero({
         {children}
       </div>
 
-      {/* Smooth fade transition from hero into page content */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-background pointer-events-none z-5" />
+      {/* Subtle scroll indicator at the bottom */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 animate-bounce opacity-60">
+        <span className="text-white text-xs tracking-widest uppercase">Scroll</span>
+        <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </section>
   );
 }
