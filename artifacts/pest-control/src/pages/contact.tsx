@@ -356,7 +356,7 @@ export default function Contact() {
             <div className="relative rounded-2xl overflow-hidden shadow-xl border border-border/80 min-h-[380px] lg:h-full flex-1 bg-muted">
               <iframe
                 title="Utkal Pest Control Headquarters Location"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3742.123!2d85.8245!3d20.2961!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a1909d2d5170aa5%3A0xfc580e2b68b33fa8!2sBhubaneswar%2C%20Odisha!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3806.237!2d78.4867!3d17.3850!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b78392bafbc2!2sHyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                 width="100%"
                 height="100%"
                 style={{ border: 0, minHeight: "360px" }}
@@ -375,7 +375,7 @@ export default function Contact() {
                   <div>
                     <h4 className="text-xs font-bold text-foreground">Central Headquarters</h4>
                     <p className="text-[11px] text-muted-foreground leading-snug">
-                      Main Hub: Jaydev Vihar, Bhubaneswar, Odisha 751013
+                      Main Hub: Hyderabad, Telangana 500001
                     </p>
                     <p className="text-[10px] text-primary font-semibold mt-1">
                       + Local Dispatch Hubs Across All Major Indian Metro Cities
@@ -406,7 +406,7 @@ export default function Contact() {
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-[11px] text-muted-foreground font-medium">
-              <span className="px-3 py-1 rounded-lg bg-background border border-border">Bhubaneswar</span>
+              <span className="px-3 py-1 rounded-lg bg-background border border-border">Hyderabad</span>
               <span className="px-3 py-1 rounded-lg bg-background border border-border">Cuttack</span>
               <span className="px-3 py-1 rounded-lg bg-background border border-border">Kolkata</span>
               <span className="px-3 py-1 rounded-lg bg-background border border-border">Delhi NCR</span>
