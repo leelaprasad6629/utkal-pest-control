@@ -20,7 +20,7 @@ import type { Booking, ServiceItem } from "@/lib/types";
 import StatusBadge from "@/components/status-badge";
 import { toast } from "@/hooks/use-toast";
 import { useUserContext } from "@/lib/user-context";
-import { Wrench } from "lucide-react";
+import PageHero from "@/components/page-hero";
 
 // ─── Complete job dialog ──────────────────────────────────────────────────────
 
@@ -275,127 +275,110 @@ export default function DashboardTechnician() {
   const completed = bookings.filter((b) => b.status === "completed");
 
   return (
-    <div className="w-full">
-      {/* Premium Full-Width Hero Section */}
-      <div className="relative overflow-hidden bg-linear-to-br from-primary via-[hsl(155,43%,18%)] to-[hsl(155,43%,12%)] text-primary-foreground min-h-[280px] h-[45vh] flex items-center border-b border-border/10">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
-          style={{ 
-            backgroundImage: "url('/images/heroes/technician-hero.jpg')" 
-          }}
-        />
-        {/* Dark Overlay (40-60%) */}
-        <div className="absolute inset-0 z-0 bg-black/55 pointer-events-none" />
-
-        {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 w-full flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
-            <div className="h-16 w-16 rounded-2xl bg-white/10 text-white flex items-center justify-center shrink-0 border border-white/20 animate-pulse-slow">
-              <Wrench className="w-8 h-8" />
-            </div>
-            <div className="space-y-1">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">Technician Dashboard</h1>
-              <p className="text-sm sm:text-base text-white/80 max-w-xl leading-relaxed">
-                View assigned jobs, update service status, and manage daily tasks.
-              </p>
-              {!userLoading && user && (
-                <p className="text-xs text-white/60">Welcome, {user.name} · Technician</p>
-              )}
-            </div>
-          </div>
-          <Link href="/profile" className="text-sm font-semibold bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full border border-white/25 shrink-0 transition-colors shadow-xs">
+    <div className="w-full min-h-screen bg-background">
+      <PageHero
+        backgroundImage="/images/heroes/technician-hero.jpg"
+        badge="Technician Portal"
+        title="My Jobs"
+        subtitle="View and manage your assigned pest control jobs"
+        actions={
+          <Link
+            href="/profile"
+            className="inline-flex items-center text-xs sm:text-sm font-semibold bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full border border-white/25 transition-colors shadow-xs"
+          >
             My Profile →
           </Link>
-        </div>
-      </div>
+        }
+      >
+        {!userLoading && user && (
+          <p className="text-xs text-white/70 pt-1">Welcome, {user.name} · Technician</p>
+        )}
+      </PageHero>
 
-      {/* Main Grid Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8 relative z-10 animate-fade-in">
-
-      {/* Loading skeleton */}
-      {loading && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="rounded-xl border border-border bg-card p-4 h-20 animate-pulse" />
-            ))}
-          </div>
-          <div className="rounded-xl border border-border bg-card p-5 h-28 animate-pulse" />
-          <div className="rounded-xl border border-border bg-card p-5 h-28 animate-pulse" />
-        </div>
-      )}
-
-      {/* No Technician profile guard — shown when admin hasn't set up this account yet */}
-      {!loading && profileError && (
-        <div className="rounded-xl border border-warning/40 bg-warning/10 p-6 sm:p-8 text-center shadow-2xs" data-testid="technician-no-profile">
-          <div className="text-4xl mb-3">⚠️</div>
-          <h3 className="text-lg font-bold text-foreground">No Technician Profile Found</h3>
-          <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
-            {profileError}
-          </p>
-          <p className="mt-3 text-xs text-text-muted">
-            Your account is logged in as <strong>{user?.email}</strong>. Ask your administrator to add you as a technician in the Admin Dashboard.
-          </p>
-        </div>
-      )}
-
-      {error && <p className="text-danger" data-testid="text-error">{error}</p>}
-
-      {!loading && !error && !profileError && (
-        <>
-          <SummaryCards bookings={bookings} />
-
-          {bookings.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-8 sm:p-12 text-center shadow-2xs">
-              <div className="text-5xl mb-4">🔧</div>
-              <h3 className="text-xl font-bold text-foreground">No jobs assigned yet</h3>
-              <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
-                Your assigned jobs will appear here once the admin assigns bookings to you.
-              </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-fade-in">
+        {/* Loading skeleton */}
+        {loading && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="rounded-xl border border-border bg-card p-4 h-20 animate-pulse" />
+              ))}
             </div>
-          ) : (
-            <Tabs defaultValue="active">
-              <div className="w-full overflow-x-auto no-scrollbar mb-4">
-                <TabsList className="w-full sm:w-auto">
-                  <TabsTrigger value="active" className="flex-1 sm:flex-none">Active ({active.length})</TabsTrigger>
-                  <TabsTrigger value="today" className="flex-1 sm:flex-none">Today ({todayJobs.length})</TabsTrigger>
-                  <TabsTrigger value="completed" className="flex-1 sm:flex-none">Completed ({completed.length})</TabsTrigger>
-                </TabsList>
+            <div className="rounded-xl border border-border bg-card p-5 h-28 animate-pulse" />
+            <div className="rounded-xl border border-border bg-card p-5 h-28 animate-pulse" />
+          </div>
+        )}
+
+        {/* No Technician profile guard — shown when admin hasn't set up this account yet */}
+        {!loading && profileError && (
+          <div className="rounded-xl border border-warning/40 bg-warning/10 p-6 sm:p-8 text-center shadow-2xs" data-testid="technician-no-profile">
+            <div className="text-4xl mb-3">⚠️</div>
+            <h3 className="text-lg font-bold text-foreground">No Technician Profile Found</h3>
+            <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
+              {profileError}
+            </p>
+            <p className="mt-3 text-xs text-text-muted">
+              Your account is logged in as <strong>{user?.email}</strong>. Ask your administrator to add you as a technician in the Admin Dashboard.
+            </p>
+          </div>
+        )}
+
+        {error && <p className="text-danger" data-testid="text-error">{error}</p>}
+
+        {!loading && !error && !profileError && (
+          <>
+            <SummaryCards bookings={bookings} />
+
+            {bookings.length === 0 ? (
+              <div className="rounded-xl border border-border bg-card p-8 sm:p-12 text-center shadow-2xs">
+                <div className="text-5xl mb-4">🔧</div>
+                <h3 className="text-xl font-bold text-foreground">No jobs assigned yet</h3>
+                <p className="mt-2 text-sm text-text-muted max-w-sm mx-auto">
+                  Your assigned jobs will appear here once the admin assigns bookings to you.
+                </p>
               </div>
+            ) : (
+              <Tabs defaultValue="active">
+                <div className="w-full overflow-x-auto no-scrollbar mb-4">
+                  <TabsList className="w-full sm:w-auto">
+                    <TabsTrigger value="active" className="flex-1 sm:flex-none">Active ({active.length})</TabsTrigger>
+                    <TabsTrigger value="today" className="flex-1 sm:flex-none">Today ({todayJobs.length})</TabsTrigger>
+                    <TabsTrigger value="completed" className="flex-1 sm:flex-none">Completed ({completed.length})</TabsTrigger>
+                  </TabsList>
+                </div>
 
-              <TabsContent value="active" className="space-y-4">
-                {active.length === 0 ? (
-                  <div className="rounded-xl border border-border bg-card p-8 text-center">
-                    <p className="text-text-muted text-sm font-medium">All jobs completed — great work!</p>
-                  </div>
-                ) : (
-                  active.map((b) => <JobCard key={b._id} booking={b} onAction={load} />)
-                )}
-              </TabsContent>
+                <TabsContent value="active" className="space-y-4">
+                  {active.length === 0 ? (
+                    <div className="rounded-xl border border-border bg-card p-8 text-center">
+                      <p className="text-text-muted text-sm font-medium">All jobs completed — great work!</p>
+                    </div>
+                  ) : (
+                    active.map((b) => <JobCard key={b._id} booking={b} onAction={load} />)
+                  )}
+                </TabsContent>
 
-              <TabsContent value="today" className="space-y-4">
-                {todayJobs.length === 0 ? (
-                  <div className="rounded-xl border border-border bg-card p-8 text-center">
-                    <div className="text-3xl mb-3">📅</div>
-                    <p className="text-text-muted text-sm">No jobs scheduled for today.</p>
-                  </div>
-                ) : (
-                  todayJobs.map((b) => <JobCard key={b._id} booking={b} onAction={load} />)
-                )}
-              </TabsContent>
+                <TabsContent value="today" className="space-y-4">
+                  {todayJobs.length === 0 ? (
+                    <div className="rounded-xl border border-border bg-card p-8 text-center">
+                      <div className="text-3xl mb-3">📅</div>
+                      <p className="text-text-muted text-sm">No jobs scheduled for today.</p>
+                    </div>
+                  ) : (
+                    todayJobs.map((b) => <JobCard key={b._id} booking={b} onAction={load} />)
+                  )}
+                </TabsContent>
 
-              <TabsContent value="completed" className="space-y-4">
-                {completed.length === 0 ? (
-                  <p className="text-center text-text-muted py-8 text-sm">No completed jobs yet.</p>
-                ) : (
-                  completed.map((b) => <JobCard key={b._id} booking={b} onAction={load} />)
-                )}
-              </TabsContent>
-            </Tabs>
-          )}
-        </>
-      )}
+                <TabsContent value="completed" className="space-y-4">
+                  {completed.length === 0 ? (
+                    <p className="text-center text-text-muted py-8 text-sm">No completed jobs yet.</p>
+                  ) : (
+                    completed.map((b) => <JobCard key={b._id} booking={b} onAction={load} />)
+                  )}
+                </TabsContent>
+              </Tabs>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

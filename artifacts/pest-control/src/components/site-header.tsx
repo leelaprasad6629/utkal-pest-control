@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact", testId: "link-contact" },
 ];
 
-/** Returns the correct dashboard href and label for the current user's role. */
 function useDashboardLink() {
   const { user } = useUserContext();
   if (isAdmin(user)) return { href: "/dashboard/admin", label: "Admin Panel" };
@@ -27,6 +26,7 @@ function useDashboardLink() {
 export default function SiteHeader() {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { href: dashHref, label: dashLabel } = useDashboardLink();
 
   const isDashActive =
@@ -34,15 +34,33 @@ export default function SiteHeader() {
     location === "/dashboard/admin" ||
     location === "/dashboard/technician";
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-primary shadow-md transition-all duration-300">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-        <Link href="/" data-testid="link-home">
-          <LogoLockup size={30} textClass="text-white text-base inline" />
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full transition-all duration-500",
+        scrolled ? "nav-solid shadow-lg" : "glass-nav"
+      )}
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16 lg:h-18">
+        <Link href="/" data-testid="link-home" className="transition-transform duration-300 hover:scale-105">
+          <LogoLockup
+            size={32}
+            textClass={cn(
+              "text-base inline transition-colors duration-300",
+              scrolled ? "text-white" : "text-primary"
+            )}
+          />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1 md:gap-3 text-sm">
+        <nav className="hidden md:flex items-center gap-1 md:gap-2 text-sm">
           {NAV_LINKS.map((link) => {
             const isActive = location === link.href;
             return (
@@ -51,13 +69,20 @@ export default function SiteHeader() {
                 href={link.href}
                 data-testid={link.testId}
                 className={cn(
-                  "px-3.5 py-1.5 rounded-full font-medium text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ease-in-out border border-transparent",
-                  isActive
-                    ? "text-primary-foreground bg-white/20 font-semibold shadow-xs border-white/20"
-                    : "text-white/80 hover:text-white hover:bg-white/15"
+                  "px-4 py-2 rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 active:scale-95 ease-out relative group",
+                  scrolled
+                    ? isActive
+                      ? "text-white bg-white/20 font-semibold shadow-sm border border-white/20"
+                      : "text-white/80 hover:text-white hover:bg-white/15"
+                    : isActive
+                      ? "text-primary-foreground bg-primary font-semibold shadow-sm"
+                      : "text-foreground/70 hover:text-primary hover:bg-primary/10"
                 )}
               >
                 {link.label}
+                {isActive && (
+                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-accent" />
+                )}
               </Link>
             );
           })}
@@ -67,10 +92,14 @@ export default function SiteHeader() {
               href={dashHref}
               data-testid="link-dashboard"
               className={cn(
-                "px-3.5 py-1.5 rounded-full font-medium text-sm transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ease-in-out border border-transparent",
-                isDashActive
-                  ? "text-primary-foreground bg-white/20 font-semibold shadow-xs border-white/20"
-                  : "text-white/80 hover:text-white hover:bg-white/15"
+                "px-4 py-2 rounded-full font-medium text-sm transition-all duration-300 hover:scale-105 active:scale-95 ease-out",
+                scrolled
+                  ? isDashActive
+                    ? "text-white bg-white/20 font-semibold shadow-sm border border-white/20"
+                    : "text-white/80 hover:text-white hover:bg-white/15"
+                  : isDashActive
+                    ? "text-primary-foreground bg-primary font-semibold shadow-sm"
+                    : "text-foreground/70 hover:text-primary hover:bg-primary/10"
               )}
             >
               {dashLabel}
@@ -78,14 +107,28 @@ export default function SiteHeader() {
           </SignedIn>
 
           <Link href="/quote" className="ml-1 md:ml-2">
-            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 border-0" data-testid="button-get-quote">
+            <Button
+              size="sm"
+              className="btn-shine bg-accent text-accent-foreground hover:bg-accent/90 border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+              data-testid="button-get-quote"
+            >
               Get Quote
             </Button>
           </Link>
 
           <SignedOut>
             <SignInButton mode="modal">
-              <Button size="sm" variant="outline" className="ml-1 border-white/40 text-white hover:bg-white/15 hover:text-white" data-testid="button-sign-in">
+              <Button
+                size="sm"
+                variant="outline"
+                className={cn(
+                  "ml-1 transition-all duration-300 hover:scale-105",
+                  scrolled
+                    ? "border-white/40 text-white hover:bg-white/15 hover:text-white"
+                    : "border-primary/30 text-primary hover:bg-primary/10"
+                )}
+                data-testid="button-sign-in"
+              >
                 Sign in
               </Button>
             </SignInButton>
@@ -98,7 +141,7 @@ export default function SiteHeader() {
           </SignedIn>
         </nav>
 
-        {/* Mobile Navigation Controls */}
+        {/* Mobile Navigation */}
         <div className="flex md:hidden items-center gap-2">
           <SignedIn>
             <NotificationBell />
@@ -107,7 +150,15 @@ export default function SiteHeader() {
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9 p-0 text-white hover:bg-white/10 hover:text-white" aria-label="Toggle Navigation Menu">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-9 w-9 p-0 transition-colors",
+                  scrolled ? "text-white hover:bg-white/10" : "text-primary hover:bg-primary/10"
+                )}
+                aria-label="Toggle Navigation Menu"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -115,7 +166,7 @@ export default function SiteHeader() {
               <div className="space-y-6 pt-4">
                 <SheetHeader className="text-left">
                   <SheetTitle>
-                    <LogoLockup size={26} textClass="text-primary text-base inline" />
+                    <LogoLockup size={28} textClass="text-primary text-base inline" />
                   </SheetTitle>
                 </SheetHeader>
 
@@ -129,10 +180,10 @@ export default function SiteHeader() {
                         onClick={() => setMobileOpen(false)}
                         data-testid={link.testId}
                         className={cn(
-                          "px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                          "px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300",
                           isActive
-                            ? "bg-primary text-primary-foreground font-semibold"
-                            : "text-foreground/80 hover:bg-muted"
+                            ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                            : "text-foreground/80 hover:bg-muted hover:translate-x-1"
                         )}
                       >
                         {link.label}
@@ -146,10 +197,10 @@ export default function SiteHeader() {
                       onClick={() => setMobileOpen(false)}
                       data-testid="link-dashboard"
                       className={cn(
-                        "px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                        "px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300",
                         isDashActive
-                          ? "bg-primary text-primary-foreground font-semibold"
-                          : "text-foreground/80 hover:bg-muted"
+                          ? "bg-primary text-primary-foreground font-semibold shadow-sm"
+                          : "text-foreground/80 hover:bg-muted hover:translate-x-1"
                       )}
                     >
                       {dashLabel}
@@ -160,7 +211,7 @@ export default function SiteHeader() {
 
               <div className="space-y-3 pt-6 border-t border-border">
                 <Link href="/quote" onClick={() => setMobileOpen(false)} className="w-full block">
-                  <Button className="w-full h-11 text-sm font-semibold" data-testid="button-get-quote">
+                  <Button className="btn-shine w-full h-11 text-sm font-semibold shadow-sm" data-testid="button-get-quote">
                     Get Quote
                   </Button>
                 </Link>

@@ -24,15 +24,9 @@ import {
   CheckCircle2, 
   Lock, 
   AlertCircle, 
-  Calendar, 
-  Clock, 
   Sparkles, 
-  ChevronRight, 
-  Star, 
-  HelpCircle,
-  Info
+  HelpCircle
 } from "lucide-react";
-import StarRating from "@/components/star-rating";
 
 interface ValidationErrors {
   service?: string;
@@ -46,8 +40,8 @@ interface ValidationErrors {
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
   return (
-    <div className="mt-1 flex items-center gap-1.5 text-xs text-danger font-medium animate-fade-in" role="alert">
-      <AlertCircle className="w-3.5 h-3.5" />
+    <div className="mt-1 flex items-center gap-1.5 text-xs text-destructive font-medium animate-fade-in" role="alert">
+      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
       <span>{msg}</span>
     </div>
   );
@@ -107,44 +101,48 @@ function BookingConfirmation({
     <motion.div 
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-md text-center"
+      className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xl text-center space-y-6"
     >
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success/15 mb-4 animate-bounce-slow">
-        <CheckCircle2 className="h-7 w-7 text-success" aria-hidden="true" />
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+        <CheckCircle2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
       </div>
-      <h2 className="text-xl sm:text-2xl font-bold text-primary">Booking Confirmed!</h2>
-      <p className="mt-2 text-text-muted text-sm leading-relaxed">
-        Your booking request has been securely registered. Our support team will contact you shortly to finalize details.
-      </p>
+      <div className="space-y-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground">Booking Confirmed!</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+          Your service request has been securely registered. Our dispatch team will call you shortly to confirm technician arrival.
+        </p>
+      </div>
 
-      <div className="mt-6 rounded-xl border border-border bg-secondary/35 p-5 text-left space-y-3.5 text-sm">
-        <div className="flex justify-between items-center">
-          <span className="text-text-muted font-medium">Booking Number</span>
-          <span className="font-mono font-bold text-primary bg-primary/5 px-2.5 py-1 rounded-md border border-primary/10">{bookingNumber}</span>
+      <div className="rounded-xl border border-border/80 bg-muted/40 p-5 text-left space-y-3 text-xs sm:text-sm">
+        <div className="flex justify-between items-center pb-2 border-b border-border/60">
+          <span className="text-muted-foreground font-medium">Booking Number</span>
+          <span className="font-mono font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-md border border-primary/20">
+            {bookingNumber}
+          </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-text-muted font-medium">Service Name</span>
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground font-medium">Service</span>
           <span className="font-semibold text-foreground">{serviceName}</span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-text-muted font-medium">Scheduled For</span>
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground font-medium">Scheduled Date</span>
           <span className="font-semibold text-foreground">
             {new Date(scheduledDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
           </span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-text-muted font-medium">Address</span>
-          <span className="font-semibold text-foreground text-right max-w-[200px] break-words">{address}</span>
+        <div className="flex justify-between items-start gap-4 pt-1">
+          <span className="text-muted-foreground font-medium shrink-0">Address</span>
+          <span className="font-semibold text-foreground text-right max-w-[220px] break-words">{address}</span>
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-3 pt-2">
         <Link href={`/bookings/${bookingId}`} className="flex-1">
-          <Button className="w-full h-11 text-sm font-semibold" data-testid="button-view-booking">
+          <Button className="w-full h-11 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm" data-testid="button-view-booking">
             View Booking
           </Button>
         </Link>
-        <Button variant="outline" className="flex-1 h-11 text-sm font-semibold" onClick={onNewBooking} data-testid="button-new-booking">
+        <Button variant="outline" className="flex-1 h-11 text-sm font-semibold rounded-xl border-border" onClick={onNewBooking} data-testid="button-new-booking">
           Book Another
         </Button>
       </div>
@@ -255,18 +253,18 @@ export default function Quote() {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
       <PageHero
-        backgroundImage="https://images.unsplash.com/photo-1591285643087-97c7a5b1d3e4?auto=format&fit=crop&w=1600&q=80"
+        backgroundImage="/images/heroes/quote-hero.jpg"
         overlayOpacity={55}
-        badge={<><Sparkles className="w-3.5 h-3.5 animate-pulse" /> Reliable Pest Solutions</>}
+        badge={<><Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" /> Reliable Pest Solutions</>}
         title="Book Your Pest Control Service"
         subtitle="Request a free inspection and receive a customized quote from our experts."
         actions={
           <Button
             onClick={handleHeroCtaClick}
             size="lg"
-            className="h-12 px-8 font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm rounded-lg"
+            className="h-12 px-8 font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-md rounded-xl transition-all"
           >
             Book Service Now
           </Button>
@@ -274,54 +272,82 @@ export default function Quote() {
       />
 
       {/* Main Two-Column Content */}
-      <div id="booking-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 animate-fade-in">
+      <div id="booking-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
-          {/* Left Column: Trust, Stats, How it Works, FAQs */}
-          <div className="lg:col-span-7 space-y-10">
+          {/* Left Column: Trust, Stats, How it Works, FAQs (lg:col-span-7) */}
+          <div className="lg:col-span-7 space-y-12">
             
             {/* Why Choose Us */}
-            <section className="space-y-6">
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
               <div className="space-y-2">
-                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Why Choose Utkal Pest Control?</h2>
-                <p className="text-sm text-text-muted max-w-lg">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+                  <ShieldCheck className="w-4 h-4" /> Why Choose Us
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Why Choose Utkal Pest Control?
+                </h2>
+                <p className="text-xs sm:text-sm text-muted-foreground max-w-lg leading-relaxed">
                   We are dedicated to providing the safest, most effective pest treatments for families and businesses nationwide.
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {TRUST_POINTS.map((point) => (
-                  <div key={point.title} className="flex gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                    <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-4 h-4" />
+                  <div key={point.title} className="glass-card card-interactive rounded-xl p-4 shadow-2xs space-y-1.5 border border-border/70">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <ShieldCheck className="w-4.5 h-4.5" />
+                      </div>
+                      <h4 className="text-xs sm:text-sm font-semibold text-foreground leading-snug">{point.title}</h4>
                     </div>
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-semibold text-foreground leading-snug">{point.title}</h4>
-                      <p className="text-xs text-text-muted leading-relaxed">{point.desc}</p>
-                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed pl-10">{point.desc}</p>
                   </div>
                 ))}
               </div>
-            </section>
+            </motion.section>
 
             {/* Statistics Cards */}
-            <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+            >
               {STATS_ITEMS.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="rounded-2xl border border-border bg-card p-4 text-center shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                    <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div key={item.label} className="bg-card border border-border/80 p-4 rounded-xl text-center space-y-1 hover:border-primary/30 transition-all shadow-2xs">
+                    <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <Icon className="w-5 h-5" />
                     </div>
                     <p className="text-xl sm:text-2xl font-bold text-primary font-display pt-1">{item.value}</p>
-                    <p className="text-[11px] font-medium text-text-muted leading-tight">{item.label}</p>
+                    <p className="text-[11px] font-medium text-muted-foreground leading-tight">{item.label}</p>
                   </div>
                 );
               })}
-            </section>
+            </motion.section>
 
             {/* How It Works */}
-            <section className="space-y-6">
-              <h2 className="text-2xl font-bold text-foreground">How It Works</h2>
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
+              <div className="space-y-1">
+                <h2 className="text-2xl font-bold text-foreground">How It Works</h2>
+                <p className="text-xs text-muted-foreground">Four simple steps to a pest-free home.</p>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 {[
                   { step: "1", icon: UserPlus, label: "Sign In", desc: "Create or sign in to your dashboard" },
@@ -331,38 +357,48 @@ export default function Quote() {
                 ].map((s) => {
                   const StepIcon = s.icon;
                   return (
-                    <div key={s.step} className="relative rounded-2xl border border-border bg-card p-5 text-center shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                      <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xs">
+                    <div key={s.step} className="bg-card border border-border/80 p-4 rounded-xl text-center space-y-2 relative shadow-2xs hover:border-primary/30 transition-all">
+                      <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xs">
                         {s.step}
                       </div>
-                      <StepIcon className="w-5 h-5 mx-auto text-primary/70" />
+                      <StepIcon className="w-5 h-5 mx-auto text-primary/80" />
                       <h4 className="text-xs font-bold text-foreground">{s.label}</h4>
-                      <p className="text-[11px] text-text-muted leading-relaxed">{s.desc}</p>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">{s.desc}</p>
                     </div>
                   );
                 })}
               </div>
-            </section>
+            </motion.section>
 
             {/* FAQ Accordion */}
-            <section className="space-y-4">
-              <h2 className="text-2xl font-bold text-foreground">Frequently Asked Questions</h2>
-              <Accordion type="single" collapsible className="space-y-2">
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                <h2 className="text-xl sm:text-2xl font-bold text-foreground">Frequently Asked Questions</h2>
+              </div>
+              
+              <Accordion type="single" collapsible className="space-y-2.5">
                 {FAQS.map((faq, idx) => (
-                  <AccordionItem key={faq.q} value={`faq-${idx}`} className="rounded-xl border border-border px-4 bg-card shadow-sm hover:shadow-md transition-all duration-300">
-                    <AccordionTrigger className="text-sm font-semibold py-3.5 hover:no-underline text-foreground text-left">
+                  <AccordionItem key={faq.q} value={`faq-${idx}`} className="border border-border/80 rounded-xl px-4 bg-card shadow-2xs hover:border-primary/30 transition-all duration-300">
+                    <AccordionTrigger className="text-xs sm:text-sm font-semibold py-3.5 hover:no-underline text-foreground text-left">
                       {faq.q}
                     </AccordionTrigger>
-                    <AccordionContent className="text-xs text-text-muted pb-4 leading-relaxed">
+                    <AccordionContent className="text-xs text-muted-foreground pb-4 leading-relaxed">
                       {faq.a}
                     </AccordionContent>
                   </AccordionItem>
                 ))}
               </Accordion>
-            </section>
+            </motion.section>
           </div>
 
-          {/* Right Column: Sign In Card OR Booking Form */}
+          {/* Right Column: Sign In Card OR Booking Form (lg:col-span-5) */}
           <div className="lg:col-span-5 lg:sticky lg:top-24">
             
             {/* If Confirmed Booking exists */}
@@ -381,66 +417,77 @@ export default function Quote() {
               <motion.div 
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-md space-y-6"
+                className="w-full rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-xl space-y-6"
               >
                 <div className="text-center space-y-3">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <Lock className="w-5 h-5" />
                   </div>
                   <h2 className="text-xl font-bold text-foreground">Secure Quote Booking</h2>
-                  <p className="text-xs text-text-muted leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     Signing in helps you securely track your booking history, view quotes, pay invoices, and contact technicians directly.
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-border bg-secondary/35 p-4 space-y-2.5 text-xs text-text-muted leading-relaxed">
-                  <div className="flex gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-2.5 text-xs text-muted-foreground leading-relaxed">
+                  <div className="flex gap-2 items-center">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Instant status updates & notifications.</span>
                   </div>
-                  <div className="flex gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <div className="flex gap-2 items-center">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Secure chat with assigned technicians.</span>
                   </div>
-                  <div className="flex gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                  <div className="flex gap-2 items-center">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <span>Downloadable bills & invoice records.</span>
                   </div>
                 </div>
 
                 <div>
                   <SignInButton mode="modal">
-                    <Button size="lg" className="w-full h-12 text-base font-semibold shadow-xs" data-testid="button-sign-in-quote">
-                      Sign in to continue
+                    <Button size="lg" className="w-full h-12 text-sm font-semibold shadow-sm rounded-xl bg-primary text-primary-foreground hover:bg-primary/90" data-testid="button-sign-in-quote">
+                      Sign In to Request Quote
                     </Button>
                   </SignInButton>
                 </div>
               </motion.div>
+
             ) : (
-              
+
               /* Booking Form Card */
-              <motion.div
+              <motion.div 
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-md space-y-5"
+                className="w-full rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-xl space-y-6"
               >
-                <div className="space-y-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-foreground">Request a Quote</h2>
-                  <p className="text-xs text-text-muted">Fields marked with <span className="text-danger">*</span> are required.</p>
+                <div className="border-b border-border/60 pb-4 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground">Service Request Form</h2>
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      Step 1 of 1
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Provide details below to calculate service requirements.
+                  </p>
                 </div>
 
-                <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-                  
-                  {/* Service */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Select Service */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="service" className="text-xs font-semibold text-foreground">Service <span className="text-danger">*</span></Label>
+                    <Label htmlFor="service" className="text-xs font-semibold text-foreground">
+                      Service Type <span className="text-destructive">*</span>
+                    </Label>
                     <Select value={serviceId} onValueChange={setServiceId}>
-                      <SelectTrigger id="service" data-testid="select-service" className="h-10 text-sm">
-                        <SelectValue placeholder="Select a service" />
+                      <SelectTrigger id="service" data-testid="select-service" className="h-10 text-xs sm:text-sm rounded-xl">
+                        <SelectValue placeholder="Select a service..." />
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((s) => (
-                          <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>
+                          <SelectItem key={s._id} value={s._id}>
+                            {s.name} ({s.pricing})
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -449,14 +496,16 @@ export default function Quote() {
 
                   {/* Address */}
                   <div className="space-y-1.5">
-                    <Label htmlFor="address" className="text-xs font-semibold text-foreground">Street Address <span className="text-danger">*</span></Label>
+                    <Label htmlFor="address" className="text-xs font-semibold text-foreground">
+                      Street Address <span className="text-destructive">*</span>
+                    </Label>
                     <Input
                       id="address"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="House/flat number, street name"
                       data-testid="input-address"
-                      className="h-10 text-sm rounded-lg"
+                      className="h-10 text-xs sm:text-sm rounded-xl bg-background"
                     />
                     <FieldError msg={validationErrors.address} />
                   </div>
@@ -464,26 +513,31 @@ export default function Quote() {
                   {/* City & Pincode */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="city" className="text-xs font-semibold text-foreground">City <span className="text-danger">*</span></Label>
+                      <Label htmlFor="city" className="text-xs font-semibold text-foreground">
+                        City <span className="text-destructive">*</span>
+                      </Label>
                       <Input 
                         id="city" 
                         value={city} 
                         onChange={(e) => setCity(e.target.value)} 
                         data-testid="input-city" 
-                        className="h-10 text-sm rounded-lg"
+                        placeholder="e.g. Bhubaneswar"
+                        className="h-10 text-xs sm:text-sm rounded-xl bg-background"
                       />
                       <FieldError msg={validationErrors.city} />
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="pincode" className="text-xs font-semibold text-foreground">Pincode <span className="text-danger">*</span></Label>
+                      <Label htmlFor="pincode" className="text-xs font-semibold text-foreground">
+                        Pincode <span className="text-destructive">*</span>
+                      </Label>
                       <Input
                         id="pincode"
                         value={pincode}
                         onChange={(e) => setPincode(e.target.value)}
-                        placeholder="6-digit"
+                        placeholder="6-digit PIN"
                         maxLength={6}
                         data-testid="input-pincode"
-                        className="h-10 text-sm rounded-lg"
+                        className="h-10 text-xs sm:text-sm rounded-xl bg-background"
                       />
                       <FieldError msg={validationErrors.pincode} />
                     </div>
@@ -494,7 +548,7 @@ export default function Quote() {
                     <div className="space-y-1.5">
                       <Label htmlFor="property-type" className="text-xs font-semibold text-foreground">Property Type</Label>
                       <Select value={propertyType} onValueChange={(v) => setPropertyType(v as "residential" | "commercial")}>
-                        <SelectTrigger id="property-type" className="h-10 text-sm rounded-lg">
+                        <SelectTrigger id="property-type" className="h-10 text-xs sm:text-sm rounded-xl">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -511,7 +565,7 @@ export default function Quote() {
                         value={areaSize} 
                         onChange={(e) => setAreaSize(e.target.value)}
                         placeholder="e.g. 1200"
-                        className="h-10 text-sm rounded-lg"
+                        className="h-10 text-xs sm:text-sm rounded-xl bg-background"
                       />
                     </div>
                   </div>
@@ -519,21 +573,23 @@ export default function Quote() {
                   {/* Date & Time Slot */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <Label htmlFor="date" className="text-xs font-semibold text-foreground">Preferred Date <span className="text-danger">*</span></Label>
+                      <Label htmlFor="date" className="text-xs font-semibold text-foreground">
+                        Preferred Date <span className="text-destructive">*</span>
+                      </Label>
                       <Input 
                         id="date" 
                         type="date" 
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                         data-testid="input-date"
-                        className="h-10 text-sm rounded-lg"
+                        className="h-10 text-xs sm:text-sm rounded-xl bg-background"
                       />
                       <FieldError msg={validationErrors.date} />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="time-slot" className="text-xs font-semibold text-foreground">Time Slot</Label>
                       <Select value={timeSlot} onValueChange={setTimeSlot}>
-                        <SelectTrigger id="time-slot" className="h-10 text-sm rounded-lg">
+                        <SelectTrigger id="time-slot" className="h-10 text-xs sm:text-sm rounded-xl">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -555,25 +611,25 @@ export default function Quote() {
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Any specific concerns, access instructions, pest type, etc."
                       rows={3}
-                      className="text-sm rounded-lg resize-y"
+                      className="text-xs sm:text-sm rounded-xl resize-y bg-background"
                     />
                   </div>
 
                   {/* Emergency Checkbox */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 pt-1">
                     <Checkbox 
                       id="emergency" 
                       checked={emergency}
                       onCheckedChange={(v) => setEmergency(v === true)}
                     />
                     <Label htmlFor="emergency" className="text-xs font-medium text-foreground cursor-pointer">
-                      This is an emergency request
+                      This is an emergency request (Priority Dispatch)
                     </Label>
                   </div>
 
                   {/* Error Message */}
                   {status === "error" && errorMessage && (
-                    <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-xs font-medium animate-fade-in" role="alert">
+                    <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-xs font-medium animate-fade-in" role="alert">
                       <div className="flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 shrink-0" />
                         <span>{errorMessage}</span>
@@ -581,17 +637,17 @@ export default function Quote() {
                     </div>
                   )}
 
-                  {/* Submit */}
+                  {/* Submit Button */}
                   <Button 
                     type="submit" 
                     disabled={status === "submitting"}
-                    className="w-full h-12 text-base font-semibold rounded-lg shadow-sm"
+                    className="w-full h-12 text-sm sm:text-base font-semibold rounded-xl shadow-md btn-shine bg-primary text-primary-foreground hover:bg-primary/90 mt-2"
                     data-testid="button-submit-booking"
                   >
                     {status === "submitting" ? (
-                      <span className="flex items-center gap-2">
+                      <span className="flex items-center justify-center gap-2">
                         <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin inline-block" />
-                        Submitting...
+                        Submitting Request...
                       </span>
                     ) : (
                       "Request Quote"
@@ -603,6 +659,6 @@ export default function Quote() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
