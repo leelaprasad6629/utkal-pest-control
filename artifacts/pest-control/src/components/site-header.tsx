@@ -134,7 +134,7 @@ export default function SiteHeader() {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <NotificationBell />
+            <NotificationBell scrolled={scrolled} />
             <div className="ml-1">
               <UserButton afterSignOutUrl={import.meta.env.BASE_URL} />
             </div>
@@ -144,7 +144,7 @@ export default function SiteHeader() {
         {/* Mobile Navigation */}
         <div className="flex md:hidden items-center gap-2">
           <SignedIn>
-            <NotificationBell />
+            <NotificationBell scrolled={scrolled} />
             <UserButton afterSignOutUrl={import.meta.env.BASE_URL} />
           </SignedIn>
 

@@ -13,7 +13,11 @@ import { apiFetch } from "@/lib/api";
 import type { AppNotification } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-export default function NotificationBell() {
+interface NotificationBellProps {
+  scrolled?: boolean;
+}
+
+export default function NotificationBell({ scrolled = false }: NotificationBellProps) {
   const { getToken, isSignedIn } = useAuth();
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [open, setOpen] = useState(false);
@@ -53,13 +57,13 @@ export default function NotificationBell() {
           type="button"
           data-testid="button-notification-bell"
           aria-label="Notifications"
-          className="relative inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/15 border border-white/30 shadow-sm hover:bg-white/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className={cn("relative inline-flex items-center justify-center w-11 h-11 rounded-full border shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2", scrolled ? "bg-white/15 border-white/30 hover:bg-white/25 focus-visible:ring-white/60" : "bg-primary/10 border-primary/20 hover:bg-primary/20 focus-visible:ring-primary/40")}
         >
           {/* Bell SVG — 22px, white for max contrast on the green navbar */}
           <svg
             viewBox="0 0 24 24"
             fill="none"
-            className="w-[22px] h-[22px] text-white"
+            className={cn("w-[22px] h-[22px]", scrolled ? "text-white" : "text-primary")}
             aria-hidden="true"
             strokeWidth="2"
             stroke="currentColor"
