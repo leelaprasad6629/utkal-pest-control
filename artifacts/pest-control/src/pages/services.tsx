@@ -25,7 +25,15 @@ import {
   Sparkles,
   Phone,
   Check,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 /** Maps service slug to a corresponding Lucide icon */
 function getServiceIcon(slug: string) {
@@ -56,6 +64,11 @@ export default function Services() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
+  // ── Carousel state ──
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [carouselCurrent, setCarouselCurrent] = useState(0);
+  const [carouselCount, setCarouselCount] = useState(0);
+
   useEffect(() => {
     // Fetch from the API in the background; if it succeeds, replace static
     // data with live DB records. If it fails, keep the static list.
@@ -67,6 +80,22 @@ export default function Services() {
       })
       .catch((err) => setError(err.message));
   }, []);
+
+  // ── Carousel: sync pagination on select/reInit ──
+  useEffect(() => {
+    if (!carouselApi) return;
+    const sync = () => {
+      setCarouselCount(carouselApi.scrollSnapList().length);
+      setCarouselCurrent(carouselApi.selectedScrollSnap());
+    };
+    sync();
+    carouselApi.on("select", sync);
+    carouselApi.on("reInit", sync);
+    return () => {
+      carouselApi.off("select", sync);
+      carouselApi.off("reInit", sync);
+    };
+  }, [carouselApi]);
 
   const categories = ["All", ...Array.from(new Set(services.map((s) => s.category).filter(Boolean)))];
 
@@ -127,18 +156,22 @@ export default function Services() {
           </div>
         )}
 
-        {/* Grid: 2 columns on desktop, 1 on mobile */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {filteredServices.map((s, index) => {
+        {/* Services Carousel */}
+        <div className="relative">
+          <Carousel
+            key={selectedCategory}
+            opts={{ align: "start", loop: true }}
+            setApi={setCarouselApi}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4 sm:-ml-6 md:-ml-6">
+          {filteredServices.map((s) => {
             const IconComponent = getServiceIcon(s.slug);
 
             return (
-              <motion.div
+              <CarouselItem
                 key={s._id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.06 }}
+                className="pl-4 sm:pl-6 basis-full md:basis-1/2 lg:basis-1/3"
               >
                 <Link
                   href={`/services/${s.slug}`}
@@ -211,9 +244,47 @@ export default function Services() {
                     </div>
                   </div>
                 </Link>
-              </motion.div>
+              </CarouselItem>
             );
           })}
+            </CarouselContent>
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={() => carouselApi?.scrollPrev()}
+              disabled={!carouselApi?.canScrollPrev()}
+              className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 border border-border shadow-md hover:bg-background hover:scale-105 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Previous services"
+            >
+              <ChevronLeft className="h-5 w-5 text-foreground" />
+            </button>
+            <button
+              onClick={() => carouselApi?.scrollNext()}
+              disabled={!carouselApi?.canScrollNext()}
+              className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 border border-border shadow-md hover:bg-background hover:scale-105 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Next services"
+            >
+              <ChevronRight className="h-5 w-5 text-foreground" />
+            </button>
+          </Carousel>
+
+          {/* Pagination Dots */}
+          {carouselCount > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-2">
+              {Array.from({ length: carouselCount }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => carouselApi?.scrollTo(i)}
+                  className={`h-2 rounded-full transition-all ${
+                    i === carouselCurrent
+                      ? "w-6 bg-primary"
+                      : "w-2 bg-border hover:bg-muted-foreground"
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Why Choose Us Section */}
