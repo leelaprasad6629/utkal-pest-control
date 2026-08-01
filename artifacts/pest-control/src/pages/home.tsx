@@ -192,12 +192,16 @@ export default function Home() {
   // ── Services carousel: autoplay + pagination dots ──
   useEffect(() => {
     if (!servicesApi) return;
-    setServicesCount(servicesApi.scrollSnapList().length);
-    const onSelect = () => setServicesCurrent(servicesApi.selectedScrollSnap());
-    servicesApi.on("select", onSelect);
-    servicesApi.on("reInit", onSelect);
+    const sync = () => {
+      setServicesCount(servicesApi.scrollSnapList().length);
+      setServicesCurrent(servicesApi.selectedScrollSnap());
+    };
+    sync();
+    servicesApi.on("select", sync);
+    servicesApi.on("reInit", sync);
     return () => {
-      servicesApi.off("select", onSelect);
+      servicesApi.off("select", sync);
+      servicesApi.off("reInit", sync);
     };
   }, [servicesApi]);
 
