@@ -398,7 +398,7 @@ export default function Home() {
               className="w-full"
             >
               <CarouselContent className="-ml-4 sm:-ml-6">
-                {(services.length ? services.slice(0, 4) : FEATURED_SERVICES).map((s) => {
+                {(services.length ? services : FEATURED_SERVICES).map((s) => {
                   const displayPrice = (s as ServiceItem).basePrice
                     ? `From ₹${(s as ServiceItem).basePrice}`
                     : (s as typeof FEATURED_SERVICES[0]).basePrice
