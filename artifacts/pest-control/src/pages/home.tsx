@@ -8,6 +8,12 @@ import type { PublicStats, Review, ServiceItem } from "@/lib/types";
 import StarRating from "@/components/star-rating";
 import ServiceCardImage from "@/components/service-card-image";
 import PageHero from "@/components/page-hero";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import { motion } from "framer-motion";
 import {
   Award,
@@ -172,11 +178,34 @@ export default function Home() {
   const [stats, setStats] = useState<PublicStats | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
 
+  // ── Services carousel state ──
+  const [servicesApi, setServicesApi] = useState<CarouselApi>();
+  const [servicesCurrent, setServicesCurrent] = useState(0);
+  const [servicesCount, setServicesCount] = useState(0);
+
   useEffect(() => {
     apiFetch<Review[]>("/reviews").then((data) => setReviews(data.slice(0, 8))).catch(() => setReviews([]));
     apiFetch<ServiceItem[]>("/services").then(setServices).catch(() => setServices([]));
     apiFetch<PublicStats>("/stats").then(setStats).catch(() => setStats(null));
   }, []);
+
+  // ── Services carousel: autoplay + pagination dots ──
+  useEffect(() => {
+    if (!servicesApi) return;
+    setServicesCount(servicesApi.scrollSnapList().length);
+    const onSelect = () => setServicesCurrent(servicesApi.selectedScrollSnap());
+    servicesApi.on("select", onSelect);
+    servicesApi.on("reInit", onSelect);
+    return () => {
+      servicesApi.off("select", onSelect);
+    };
+  }, [servicesApi]);
+
+  useEffect(() => {
+    if (!servicesApi) return;
+    const id = setInterval(() => servicesApi.scrollNext(), 4000);
+    return () => clearInterval(id);
+  }, [servicesApi]);
 
   const avgRating = stats?.averageRating ?? (reviews.length ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length : null);
   const totalReviewsCount = stats?.reviewCount ?? reviews.length;
@@ -361,59 +390,105 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Service Cards Grid */}
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {(services.length ? services.slice(0, 4) : FEATURED_SERVICES).map((s) => {
-              const displayPrice = (s as ServiceItem).basePrice
-                ? `From ₹${(s as ServiceItem).basePrice}`
-                : (s as typeof FEATURED_SERVICES[0]).basePrice
-                ? `From ₹${(s as typeof FEATURED_SERVICES[0]).basePrice}`
-                : "Starting at ₹999";
+          {/* Service Cards Carousel */}
+          <div className="mt-8 relative">
+            <Carousel
+              opts={{ align: "start", loop: true }}
+              setApi={setServicesApi}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4 sm:-ml-6">
+                {(services.length ? services.slice(0, 4) : FEATURED_SERVICES).map((s) => {
+                  const displayPrice = (s as ServiceItem).basePrice
+                    ? `From ₹${(s as ServiceItem).basePrice}`
+                    : (s as typeof FEATURED_SERVICES[0]).basePrice
+                    ? `From ₹${(s as typeof FEATURED_SERVICES[0]).basePrice}`
+                    : "Starting at ₹999";
 
-              return (
-                <div
-                  key={s.slug}
-                  className="group card-interactive flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-                >
-                  <div>
-                    <div className="relative">
-                      <ServiceCardImage slug={s.slug} alt={s.name} />
-                      <div className="absolute top-3 right-3 rounded-full bg-primary/90 px-3 py-1 text-xs font-bold text-white shadow-xs backdrop-blur-xs">
-                        {displayPrice}
-                      </div>
-                    </div>
-                    <div className="p-5">
-                      <div className="flex items-center justify-between gap-2">
-                        <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{s.name}</h3>
-                      </div>
-                      <p className="mt-2 text-sm leading-relaxed text-text-muted line-clamp-3">{s.description}</p>
-                    </div>
-                  </div>
+                  return (
+                    <CarouselItem
+                      key={s.slug}
+                      className="pl-4 sm:pl-6 basis-full sm:basis-1/2 lg:basis-1/4"
+                    >
+                      <div className="group card-interactive flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card shadow-sm h-full">
+                        <div>
+                          <div className="relative">
+                            <ServiceCardImage slug={s.slug} alt={s.name} />
+                            <div className="absolute top-3 right-3 rounded-full bg-primary/90 px-3 py-1 text-xs font-bold text-white shadow-xs backdrop-blur-xs">
+                              {displayPrice}
+                            </div>
+                          </div>
+                          <div className="p-5">
+                            <div className="flex items-center justify-between gap-2">
+                              <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">{s.name}</h3>
+                            </div>
+                            <p className="mt-2 text-sm leading-relaxed text-text-muted line-clamp-3">{s.description}</p>
+                          </div>
+                        </div>
 
-                  <div className="p-5 pt-0 mt-auto border-t border-border/60">
-                    <div className="mt-4 grid grid-cols-2 gap-2">
-                      <Link href={`/services/${s.slug}`} data-testid={`link-service-${s.slug}`}>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full text-xs font-semibold h-9"
-                        >
-                          Learn More
-                        </Button>
-                      </Link>
-                      <Link href={`/quote?service=${s.slug}`}>
-                        <Button
-                          size="sm"
-                          className="w-full text-xs font-semibold h-9 bg-primary text-primary-foreground hover:brightness-110"
-                        >
-                          Book Now
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                        <div className="p-5 pt-0 mt-auto border-t border-border/60">
+                          <div className="mt-4 grid grid-cols-2 gap-2">
+                            <Link href={`/services/${s.slug}`} data-testid={`link-service-${s.slug}`}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full text-xs font-semibold h-9"
+                              >
+                                Learn More
+                              </Button>
+                            </Link>
+                            <Link href={`/quote?service=${s.slug}`}>
+                              <Button
+                                size="sm"
+                                className="w-full text-xs font-semibold h-9 bg-primary text-primary-foreground hover:brightness-110"
+                              >
+                                Book Now
+                              </Button>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+
+              {/* Navigation Arrows */}
+              <button
+                onClick={() => servicesApi?.scrollPrev()}
+                disabled={!servicesApi?.canScrollPrev()}
+                className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 border border-border shadow-md hover:bg-background hover:scale-105 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Previous services"
+              >
+                <ChevronLeft className="h-5 w-5 text-foreground" />
+              </button>
+              <button
+                onClick={() => servicesApi?.scrollNext()}
+                disabled={!servicesApi?.canScrollNext()}
+                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/90 border border-border shadow-md hover:bg-background hover:scale-105 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                aria-label="Next services"
+              >
+                <ChevronRight className="h-5 w-5 text-foreground" />
+              </button>
+            </Carousel>
+
+            {/* Pagination Dots */}
+            {servicesCount > 1 && (
+              <div className="mt-6 flex items-center justify-center gap-2">
+                {Array.from({ length: servicesCount }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => servicesApi?.scrollTo(i)}
+                    className={`h-2 rounded-full transition-all ${
+                      i === servicesCurrent
+                        ? "w-6 bg-primary"
+                        : "w-2 bg-border hover:bg-muted-foreground"
+                    }`}
+                    aria-label={`Go to slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="mt-10 text-center">
