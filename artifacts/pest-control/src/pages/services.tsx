@@ -180,7 +180,7 @@ export default function Services() {
                 >
                   {/* Image Container with Badge */}
                   <div className="relative overflow-hidden">
-                    <ServiceCardImage slug={s.slug} alt={s.name} />
+                    <ServiceCardImage slug={s.slug} alt={s.name} height="h-44" />
                     {s.category && (
                       <Badge className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white border-white/20 text-xs font-medium px-2.5 py-1">
                         {s.category}
@@ -194,13 +194,13 @@ export default function Services() {
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-6 flex flex-col flex-1 justify-between gap-4">
+                  <div className="p-5 flex flex-col flex-1 justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-3 mb-2.5">
-                        <div className="p-2.5 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                          <IconComponent className="w-5 h-5" />
+                        <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                          <IconComponent className="w-4 h-4" />
                         </div>
-                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                        <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
                           {s.name}
                         </h3>
                       </div>
@@ -236,7 +236,7 @@ export default function Services() {
                         }}
                       >
                         <Link href={`/quote?service=${s.slug}`}>
-                          <Button size="sm" variant="secondary" className="hover:bg-primary hover:text-white transition-colors">
+                          <Button size="sm" variant="secondary" className="h-8 px-3 text-xs hover:bg-primary hover:text-white transition-colors">
                             Book Now
                           </Button>
                         </Link>
