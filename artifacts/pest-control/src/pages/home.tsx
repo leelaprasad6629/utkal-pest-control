@@ -3,6 +3,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BUSINESS_NAME, TAGLINE, SERVICE_AREAS } from "@/config/business";
+import { PAGE_HERO_IMAGES } from "@/config/hero-images";
+import PageHero, { SectionHero } from "@/components/page-hero";
 import { apiFetch } from "@/lib/api";
 import type { PublicStats, Review, ServiceItem } from "@/lib/types";
 import StarRating from "@/components/star-rating";
@@ -106,53 +108,48 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen w-full">
-      {/* Fixed Background Image */}
-      <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=80')" 
-        }}
-      />
-      {/* Themed Overlay for Readability */}
-      <div className="fixed inset-0 z-0 bg-background/92 backdrop-blur-[1.5px] pointer-events-none" />
-
-      {/* Page Content */}
-      <main className="relative z-10 animate-fade-in">
+      <main className="relative z-10">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary to-[hsl(155,43%,12%)] text-primary-foreground">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 md:py-24">
-          <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-accent">{TAGLINE}</p>
-          <h1 className="mt-3 max-w-2xl text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight text-primary-foreground leading-tight">
-            Protect your home, calmly and thoroughly.
-          </h1>
-          <p className="mt-4 max-w-xl text-base sm:text-lg text-primary-foreground/80 leading-relaxed">
+      <PageHero
+        image={PAGE_HERO_IMAGES.home}
+        title={
+          <>
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-widest text-accent">{TAGLINE}</p>
+            <h1 className="mt-3 max-w-2xl text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight leading-tight">
+              Protect your home, calmly and thoroughly.
+            </h1>
+          </>
+        }
+        subtitle={
+          <>
             {BUSINESS_NAME} provides certified, eco-conscious pest control for homes and
             businesses in {SERVICE_AREAS.join(", ")}. Request a free quote and get a
             technician scheduled in minutes.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <Link href="/quote" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-12 text-base font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm"
-                data-testid="button-home-quote"
-              >
-                Get Free Quote
-              </Button>
-            </Link>
-            <Link href="/services" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto h-12 text-base font-semibold border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-                data-testid="button-home-services"
-              >
-                View Services
-              </Button>
-            </Link>
-          </div>
+          </>
+        }
+      >
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <Link href="/quote" className="w-full sm:w-auto">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto h-12 text-base font-semibold bg-accent text-accent-foreground border-accent hover:brightness-95 shadow-sm"
+              data-testid="button-home-quote"
+            >
+              Get Free Quote
+            </Button>
+          </Link>
+          <Link href="/services" className="w-full sm:w-auto">
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:w-auto h-12 text-base font-semibold border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+              data-testid="button-home-services"
+            >
+              View Services
+            </Button>
+          </Link>
         </div>
-      </section>
+      </PageHero>
 
       {/* Stats bar */}
       <section className="border-b border-border bg-secondary/20 backdrop-blur-xs">
@@ -354,8 +351,8 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="bg-primary text-primary-foreground">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center space-y-4">
+      <SectionHero image={PAGE_HERO_IMAGES.cta}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center space-y-4 text-primary-foreground">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-foreground">Serving {SERVICE_AREAS.join(", ")}</h2>
           <p className="text-primary-foreground/80 max-w-xl mx-auto text-sm sm:text-base">
             Ready to get started? Book a free inspection and quote today.
@@ -372,7 +369,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-      </section>
+      </SectionHero>
       </main>
     </div>
   );

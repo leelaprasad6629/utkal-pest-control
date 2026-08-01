@@ -1,4 +1,6 @@
 import { SERVICE_AREAS } from "@/config/business";
+import { PAGE_HERO_IMAGES } from "@/config/hero-images";
+import PageHero from "@/components/page-hero";
 
 const REASONS = [
   "Professional certified technicians",
@@ -10,26 +12,15 @@ const REASONS = [
 export default function About() {
   return (
     <div className="relative min-h-screen w-full">
-      {/* Fixed Background Image */}
-      <div 
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed pointer-events-none"
-        style={{ 
-          backgroundImage: "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80')" 
-        }}
+      <PageHero
+        image={PAGE_HERO_IMAGES.about}
+        size="md"
+        title="About Utkal Pest Control"
+        subtitle="A trusted eco-friendly pest control company serving households and businesses with safe, effective methods tailored to local conditions."
       />
-      {/* Themed Overlay for Readability */}
-      <div className="fixed inset-0 z-0 bg-background/92 backdrop-blur-[1.5px] pointer-events-none" />
 
-      {/* Page Content */}
       <main className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 py-14 animate-fade-in">
-        <h1 className="text-primary">About Utkal Pest Control</h1>
-        <p className="mt-4 max-w-2xl text-text-muted">
-          Utkal Pest Control is a trusted eco-friendly pest control company serving households and
-          businesses in local communities. Our certified technicians use safe, effective methods
-          tailored to local conditions.
-        </p>
-
-        <section className="mt-10 rounded-xl border border-border bg-card/90 p-6 shadow-sm backdrop-blur-xs">
+        <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
           <h2>Service Areas</h2>
           <p className="mt-2 text-text-muted">
             We operate across the following areas: {SERVICE_AREAS.join(", ")}. If you're unsure
@@ -43,7 +34,7 @@ export default function About() {
             {REASONS.map((reason) => (
               <li
                 key={reason}
-                className="flex items-start gap-3 rounded-lg border border-border bg-card/90 p-4 text-sm shadow-sm backdrop-blur-xs"
+                className="flex items-start gap-3 rounded-lg border border-border bg-card p-4 text-sm shadow-sm"
               >
                 <svg
                   className="mt-0.5 h-5 w-5 shrink-0 text-success"

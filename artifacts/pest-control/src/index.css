@@ -363,6 +363,14 @@
   .card-interactive {
     @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-primary/30;
   }
+
+  .animate-hero-bg {
+    animation: hero-bg-fade-in 900ms ease-out both;
+  }
+
+  .whatsapp-float {
+    @apply fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg ring-2 ring-white/20 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:brightness-105 active:scale-95;
+  }
 }
 
 @keyframes fade-in {
@@ -373,6 +381,17 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes hero-bg-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

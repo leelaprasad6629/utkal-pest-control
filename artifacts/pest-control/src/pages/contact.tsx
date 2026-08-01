@@ -5,6 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiFetch } from "@/lib/api";
+import { WHATSAPP_NUMBER, getWhatsAppUrl } from "@/config/business";
+import { PAGE_HERO_IMAGES } from "@/config/hero-images";
+import PageHero from "@/components/page-hero";
 import { 
   MapPin, 
   Phone, 
@@ -46,37 +49,35 @@ export default function Contact() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 animate-fade-in space-y-10 sm:space-y-14">
-      {/* Hero / Header Section */}
-      <section className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-semibold tracking-wide uppercase">
+    <>
+      <PageHero
+        image={PAGE_HERO_IMAGES.contact}
+        size="md"
+        align="center"
+        title="We're Here to Protect Your Space"
+        subtitle="Have a question about our pest control services, need a free inspection quote, or require immediate assistance? Send us a message and our team will respond promptly."
+      >
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary-foreground/15 text-primary-foreground text-xs sm:text-sm font-semibold tracking-wide uppercase mb-4">
           <Headphones className="w-4 h-4" />
           Get In Touch
         </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
-          We're Here to Protect Your Space
-        </h1>
-        <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-          Have a question about our pest control services, need a free inspection quote, or require immediate assistance? 
-          Send us a message and our team will respond promptly.
-        </p>
-
-        {/* Feature Badges */}
-        <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium text-muted-foreground">
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-2xs">
-            <Zap className="w-4 h-4 text-amber-500 shrink-0" />
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium">
+          <div className="flex items-center gap-1.5 bg-primary-foreground/10 border border-primary-foreground/20 px-3 py-1.5 rounded-lg">
+            <Zap className="w-4 h-4 text-accent shrink-0" />
             <span>Fast 24/7 Response</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-2xs">
-            <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+          <div className="flex items-center gap-1.5 bg-primary-foreground/10 border border-primary-foreground/20 px-3 py-1.5 rounded-lg">
+            <ShieldCheck className="w-4 h-4 text-accent shrink-0" />
             <span>Licensed Professionals</span>
           </div>
-          <div className="flex items-center gap-1.5 bg-card border border-border px-3 py-1.5 rounded-lg shadow-2xs">
-            <Globe className="w-4 h-4 text-primary shrink-0" />
+          <div className="flex items-center gap-1.5 bg-primary-foreground/10 border border-primary-foreground/20 px-3 py-1.5 rounded-lg">
+            <Globe className="w-4 h-4 text-accent shrink-0" />
             <span>Serving Across India</span>
           </div>
         </div>
-      </section>
+      </PageHero>
+
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 animate-fade-in space-y-10 sm:space-y-14">
 
       {/* Contact Info Cards - Balanced 4-Column Grid */}
       <section className="max-w-6xl mx-auto">

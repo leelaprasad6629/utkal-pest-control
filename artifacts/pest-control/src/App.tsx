@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
+import WhatsAppButton from "@/components/whatsapp-button";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import About from "@/pages/about";
@@ -102,6 +103,7 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       <SiteFooter />
+      <WhatsAppButton />
     </>
   );
 }
