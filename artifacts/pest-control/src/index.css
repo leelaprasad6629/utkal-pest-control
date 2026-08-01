@@ -4,12 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html, body {
-  overflow-x: hidden;
-  max-width: 100vw;
-  scroll-behavior: smooth;
-}
-
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
