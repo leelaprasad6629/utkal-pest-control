@@ -22,7 +22,7 @@ import { FaWhatsapp } from "react-icons/fa";
 
 // ─── APK Download URL ───────────────────────────────────────────────
 // ⚠️  Update this with your actual APK download link when ready.
-const APK_DOWNLOAD_URL = "#"; // ← Replace with your APK URL
+const APK_DOWNLOAD_URL = "https://base44.app/api/apps/6a68de79568a670980669a8f/files/mp/public/6a68de79568a670980669a8f/522fa955f_UtkalPestControl-APK.zip"; // ← Replace with your APK URL
 
 const FOOTER_LINKS = {
   services: [
