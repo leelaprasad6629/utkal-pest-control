@@ -16,8 +16,13 @@ import {
   Leaf,
   Clock,
   ChevronRight,
+  Download,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+
+// ─── APK Download URL ───────────────────────────────────────────────
+// ⚠️  Update this with your actual APK download link when ready.
+const APK_DOWNLOAD_URL = "#"; // ← Replace with your APK URL
 
 const FOOTER_LINKS = {
   services: [
@@ -43,6 +48,15 @@ const TRUST_BADGES = [
   { icon: Clock, label: "24×7 Support" },
 ];
 
+/** Inline Android robot icon (lucide-react doesn't ship one) */
+function AndroidIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M17.6 9.48l1.84-3.18a.5.5 0 0 0-.87-.5l-1.87 3.24a10.7 10.7 0 0 0-9.4 0L5.43 5.8a.5.5 0 1 0-.87.5L6.4 9.48A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.52zM7 15.25a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zm10 0a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5z"/>
+    </svg>
+  );
+}
+
 export default function SiteFooter() {
   const [showTop, setShowTop] = useState(false);
 
@@ -56,45 +70,55 @@ export default function SiteFooter() {
 
   return (
     <footer className="relative w-full bg-primary text-primary-foreground overflow-hidden">
-      {/* Decorative top wave */}
+      {/* Decorative top accent */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-accent/60 via-accent to-accent/60" />
 
       {/* Main footer content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
-          {/* Brand & About */}
-          <div className="space-y-3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-8">
+          {/* Brand & About — full width on mobile, 1 col on larger */}
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1 space-y-2">
             <LogoLockup size={34} textClass="text-primary-foreground text-lg" />
-            <p className="text-sm text-primary-foreground/70 leading-relaxed max-w-xs">
+            <p className="text-xs sm:text-sm text-primary-foreground/70 leading-relaxed max-w-xs">
               {TAGLINE}. Serving homes and businesses with certified, safe, and effective pest management solutions.
             </p>
-            <div className="flex flex-wrap gap-2 pt-1">
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
               {TRUST_BADGES.map((badge) => {
                 const Icon = badge.icon;
                 return (
                   <span
                     key={badge.label}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-foreground/10 border border-primary-foreground/15 text-xs font-medium text-primary-foreground/80"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-foreground/10 border border-primary-foreground/15 text-[11px] font-medium text-primary-foreground/80"
                   >
-                    <Icon className="h-3.5 w-3.5" />
+                    <Icon className="h-3 w-3" />
                     {badge.label}
                   </span>
                 );
               })}
             </div>
+            {/* APK Download button — visible on desktop only here (mobile shows it separately) */}
+            <a
+              href={APK_DOWNLOAD_URL}
+              download
+              className="hidden lg:inline-flex items-center gap-2 mt-2 px-3 py-2 rounded-lg bg-accent text-accent-foreground text-sm font-semibold hover:bg-accent/90 transition-colors w-fit"
+            >
+              <AndroidIcon className="h-4 w-4" />
+              <Download className="h-4 w-4" />
+              Download APK
+            </a>
           </div>
 
           {/* Services */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-primary-foreground/60 mb-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-primary-foreground/60 mb-2.5">
               Our Services
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1.5 sm:space-y-2">
               {FOOTER_LINKS.services.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group flex items-center gap-1 text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="group flex items-center gap-1 text-xs sm:text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                   >
                     <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-1 transition-all" />
                     {link.label}
@@ -106,15 +130,15 @@ export default function SiteFooter() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-primary-foreground/60 mb-4">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-primary-foreground/60 mb-2.5">
               Quick Links
             </h3>
-            <ul className="space-y-2.5">
+            <ul className="space-y-1.5 sm:space-y-2">
               {FOOTER_LINKS.quick.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group flex items-center gap-1 text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="group flex items-center gap-1 text-xs sm:text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
                   >
                     <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-1 transition-all" />
                     {link.label}
@@ -125,29 +149,29 @@ export default function SiteFooter() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-primary-foreground/60 mb-4">
+          <div className="col-span-2 sm:col-span-1">
+            <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-primary-foreground/60 mb-2.5">
               Get in Touch
             </h3>
-            <ul className="space-y-3 text-sm text-primary-foreground/70">
-              <li className="flex items-start gap-2.5">
-                <MapPin className="h-4 w-4 mt-0.5 shrink-0 text-accent" />
+            <ul className="space-y-2 text-xs sm:text-sm text-primary-foreground/70">
+              <li className="flex items-start gap-2">
+                <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0 text-accent" />
                 <span>{SERVICE_AREAS.join(", ")}</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Phone className="h-4 w-4 shrink-0 text-accent" />
+              <li className="flex items-center gap-2">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-accent" />
                 <a href="tel:+917093823752" className="hover:text-primary-foreground transition-colors">
                   +91 70938 23752
                 </a>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Mail className="h-4 w-4 shrink-0 text-accent" />
+              <li className="flex items-center gap-2">
+                <Mail className="h-3.5 w-3.5 shrink-0 text-accent" />
                 <a href="mailto:contact@utkalpestcontrol.com" className="hover:text-primary-foreground transition-colors break-all">
                   contact@utkalpestcontrol.com
                 </a>
               </li>
-              <li className="flex items-center gap-2.5">
-                <FaWhatsapp className="h-4 w-4 shrink-0 text-accent" />
+              <li className="flex items-center gap-2">
+                <FaWhatsapp className="h-3.5 w-3.5 shrink-0 text-accent" />
                 <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors">
                   WhatsApp Us
                 </a>
@@ -155,7 +179,7 @@ export default function SiteFooter() {
             </ul>
 
             {/* Social */}
-            <div className="flex items-center gap-3 mt-5">
+            <div className="flex items-center gap-2.5 mt-3">
               {[
                 { Icon: Facebook, href: "#" },
                 { Icon: Instagram, href: "#" },
@@ -165,24 +189,35 @@ export default function SiteFooter() {
                 <a
                   key={i}
                   href={href}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-foreground/10 border border-primary-foreground/15 text-primary-foreground/70 hover:bg-accent hover:text-accent-foreground hover:scale-110 transition-all duration-300"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-foreground/10 border border-primary-foreground/15 text-primary-foreground/70 hover:bg-accent hover:text-accent-foreground hover:scale-110 transition-all duration-300"
                   aria-label="Social media"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5" />
                 </a>
               ))}
             </div>
           </div>
         </div>
+
+        {/* APK Download — mobile/tablet only (desktop shows it in brand column) */}
+        <a
+          href={APK_DOWNLOAD_URL}
+          download
+          className="lg:hidden mt-3 flex items-center justify-center gap-2 w-full sm:w-fit px-4 py-2.5 rounded-lg bg-accent text-accent-foreground text-sm font-semibold hover:bg-accent/90 transition-colors"
+        >
+          <AndroidIcon className="h-5 w-5" />
+          Download Android App
+          <Download className="h-4 w-4" />
+        </a>
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-primary-foreground/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-primary-foreground/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col sm:flex-row items-center justify-between gap-1.5 text-[11px] sm:text-xs text-primary-foreground/50">
           <p>
             © {new Date().getFullYear()} {BUSINESS_NAME}. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <a href="#" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
             <span className="opacity-30">|</span>
             <a href="#" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
